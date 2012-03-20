@@ -16,9 +16,9 @@ import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 @Service
 public class SearchService {
@@ -28,7 +28,7 @@ public class SearchService {
     private Client client;
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private WebApplicationContext applicationContext;
 
     @PostConstruct
     public void booststrap() {
@@ -86,6 +86,12 @@ public class SearchService {
         }
 
         logger.debug("final settings: {}", settings.internalMap());
+
+        // setup sigar
+        String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
+        logger.debug("sigar dir: {}", sigarDir);
+        System.setProperty("org.hyperic.sigar.path", sigarDir);
+
         node = NodeBuilder.nodeBuilder().settings(settings).node();
         client = node.client();
     }
