@@ -30,13 +30,15 @@ public class SearchService {
     @PostConstruct
     public void booststrap() {
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+        
+        // cloud9 default settings
         Resource conf = applicationContext.getResource("classpath:cloud9.yml");
         logger.debug("cloud9.yml exists: {}", conf.exists());
         if (conf.exists()) {
             try {
                 InputStream is = conf.getInputStream();
                 settings.loadFromStream(conf.getFilename(), is);
-                logger.debug("settings: {}", settings);
+                logger.debug("settings: {}", settings.internalMap());
                 is.close();
             } catch (IOException e) {
                 logger.debug("error reading settings", e);
