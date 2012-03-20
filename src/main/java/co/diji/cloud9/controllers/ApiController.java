@@ -85,7 +85,7 @@ public class ApiController {
             HttpServletResponse resp = (HttpServletResponse) asyncContext.getResponse();
             logger.debug("response content type: {}", response.contentType());
             resp.setContentType(response.contentType());
-            logger.debug("isBrowser: {}", restRequest.header("User-Agent"));
+            logger.debug("isBrowser: {}", RestUtils.isBrowser(restRequest.header("User-Agent")));
             if (RestUtils.isBrowser(restRequest.header("User-Agent"))) {
                 resp.addHeader("Access-Control-Allow-Origin", "*");
                 logger.debug("request method: {}", restRequest.method());
