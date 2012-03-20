@@ -37,7 +37,7 @@ public class ServletRestRequest extends AbstractRestRequest implements RestReque
         }
 
         content = Streams.copyToByteArray(servletRequest.getInputStream());
-        logger.debug("method:{} path:{} params:{}", new Object[] { method, path, params });
+        logger.debug("method:{} path:{} params:{}", new Object[]{method, path, params});
         logger.debug("content: {}", new String(content));
     }
 

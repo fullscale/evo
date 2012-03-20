@@ -57,7 +57,8 @@ public class ApiController {
     @ResponseBody
     @RequestMapping(value = "/**")
     public void passthough(HttpServletRequest request, HttpServletResponse response) {
-        logger.trace("passthrough - method: {}, path: {}, params: {}", new Object[] { request.getMethod(), request.getServletPath(), request.getQueryString() });
+        logger.trace("passthrough - method: {}, path: {}, params: {}", new Object[]{
+                request.getMethod(), request.getServletPath(), request.getQueryString()});
         final AsyncContext asyncContext = request.startAsync(request, response);
         try {
             ServletRestRequest restRequest = new ServletRestRequest(request);
