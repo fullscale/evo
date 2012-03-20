@@ -2,6 +2,10 @@ package co.diji.cloud9.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -63,6 +67,26 @@ public class SearchService {
             }
         }
 
+        // custom user settings from system properties
+        // set node name to the current hostname
+        try {
+            settings.put("node.name", System.getProperty("c9.node.name", InetAddress.getLocalHost().getHostName()));
+        } catch (UnknownHostException e) {
+            logger.debug("unable to get hostname", e);
+        }
+        
+        // set the cluster name to a random string
+        settings.put("cluster.name", System.getProperty("c9.cluster.name", UUID.randomUUID().toString()));
+        
+        // use unicast vs. multicast
+        String unicastHosts = System.getProperty("c9.unicast.hosts", null);
+        logger.debug("c9.unicast.hosts: {}", unicastHosts);
+        if (unicastHosts != null) {
+            settings.put("discovery.zen.ping.multicast.enabled", false);
+            settings.putArray("discovery.zen.ping.unicast.hosts", unicastHosts.split(","));
+        }
+        
+        logger.debug("final settings: {}", settings.internalMap());
         node = NodeBuilder.nodeBuilder().settings(settings).node();
         client = node.client();
     }
