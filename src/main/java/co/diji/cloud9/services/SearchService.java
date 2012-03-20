@@ -45,6 +45,24 @@ public class SearchService {
             }
         }
 
+        // custom user settings from file
+        String userSettingsFile = System.getProperty("c9.settings", null);
+        logger.debug("user settings file: {}", userSettingsFile);
+        if (userSettingsFile != null) {
+            Resource userConf = applicationContext.getResource("file:" + userSettingsFile);
+            logger.debug("userConf exists: {}", userConf.exists());
+            if (userConf.exists()) {
+                try {
+                    InputStream is = userConf.getInputStream();
+                    settings.loadFromStream(userSettingsFile, is);
+                    logger.debug("settings: {}", settings.internalMap());
+                    is.close();
+                } catch (IOException e) {
+                    logger.warn("error loading user settings", e);
+                } 
+            }
+        }
+
         node = NodeBuilder.nodeBuilder().settings(settings).node();
         client = node.client();
     }
