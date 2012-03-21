@@ -1,0 +1,38 @@
+node:
+    client: false
+    data: true
+
+path:
+    data: target/data
+
+cluster:
+    name: cloud9test
+
+http:
+    enabled: false
+
+gateway:
+    type: none
+
+index:
+    store:
+        type: memory
+    number_of_shards: 1
+    number_of_replicas: 0
+    analysis:
+        filter:
+            edgeNGram:
+                type: edgeNGram
+                min_gram: 1
+                max_gram: 25
+                side: front
+
+        analyzer:
+            string_lowercase:
+                tokenizer: keyword
+                filter: lowercase
+
+            ngrammer:
+                type: custom
+                tokenizer: whitespace
+                filter: [lowercase, edgeNGram]
