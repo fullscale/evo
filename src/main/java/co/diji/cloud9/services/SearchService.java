@@ -30,6 +30,9 @@ public class SearchService {
     @Autowired
     private WebApplicationContext applicationContext;
 
+    /**
+     * Initialize and start our ElasticSearch node.
+     */
     @PostConstruct
     public void booststrap() {
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
@@ -96,6 +99,9 @@ public class SearchService {
         client = node.client();
     }
 
+    /**
+     * Cleanly shutdown our ElasticSearch node.
+     */
     @PreDestroy
     public void shutdown() {
         if (node != null) {
@@ -103,10 +109,20 @@ public class SearchService {
         }
     }
 
+    /**
+     * Get the internal ElasticSearch Node object
+     * 
+     * @return the internal Node object
+     */
     public Node getNode() {
         return node;
     }
 
+    /**
+     * Get the internal ElasticSearch Client object
+     * 
+     * @return the internal Client object
+     */
     public Client getClient() {
         return client;
     }
