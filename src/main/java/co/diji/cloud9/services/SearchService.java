@@ -187,8 +187,8 @@ public class SearchService {
      * 
      * @return a map where the key is the node id and the value is the info for that node, null on error
      */
-    public Map<String, NodeInfo> nodeInfo() {
-        logger.trace("nodeInfo");
+    public Map<String, NodeInfo> getNodeInfo() {
+        logger.trace("in getNodeInfo");
         Map<String, NodeInfo> nodeInfo = null;
         ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest());
 
@@ -202,7 +202,7 @@ public class SearchService {
             logger.debug("Error getting node info", e);
         }
 
-        logger.trace("nodeInfo: {}", nodeInfo);
+        logger.trace("exit getNodeInfo: {}", nodeInfo);
         return nodeInfo;
     }
 
