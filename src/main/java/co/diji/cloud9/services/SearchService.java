@@ -4,14 +4,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
@@ -171,6 +177,27 @@ public class SearchService {
 
         logger.trace("indexStatus: {}", status);
         return status;
+    }
+
+    /**
+     * Get information about nodes in the cluster.
+     * 
+     * @return a list of node information, null when there is an error
+     */
+    public List<NodeInfo> nodeInfo() {
+        logger.trace("nodeInfo");
+        List<NodeInfo> nodeInfo = null;
+        ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest());
+
+        try {
+            NodesInfoResponse resp = action.actionGet();
+            nodeInfo = Arrays.asList(resp.getNodes());
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting node info", e);
+        }
+
+        logger.trace("nodeInfo: {}", nodeInfo);
+        return nodeInfo;
     }
 
 }

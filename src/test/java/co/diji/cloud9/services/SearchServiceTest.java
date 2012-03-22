@@ -1,8 +1,11 @@
 package co.diji.cloud9.services;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -64,5 +67,13 @@ public class SearchServiceTest {
         // TODO add more tests once we have more index operations such as create and delete
         IndexStatus status = searchService.indexStatus("doesnotexistindex");
         Assert.assertNull(status);
+    }
+
+    @Test
+    public void testNodeInfo() {
+        List<NodeInfo> info = searchService.nodeInfo();
+        Assert.assertNotNull(info);
+        Assert.assertEquals(1, info.size());
+        Assert.assertEquals("c9.test.node", info.get(0).getNode().name());
     }
 }
