@@ -281,6 +281,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.1</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -353,8 +359,8 @@
                         <phase>process-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <copy todir="${project.build.directory}/test-classes/WEB-INF/lib/sigar">
-                                    <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib/sigar" includes="**/*" />
+                                <copy todir="${project.build.directory}/test-classes/">
+                                    <fileset dir="${basedir}/src/main/webapp/" includes="**/*" />
                                 </copy>
                             </tasks>
                         </configuration>

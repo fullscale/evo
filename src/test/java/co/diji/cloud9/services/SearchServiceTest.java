@@ -19,17 +19,22 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 public class SearchServiceTest {
 
     private static SearchService searchService;
+    private static ConfigService config;
 
     @BeforeClass
     public static void setup() {
         searchService = new SearchService();
+        config = new ConfigService();
 
         // mock appplication context and inject into search service
         MockServletContext servletContext = new MockServletContext();
         WebApplicationContext webappContext = new GenericWebApplicationContext(servletContext);
         ReflectionTestUtils.setField(searchService, "applicationContext", webappContext, WebApplicationContext.class);
+        ReflectionTestUtils.setField(config, "applicationContext", webappContext, WebApplicationContext.class);
+        ReflectionTestUtils.setField(searchService, "config", config, ConfigService.class);
         System.setProperty("c9.cluster.name", "c9.test.cluster");
         System.setProperty("c9.node.name", "c9.test.node");
+        config.init();
         searchService.booststrap();
     }
 

@@ -1,0 +1,24 @@
+{
+    "images": {
+        "_timestamp": {
+            "enabled": true,
+            "store": true
+        },
+        "_source": {
+            "compress": true,
+            "enabled": true
+        },
+        "properties": {
+            "code": {
+                "type": "binary",
+                "index": "no",
+                "store": "no"
+            },
+            "mime": {
+                "type": "string",
+                "index": "no",
+                "store": "no"
+            }
+        }
+    }
+}
