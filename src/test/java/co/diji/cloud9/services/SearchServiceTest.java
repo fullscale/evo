@@ -57,7 +57,7 @@ public class SearchServiceTest {
 
     @Test
     public void testHealth() {
-        ClusterHealthResponse health = searchService.health();
+        ClusterHealthResponse health = searchService.getClusterHealth();
         Assert.assertNotNull(health);
         Assert.assertEquals("c9.test.cluster", health.getClusterName());
         Assert.assertEquals(1, health.getNumberOfNodes());
@@ -66,21 +66,21 @@ public class SearchServiceTest {
     @Test
     public void testIndexStatus() {
         // TODO add more tests once we have more index operations such as create and delete
-        IndexStatus status = searchService.indexStatus("doesnotexistindex");
-        Assert.assertNull(status);
+        Map<String, IndexStatus> indexStatus = searchService.getIndexStatus("doesnotexistindex");
+        Assert.assertNull(indexStatus);
     }
 
     @Test
     public void testNodeInfo() {
-        Map<String, NodeInfo> info = searchService.nodeInfo();
+        Map<String, NodeInfo> info = searchService.getNodeInfo();
         Assert.assertNotNull(info);
         Assert.assertEquals(1, info.size());
         Assert.assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
     }
-    
+
     @Test
     public void testNodeStats() {
-        Map<String, NodeStats> stats = searchService.nodeStats();
+        Map<String, NodeStats> stats = searchService.getNodeStats();
         Assert.assertNotNull(stats);
         Assert.assertEquals(1, stats.size());
         Assert.assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
