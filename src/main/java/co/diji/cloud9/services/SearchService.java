@@ -164,22 +164,22 @@ public class SearchService {
     /**
      * Gets the status of an index.
      * 
-     * @param index the name of the index
-     * @return the index status, null if the index does not exist or there is an error
+     * @param indices a list of index names to get the status for
+     * @return a map where the key is the index name and the value is the status for that index, null on error
      */
-    public IndexStatus indexStatus(String index) {
-        logger.trace("indexStatus index:{}", index);
-        IndexStatus status = null;
-        ListenableActionFuture<IndicesStatusResponse> action = client.admin().indices().prepareStatus(index).execute();
+    public Map<String, IndexStatus> getIndexStatus(String... indices) {
+        logger.trace("in getIndexStatus indices:{}", indices);
+        Map<String, IndexStatus> indexStatus = null;
+        ListenableActionFuture<IndicesStatusResponse> action = client.admin().indices().prepareStatus(indices).execute();
         try {
             IndicesStatusResponse resp = action.actionGet();
-            status = resp.index(index);
+            indexStatus = resp.indices();
         } catch (ElasticSearchException e) {
             logger.debug("Error getting index status", e);
         }
 
-        logger.trace("indexStatus: {}", status);
-        return status;
+        logger.trace("exit getIndexStatus: {}", indexStatus);
+        return indexStatus;
     }
 
     /**
