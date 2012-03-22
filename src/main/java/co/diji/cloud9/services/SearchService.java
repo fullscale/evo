@@ -136,6 +136,7 @@ public class SearchService {
      * @return the cluster health, null when there is an error
      */
     public ClusterHealthResponse health() {
+        logger.trace("health");
         ClusterHealthResponse resp = null;
         ListenableActionFuture<ClusterHealthResponse> healthAction = client.admin().cluster().prepareHealth().execute();
 
@@ -145,6 +146,7 @@ public class SearchService {
             logger.debug("Error getting cluster health", e);
         }
 
+        logger.trace("{}", resp);
         return resp;
     }
 }
