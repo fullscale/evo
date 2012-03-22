@@ -23,7 +23,8 @@ public class SearchServiceTest {
         MockServletContext servletContext = new MockServletContext();
         WebApplicationContext webappContext = new GenericWebApplicationContext(servletContext);
         ReflectionTestUtils.setField(searchService, "applicationContext", webappContext, WebApplicationContext.class);
-
+        System.setProperty("c9.cluster.name", "c9.test.cluster");
+        System.setProperty("c9.node.name", "c9.test.node");
         searchService.booststrap();
     }
 
