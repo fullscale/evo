@@ -2,8 +2,8 @@ package co.diji.cloud9.services;
 
 import junit.framework.Assert;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -12,10 +12,10 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 
 public class SearchServiceTest {
 
-    private SearchService searchService;
+    private static SearchService searchService;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         searchService = new SearchService();
 
         // mock appplication context and inject into search service
@@ -26,8 +26,8 @@ public class SearchServiceTest {
         searchService.booststrap();
     }
 
-    @After
-    public void shutdown() {
+    @AfterClass
+    public static void shutdown() {
         if (searchService != null) {
             searchService.shutdown();
         }
