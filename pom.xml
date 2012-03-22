@@ -41,17 +41,6 @@
                     <artifactId>jetty-webapp</artifactId>
                     <version>${jetty.version}</version>
                 </dependency>
-                <dependency>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-annotations</artifactId>
-                    <version>${jetty.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-jndi</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
             </dependencies>
        
             <build> 
@@ -161,12 +150,6 @@
             <version>1.7</version>
         </dependency>
 
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-
         <!-- AspectJ -->
         <dependency>
             <groupId>org.aspectj</groupId>
@@ -251,12 +234,6 @@
             <version>${jetty.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-annotations</artifactId>
-            <version>${jetty.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- ElasticSearch -->
         <dependency>
@@ -308,6 +285,12 @@
                     <artifactId>commons-logging</artifactId>
                  </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.1</version>
         </dependency>
 
     </dependencies>
@@ -369,7 +352,6 @@
                 <configuration>
                     <webApp>
                         <contextPath>/</contextPath>
-                        <defaultsDescriptor>${basedir}/src/test/resources/webdefault.xml</defaultsDescriptor>
                     </webApp>
                 </configuration>
             </plugin>
@@ -383,8 +365,8 @@
                         <phase>process-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <copy todir="${project.build.directory}/test-classes/WEB-INF/lib/sigar">
-                                    <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib/sigar" includes="**/*" />
+                                <copy todir="${project.build.directory}/test-classes/">
+                                    <fileset dir="${basedir}/src/main/webapp/" includes="**/*" />
                                 </copy>
                             </tasks>
                         </configuration>

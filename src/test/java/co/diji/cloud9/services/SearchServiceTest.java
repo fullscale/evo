@@ -1,11 +1,12 @@
 package co.diji.cloud9.services;
 
-import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
+import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,17 +19,22 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 public class SearchServiceTest {
 
     private static SearchService searchService;
+    private static ConfigService config;
 
     @BeforeClass
     public static void setup() {
         searchService = new SearchService();
+        config = new ConfigService();
 
         // mock appplication context and inject into search service
         MockServletContext servletContext = new MockServletContext();
         WebApplicationContext webappContext = new GenericWebApplicationContext(servletContext);
         ReflectionTestUtils.setField(searchService, "applicationContext", webappContext, WebApplicationContext.class);
+        ReflectionTestUtils.setField(config, "applicationContext", webappContext, WebApplicationContext.class);
+        ReflectionTestUtils.setField(searchService, "config", config, ConfigService.class);
         System.setProperty("c9.cluster.name", "c9.test.cluster");
         System.setProperty("c9.node.name", "c9.test.node");
+        config.init();
         searchService.booststrap();
     }
 
@@ -56,7 +62,7 @@ public class SearchServiceTest {
 
     @Test
     public void testHealth() {
-        ClusterHealthResponse health = searchService.health();
+        ClusterHealthResponse health = searchService.getClusterHealth();
         Assert.assertNotNull(health);
         Assert.assertEquals("c9.test.cluster", health.getClusterName());
         Assert.assertEquals(1, health.getNumberOfNodes());
@@ -65,15 +71,24 @@ public class SearchServiceTest {
     @Test
     public void testIndexStatus() {
         // TODO add more tests once we have more index operations such as create and delete
-        IndexStatus status = searchService.indexStatus("doesnotexistindex");
-        Assert.assertNull(status);
+        Map<String, IndexStatus> indexStatus = searchService.getIndexStatus("doesnotexistindex");
+        Assert.assertNull(indexStatus);
     }
 
     @Test
     public void testNodeInfo() {
-        List<NodeInfo> info = searchService.nodeInfo();
+        Map<String, NodeInfo> info = searchService.getNodeInfo();
         Assert.assertNotNull(info);
         Assert.assertEquals(1, info.size());
-        Assert.assertEquals("c9.test.node", info.get(0).getNode().name());
+        Assert.assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
     }
+
+    @Test
+    public void testNodeStats() {
+        Map<String, NodeStats> stats = searchService.getNodeStats();
+        Assert.assertNotNull(stats);
+        Assert.assertEquals(1, stats.size());
+        Assert.assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
+    }
+
 }
