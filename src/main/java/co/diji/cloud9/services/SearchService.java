@@ -18,6 +18,9 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
+import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
+import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequest;
+import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
@@ -203,4 +206,27 @@ public class SearchService {
         return nodeInfo;
     }
 
+    /**
+     * Get stats about nodes in the cluster.
+     * 
+     * @return a map where the key is the node id and the value is the info for that node, null on error
+     */
+    public Map<String, NodeStats> nodeStats() {
+        logger.trace("nodeStats");
+        Map<String, NodeStats> nodeStats = null;
+        ActionFuture<NodesStatsResponse> action = client.admin().cluster().nodesStats(new NodesStatsRequest());
+
+        try {
+            NodesStatsResponse resp = action.actionGet();
+            nodeStats = new HashMap<String, NodeStats>();
+            for (NodeStats stats : resp.getNodes()) {
+                nodeStats.put(stats.getNode().id(), stats);
+            }
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting node stats", e);
+        }
+
+        logger.trace("nodeStats: {}", nodeStats);
+        return nodeStats;
+    }
 }

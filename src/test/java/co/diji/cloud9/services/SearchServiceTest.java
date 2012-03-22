@@ -6,6 +6,7 @@ import junit.framework.Assert;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
+import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -76,4 +77,13 @@ public class SearchServiceTest {
         Assert.assertEquals(1, info.size());
         Assert.assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
     }
+    
+    @Test
+    public void testNodeStats() {
+        Map<String, NodeStats> stats = searchService.nodeStats();
+        Assert.assertNotNull(stats);
+        Assert.assertEquals(1, stats.size());
+        Assert.assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
+    }
+
 }
