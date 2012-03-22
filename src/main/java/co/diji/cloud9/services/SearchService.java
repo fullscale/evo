@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -182,16 +182,19 @@ public class SearchService {
     /**
      * Get information about nodes in the cluster.
      * 
-     * @return a list of node information, null when there is an error
+     * @return a map where the key is the node id and the value is the info for that node, null on error
      */
-    public List<NodeInfo> nodeInfo() {
+    public Map<String, NodeInfo> nodeInfo() {
         logger.trace("nodeInfo");
-        List<NodeInfo> nodeInfo = null;
+        Map<String, NodeInfo> nodeInfo = null;
         ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest());
 
         try {
             NodesInfoResponse resp = action.actionGet();
-            nodeInfo = Arrays.asList(resp.getNodes());
+            nodeInfo = new HashMap<String, NodeInfo>();
+            for (NodeInfo info : resp.getNodes()) {
+                nodeInfo.put(info.node().id(), info);
+            }
         } catch (ElasticSearchException e) {
             logger.debug("Error getting node info", e);
         }

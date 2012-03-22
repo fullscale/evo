@@ -1,6 +1,6 @@
 package co.diji.cloud9.services;
 
-import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -71,9 +71,9 @@ public class SearchServiceTest {
 
     @Test
     public void testNodeInfo() {
-        List<NodeInfo> info = searchService.nodeInfo();
+        Map<String, NodeInfo> info = searchService.nodeInfo();
         Assert.assertNotNull(info);
         Assert.assertEquals(1, info.size());
-        Assert.assertEquals("c9.test.node", info.get(0).getNode().name());
+        Assert.assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
     }
 }
