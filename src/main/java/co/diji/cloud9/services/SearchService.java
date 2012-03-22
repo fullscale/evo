@@ -148,7 +148,7 @@ public class SearchService {
             logger.debug("Error getting cluster health", e);
         }
 
-        logger.trace("{}", resp);
+        logger.trace("health: {}", resp);
         return resp;
     }
 
@@ -169,7 +169,7 @@ public class SearchService {
             logger.debug("Error getting index status", e);
         }
 
-        logger.trace("{}", status);
+        logger.trace("indexStatus: {}", status);
         return status;
     }
 
