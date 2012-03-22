@@ -12,6 +12,8 @@ import javax.annotation.PreDestroy;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
@@ -149,4 +151,26 @@ public class SearchService {
         logger.trace("{}", resp);
         return resp;
     }
+
+    /**
+     * Gets the status of an index.
+     * 
+     * @param index the name of the index
+     * @return the index status, null if the index does not exist or there is an error
+     */
+    public IndexStatus indexStatus(String index) {
+        logger.trace("indexStatus index:{}", index);
+        IndexStatus status = null;
+        ListenableActionFuture<IndicesStatusResponse> action = client.admin().indices().prepareStatus(index).execute();
+        try {
+            IndicesStatusResponse resp = action.actionGet();
+            status = resp.index(index);
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting index status", e);
+        }
+
+        logger.trace("{}", status);
+        return status;
+    }
+
 }
