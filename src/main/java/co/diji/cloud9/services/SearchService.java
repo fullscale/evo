@@ -9,6 +9,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
@@ -127,4 +129,16 @@ public class SearchService {
         return client;
     }
 
+    /**
+     * Gets the cluster health
+     * 
+     * @return ClusterHealthResponse object
+     */
+    public ClusterHealthResponse health() {
+        ClusterHealthResponse resp = null;
+        ListenableActionFuture<ClusterHealthResponse> healthAction = client.admin().cluster().prepareHealth().execute();
+        resp = healthAction.actionGet();
+
+        return resp;
+    }
 }

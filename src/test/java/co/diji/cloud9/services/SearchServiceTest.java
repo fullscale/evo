@@ -2,6 +2,7 @@ package co.diji.cloud9.services;
 
 import junit.framework.Assert;
 
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,4 +38,13 @@ public class SearchServiceTest {
     public void testSearchService() {
         Assert.assertNotNull(searchService);
     }
+
+    @Test
+    public void testHealth() {
+        ClusterHealthResponse health = searchService.health();
+        Assert.assertNotNull(health);
+        Assert.assertEquals("c9.test.cluster", health.getClusterName());
+        Assert.assertEquals(1, health.getNumberOfNodes());
+    }
+
 }
