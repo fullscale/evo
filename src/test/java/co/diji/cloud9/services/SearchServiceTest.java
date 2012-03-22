@@ -3,6 +3,7 @@ package co.diji.cloud9.services;
 import junit.framework.Assert;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,4 +59,10 @@ public class SearchServiceTest {
         Assert.assertEquals(1, health.getNumberOfNodes());
     }
 
+    @Test
+    public void testIndexStatus() {
+        // TODO add more tests once we have more index operations such as create and delete
+        IndexStatus status = searchService.indexStatus("doesnotexistindex");
+        Assert.assertNull(status);
+    }
 }

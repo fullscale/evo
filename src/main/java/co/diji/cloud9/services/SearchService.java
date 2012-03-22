@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
@@ -132,12 +133,17 @@ public class SearchService {
     /**
      * Gets the cluster health
      * 
-     * @return ClusterHealthResponse object
+     * @return the cluster health, null when there is an error
      */
     public ClusterHealthResponse health() {
         ClusterHealthResponse resp = null;
         ListenableActionFuture<ClusterHealthResponse> healthAction = client.admin().cluster().prepareHealth().execute();
-        resp = healthAction.actionGet();
+
+        try {
+            resp = healthAction.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting cluster health", e);
+        }
 
         return resp;
     }
