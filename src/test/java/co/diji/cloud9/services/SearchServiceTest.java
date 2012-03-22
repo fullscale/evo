@@ -40,6 +40,16 @@ public class SearchServiceTest {
     }
 
     @Test
+    public void testClientNotNull() {
+        Assert.assertNotNull(searchService.getClient());
+    }
+
+    @Test
+    public void testNodeNotNull() {
+        Assert.assertNotNull(searchService.getNode());
+    }
+
+    @Test
     public void testHealth() {
         ClusterHealthResponse health = searchService.health();
         Assert.assertNotNull(health);
