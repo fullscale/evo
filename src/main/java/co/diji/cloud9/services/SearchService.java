@@ -21,6 +21,7 @@ import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.monitor.os.OsStats;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
@@ -28,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
-import org.elasticsearch.monitor.os.OsStats;
 
 @Service
 public class SearchService {
@@ -151,7 +150,7 @@ public class SearchService {
     public Map<String, NodeInfo> getNodeInfo() {
         logger.trace("in getNodeInfo");
         Map<String, NodeInfo> nodeInfo = null;
-        ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest());
+        ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest().all());
 
         try {
             NodesInfoResponse resp = action.actionGet();
@@ -175,15 +174,15 @@ public class SearchService {
     public Map<String, NodeStats> getNodeStats() {
         logger.trace("in getNodeStats");
         Map<String, NodeStats> nodeStats = null;
-        ActionFuture<NodesStatsResponse> action = client.admin().cluster().nodesStats(new NodesStatsRequest());
+        ActionFuture<NodesStatsResponse> action = client.admin().cluster().nodesStats(new NodesStatsRequest().all());
 
         try {
             NodesStatsResponse resp = action.actionGet();
             nodeStats = new HashMap<String, NodeStats>();
             for (NodeStats stats : resp.getNodes()) {
-                OsStats ostats = stats.getOs();
-                System.out.println(ostats);
-                //System.out.println(ostats.timestamp());
+                OsStats ostats = stats.os();
+                logger.debug("{}", ostats);
+                // System.out.println(ostats.timestamp());
                 nodeStats.put(stats.getNode().id(), stats);
             }
         } catch (ElasticSearchException e) {
