@@ -1,10 +1,8 @@
-package co.diji.cloud9.services;
+package co.diji.cloud9.utils;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
-
-import co.diji.cloud9.utils.C9Helper;
 
 public class C9HelperTest {
 
