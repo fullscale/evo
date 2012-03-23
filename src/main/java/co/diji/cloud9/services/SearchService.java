@@ -16,9 +16,11 @@ import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequest;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
@@ -100,6 +102,27 @@ public class SearchService {
 
         logger.trace("exit getClusterHealth: {}", resp);
         return resp;
+    }
+
+    /**
+     * Gets the state of the cluster
+     * 
+     * @return the cluster state, null when there is an error
+     */
+    public ClusterState getClusterState() {
+        logger.trace("in getClusterState");
+        ClusterState clusterState = null;
+        ListenableActionFuture<ClusterStateResponse> action = client.admin().cluster().prepareState().execute();
+
+        try {
+            ClusterStateResponse resp = action.actionGet();
+            clusterState = resp.state();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting cluster state");
+        }
+
+        logger.trace("exit getClusterState: {}", clusterState);
+        return clusterState;
     }
 
     /**
