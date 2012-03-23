@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import org.elasticsearch.monitor.os.OsStats;
+
 @Service
 public class SearchService {
 
@@ -184,6 +186,9 @@ public class SearchService {
             NodesStatsResponse resp = action.actionGet();
             nodeStats = new HashMap<String, NodeStats>();
             for (NodeStats stats : resp.getNodes()) {
+                OsStats ostats = stats.getOs();
+                System.out.println(ostats);
+                //System.out.println(ostats.timestamp());
                 nodeStats.put(stats.getNode().id(), stats);
             }
         } catch (ElasticSearchException e) {
