@@ -46,11 +46,11 @@ public class ConfigService {
 
         cloud9Settings = getSettingsFromResource("classpath:cloud9.yml");
         nodeSettings = createNodeSettings();
-        htmlMapping = getResourceContent("classpath:htmlMapping.json");
-        cssMapping = getResourceContent("classpath:cssMapping.json");
-        jsMapping = getResourceContent("classpath:jsMapping.json");
-        imagesMapping = getResourceContent("classpath:imagesMapping.json");
-        controllerMapping = getResourceContent("classpath:controllerMapping.json");
+        htmlMapping = getResourceContent("classpath:mappings/html.json");
+        cssMapping = getResourceContent("classpath:mappings/css.json");
+        jsMapping = getResourceContent("classpath:mappings/js.json");
+        imagesMapping = getResourceContent("classpath:mappings/images.json");
+        controllerMapping = getResourceContent("classpath:mappings/controller.json");
     }
 
     /**
