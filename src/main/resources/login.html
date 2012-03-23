@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="layout" content="one_column"></meta>
+        <title>Cloud9 - Login</title>
+    </head>
+  
+    <body style="margin:0px;">
+    
+        <%-- the main content --%>
+        <br><br>
+        <div style="height:50px;">&nbsp;</div>
+    
+        <center>
+            <g:form controller="auth" action="authenticate" method="post">
+                <table border="0">
+                    <tr>
+                        <td><img src="/images/c9/cloud9-logo.png"></td>
+                        <td>    
+      
+                            <div style="margin-top:6px;">
+
+                                <table>
+                                    <tr>
+                                        <td style="padding-bottom:5px">
+                                            <input style="height:16px;font-size:14px" type="text" id="login" name="login" placeholder="Username" size="30">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-bottom:5px">
+                                            <input style="height:16px;font-size:14px" type="password" id="password" name="password" placeholder="Password" size="30">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr>
+                        <td>
+                            <input type="hidden" name="c" value="${flash.controller ?: 'overview'}">
+                            <input type="hidden" name="a" value="">
+                        </td>
+                        <td style="text-align:right">
+                            <button class="sbab image_link" type="submit" id="loginBtn">
+                                <strong>Login</strong>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </g:form>
+        </center>
+    </body>
+</html>
