@@ -1,0 +1,19 @@
+<html>
+	<head>
+		<title>Overview</title>
+	</head>
+
+	<body>
+		<p>This is the Overview ${stats}</p>
+    #foreach( $node in $stats )
+      <tr><td>$node.key</td><td>$node.hostname</td><td>$node.os</td></tr>
+    #end
+    <br>
+    #foreach ($mapEntry in $stats.entrySet())
+      #set ($os = $mapEntry.value.getOs() )
+      <name>$mapEntry.key</name>
+      <value>$mapEntry.value.hostname</value>
+      <value>$os</value>
+    #end
+	</body>
+</html>

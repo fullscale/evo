@@ -1,0 +1,270 @@
+a { color: #0066CC;}
+a img { border: none;}
+a:visited { color: #999;}
+a:hover { color: #0066CC;}
+acronym, abbr { border-bottom: 1px dashed #333;}
+acronym, abbr, span.caps { font-size: 90%; letter-spacing: .07em;}
+acronym, abbr { cursor: help;}
+blockquote { border-left: 5px solid #ccc; margin-left: 1.5em; padding-left: 5px;}
+body { background-color: #F2F2F2; color: #4e4e4e; margin: 0; padding: 0; text-align: left;}
+cite { font-size: 90%; font-style: normal;}
+h2 { border-bottom: 1px dotted #ccc; font: 95%; margin: 15px 0 2px 0; padding-bottom: 2px; color: #000;}
+h3 { border-bottom: dotted 1px #eee; margin-top: 0;}
+ol#comments li p { font-size: 100%;}
+p, li, .feedback { font: 90%/175%; }
+/* classes used by the_meta() */ul.post-meta { list-style: none;}
+ul.post-meta span.post-meta-key { font-weight: bold;}
+.credit { background: #000; border-top: double 3px #aba; color: #fff; font-size: 11px; margin: 10px 0 0 0; padding: 3px; text-align: center;}
+.credit a:link, .credit a:hover { color: #fff;}
+.feedback { color: #ccc; text-align: right; clear: both;}
+.meta { font-size: .75em;}
+.meta li, ul.post-meta li { display: inline;}
+.meta ul { display: inline; list-style: none; margin: 0; padding: 0;}
+.meta, .meta a { color: #000000; font-weight: normal; letter-spacing: 0;}
+.storytitle { margin: 0;}
+.storytitle a { text-decoration: none;}
+#commentform #author, #commentform #email, #commentform #url, #commentform textarea { background: #fff; border: 1px solid #333; padding: .2em;}
+#commentform textarea { width: 80%;}
+#commentlist li ul { border-left: 1px solid #ddd; font-size: 110%; list-style-type: none;}
+#content {
+margin:10px 1em;
+}
+#hd { background-color: #304369; border-bottom: 1px solid black; border-top: 1px solid black; }
+#header { border: solid 1px #fff; letter-spacing: 0.2em; margin: 0; padding: 15px 10px 15px 60px;}
+#hd h1 a { font-size: 180%; color: #fff; text-decoration: none;}
+#hd h1 a:hover { text-decoration: underline;}
+#menu { padding: .25em;}
+#menu form { margin: 0 0 0 13px;}
+#menu input#s { width: 80%; background: #eee; border: 1px solid #999; color: #000;}
+#menu ul { color: #808080; list-style-type: none; margin: 0; padding-left: 3px; text-transform: lowercase; }
+#menu ul li { margin-top: 10px; padding-bottom: 2px; /*border-bottom: dotted 1px #ccc;*/}
+#menu ul ul { font-variant: normal; font-weight: normal; line-height: 100%; list-style-type: none; margin: 0; padding: 0; text-align: left;}
+#menu ul ul li { border: 0; font: normal normal 12px/115%; letter-spacing: 0; margin-top: 0; padding: 0; padding-left: 12px;}
+#menu ul ul li a { color: #000; text-decoration: none; border-bottom: 1px dotted #fff; border-left: 1px dotted #fff; padding-left: 2px;}
+#menu ul ul li a:hover { color: #304369; border-bottom: 1px dotted #809080; border-left: 1px dotted #809080;}
+#menu ul ul ul.children { font-size: 142%; padding-left: 4px;}
+#wp-calendar { border: 1px solid #ddd; empty-cells: show; font-size: 14px; margin: 0; width: 90%;}
+#wp-calendar #next a { padding-right: 10px; text-align: right;}
+#wp-calendar #prev a { padding-left: 10px; text-align: left;}
+#wp-calendar a { display: block; text-decoration: none;}
+#wp-calendar a:hover { background: #e0e6e0; color: #333;}
+#wp-calendar caption { color: #999; font-size: 16px; text-align: left;}
+#wp-calendar td { color: #ccc; font: normal 12px; letter-spacing: normal; padding: 2px 0; text-align: center;}
+#wp-calendar td.pad:hover { background: #fff;}
+#wp-calendar td:hover, #wp-calendar #today { background: #eee; color: #bbb;}
+#wp-calendar th { font-style: normal; text-transform: capitalize;}
+div.post { min-height: 25em; _height: 25em; position: relative; border-bottom: 2px dashed #ccc;}
+div.post h2 { border: none; font-size: 130%; }
+div.post h2 a { text-decoration: none; color: #304369; }
+div.post .entry {
+	padding-bottom: 2em;
+}
+div.post .postmetadata {
+position: absolute;
+bottom: 5px;
+left: 0;
+}
+div.post p { padding: .25em; }
+div.post ul { margin-left: 2em; list-style-type: square;}
+div.post ol { margin-left: 2em; list-style-type: decimal;}
+div.post ul li, div.post ol li { padding: .25em;}
+
+.navigation .alignleft {
+	float: left;
+	margin-top: 5px;
+}
+.navigation .alignright {
+	float: right;
+	margin-top: 5px;
+}
+#davdoc { width: 96%; background-color: #fff; border-right: 1px solid black; border-left: 1px solid black; margin:auto; min-height: 800px;}
+#bd { padding: .15em;}
+#hd { margin-bottom: 0; font-size: 120%; }
+#maincontent { padding: .2em; border-right: 1px dotted #ccc;}
+#commentlist li { margin-top: 1em; border-bottom: 1px dashed #ccc; }
+#yui_menu {border: 1px solid black;background-color: #F2F2F2;zoom: 1;}
+#yui_menu:after { display: block; clear: both; visibility: hidden; content: '.'; height: 0;}
+#yui_menu li {float: left;display: inline;}
+#yui_menu a {display: block;padding: .25em;margin: .25em;color: black;text-decoration: none;border: 1px solid #F2F2F2;}
+#yui_menu a:hover {color: white;border: 1px solid black;background-color: #304369;}
+#twitter_div { overflow: hidden; }
+#twitter_div ul li { padding: 5px 0 !important; border-bottom: 1px dashed #f2f2f2 !important; }
+#twitter_div span { color: #808080; }
+#twitter_div a { color: #304369!important; }
+
+h1,h2,h3,h4,h5,h6,strong {
+	/*bringing boldness back to headers and the strong element*/
+	font-weight:bold; 
+}
+
+em {
+	/*bringing italics back to the em element*/
+	font-style:italic;
+}
+
+#commentlist h1 {
+	/*18px via YUI Fonts CSS foundation*/
+	font-size:138.5%;  
+}
+#commentlist h2 {
+	/*16px via YUI Fonts CSS foundation*/
+	font-size:123.1%; 
+}
+#commentlist h3 {
+	/*14px via YUI Fonts CSS foundation*/
+	font-size:108%;  
+}
+#commentlist h1,#commentlist h2,#commentlist h3 {
+	/* top & bottom margin based on font size */
+	margin:1em 0;
+}
+#commentlist h1,#commentlist h2,#commentlist h3,#commentlist h4,#commentlist h5,#commentlist h6,#commentlist strong {
+	/*bringing boldness back to headers and the strong element*/
+	font-weight:bold; 
+}
+#commentlist abbr,#commentlist acronym {
+	/*indicating to users that more info is available */
+	border-bottom:1px dotted #000;
+	cursor:help;
+} 
+#commentlist em {
+	/*bringing italics back to the em element*/
+	font-style:italic;
+}
+#commentlist blockquote,#commentlist ul,#commentlist ol,#commentlist dl {
+	/*giving blockquotes and lists room to breath*/
+	margin:1em;
+}
+#commentlist ol,#commentlist ul,#commentlist dl {
+	/*bringing lists on to the page with breathing room */
+	margin-left:2em;
+}
+#commentlist ol li {
+	/*giving OL's LIs generated numbers*/
+	list-style: decimal outside;	
+}
+#commentlist ul li {
+	/*giving UL's LIs generated disc markers*/
+	list-style: disc outside;
+}
+#commentlist dl dd {
+	/*giving UL's LIs generated numbers*/
+	margin-left:1em;
+}
+#commentlist th,#commentlist td {
+	/*borders and padding to make the table readable*/
+	border:1px solid #000;
+	padding:.5em;
+}
+#commentlist th {
+	/*distinguishing table headers from data cells*/
+	font-weight:bold;
+	text-align:center;
+}
+#commentlist caption {
+	/*coordinated marking to match cell's padding*/
+	margin-bottom:.5em;
+	/*centered so it doesn't blend in to other content*/
+	text-align:center;
+}
+#commentlist p,#commentlist fieldset,#commentlist table {
+	/*so things don't run into each other*/
+	margin-bottom:1em;
+}
+
+
+.dp-css .keyword { color: red; }
+.dp-css .value { color: #ff1493; }
+.dp-css .comment { color: green; }
+.dp-css .string { color: blue; }
+.dp-css .preprocessor { color: gray; }
+.dp-css .keyword { color: blue; }
+.dp-css .vars { color: #d00; }
+.dp-css .colors { font-weight: bold; }
+
+ul.filelist {
+    list-style-type: square;
+    margin-left: 25px;
+    padding-left: 20px;
+}
+ul.filelist li {
+    list-style-type: square;
+}
+ul.filelist li em {
+    color: #808080;
+    font-size: 55%;
+}
+
+.commentlist {
+	zoom: 1;
+}
+.commentlist p {
+	margin: 1em;
+	margin-right: 2em;
+}
+
+.commentlist .pingback,
+.commentlist .comment {
+	margin: 1em;
+	padding: 1em;
+	zoom: 1;
+}
+.commentlist li.even {
+	border-top: 1px dashed #ccc;
+	border-left: 1px dashed #ccc;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+.commentlist li.odd {
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-right: 1px dashed #ccc;
+	border-bottom: 1px dashed #ccc;
+}
+.commentlist .comment .vcard {
+	float: right;
+	margin: -.5em;
+}
+.commentlist .comment .vcard .says {
+	display: none;
+}
+
+.commentlist .comment .vcard .fn {
+	float: right;
+	clear: both;
+}
+.commentlist .comment .vcard .photo {
+	float: right;
+}
+#projects li {
+    padding: 3px !important;
+}
+#projects li a {
+    text-decoration: none;
+    display: block;
+    border: 1px solid #ccc !important;
+    padding: .25em;
+    padding-right: 20px;
+    text-align: right;
+    background-image: url( http://github.com/images/icons/public.png );
+    background-repeat: no-repeat;
+    background-position: right 2px;
+}
+#projects li a:hover {
+    background-color: #ccc;
+    color: black;
+}
+
+#respond {
+	margin-top: 4em;
+}
+
+.aboutme {
+	padding: 5px;
+}
+.aboutme p {
+	padding: 5px;
+}
+.aboutme blockquote {
+	border-left: none;
+}
