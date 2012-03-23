@@ -39,6 +39,11 @@ public class ConfigService {
      */
     @PostConstruct
     public void init() {
+        // setup sigar
+        String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
+        logger.debug("sigar dir: {}", sigarDir);
+        System.setProperty("org.hyperic.sigar.path", sigarDir);
+
         cloud9Settings = getSettingsFromResource("classpath:cloud9.yml");
         nodeSettings = createNodeSettings();
         htmlMapping = getResourceContent("classpath:htmlMapping.json");

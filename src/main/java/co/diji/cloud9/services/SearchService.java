@@ -49,11 +49,6 @@ public class SearchService {
      */
     @PostConstruct
     public void booststrap() {
-        // setup sigar
-        String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
-        logger.debug("sigar dir: {}", sigarDir);
-        System.setProperty("org.hyperic.sigar.path", sigarDir);
-
         node = NodeBuilder.nodeBuilder().settings(config.getNodeSettings()).node();
         client = node.client();
     }
