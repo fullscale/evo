@@ -13,8 +13,9 @@
     <http pattern="/loggedout.jsp" security="none"/>
 
     <http use-expressions="true">
-        <!--intercept-url pattern="/v1/apps/**" access="hasRole('supervisor')"/-->
-        <intercept-url pattern="/v1/**" access="isAuthenticated()" />
+        <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
+        <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->
+        <!--intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" /-->
         <intercept-url pattern="/**" access="permitAll" />
         <form-login login-page='/login.html' />
         <logout logout-success-url="/loggedout.jsp" delete-cookies="JSESSIONID"/>
@@ -24,9 +25,9 @@
         <!--x509 /-->
 
         <!-- Limit the number of sessions a user can have -->
-        <session-management invalid-session-url="/timeout.jsp">
+        <!--session-management invalid-session-url="/timeout.jsp">
             <concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
-        </session-management>
+        </session-management-->
 
     </http>
 
