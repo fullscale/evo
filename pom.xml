@@ -352,7 +352,6 @@
                 <version>2.2</version>
                 <configuration>
                     <warName>${project.name}-${project.version}</warName>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
                     <packagingExcludes>
                         <!--%regex[WEB-INF/lib/(jetty|javax\.servlet).*\.jar]-->
                         WEB-INF/lib/jetty-*.jar,
