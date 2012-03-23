@@ -21,7 +21,6 @@ import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.monitor.os.OsStats;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
@@ -131,6 +130,7 @@ public class SearchService {
         logger.trace("in getIndexStatus indices:{}", indices);
         Map<String, IndexStatus> indexStatus = null;
         ListenableActionFuture<IndicesStatusResponse> action = client.admin().indices().prepareStatus(indices).execute();
+        
         try {
             IndicesStatusResponse resp = action.actionGet();
             indexStatus = resp.indices();
@@ -180,9 +180,6 @@ public class SearchService {
             NodesStatsResponse resp = action.actionGet();
             nodeStats = new HashMap<String, NodeStats>();
             for (NodeStats stats : resp.getNodes()) {
-                OsStats ostats = stats.os();
-                logger.debug("{}", ostats);
-                // System.out.println(ostats.timestamp());
                 nodeStats.put(stats.getNode().id(), stats);
             }
         } catch (ElasticSearchException e) {
