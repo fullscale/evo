@@ -20,6 +20,10 @@
 		<level value="warn" />
 	</logger>
 	
+	<logger name="org.springframework.aop">
+		<level value="warn" />
+	</logger>
+	
 	<logger name="org.springframework.beans">
 		<level value="warn" />
 	</logger>
@@ -29,6 +33,14 @@
 	</logger>
 
 	<logger name="org.springframework.web">
+		<level value="warn" />
+	</logger>
+
+	<logger name="org.springframework.security">
+		<level value="warn" />
+	</logger>
+
+	<logger name="org.apache.velocity">
 		<level value="warn" />
 	</logger>
 
