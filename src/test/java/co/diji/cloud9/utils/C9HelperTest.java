@@ -13,10 +13,13 @@ public class C9HelperTest {
         assertTrue(C9Helper.isValidName("v2l1d"));
         assertTrue(C9Helper.isValidName("abc123"));
         assertTrue(C9Helper.isValidName("123"));
+        assertTrue(C9Helper.isValidName("valid.app"));
         assertFalse(C9Helper.isValidName("NOTVALID"));
         assertFalse(C9Helper.isValidName("notValid"));
         assertFalse(C9Helper.isValidName("@#$#$"));
         assertFalse(C9Helper.isValidName("not$valid"));
         assertFalse(C9Helper.isValidName("897sdfQ"));
+        assertFalse(C9Helper.isValidName("not#$#valid.app"));
+        assertFalse(C9Helper.isValidName("name.not.valid"));
     }
 }

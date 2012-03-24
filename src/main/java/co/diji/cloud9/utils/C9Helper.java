@@ -9,6 +9,6 @@ public class C9Helper {
      * @return if it is valid or not
      */
     public static boolean isValidName(String name) {
-        return name.matches("[a-z0-9]+");
+        return name.matches("[a-z0-9]+(?:\\.app)?");
     }
 }
