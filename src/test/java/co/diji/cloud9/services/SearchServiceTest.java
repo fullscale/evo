@@ -3,7 +3,7 @@ package co.diji.cloud9.services;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.*;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.health.ClusterIndexHealth;
@@ -53,110 +53,110 @@ public class SearchServiceTest {
 
     @Test
     public void testSearchService() {
-        Assert.assertNotNull(searchService);
+        assertNotNull(searchService);
     }
 
     @Test
     public void testClientNotNull() {
-        Assert.assertNotNull(searchService.getClient());
+        assertNotNull(searchService.getClient());
     }
 
     @Test
     public void testNodeNotNull() {
-        Assert.assertNotNull(searchService.getNode());
+        assertNotNull(searchService.getNode());
     }
 
     @Test
     public void testHealth() {
         ClusterHealthResponse health = searchService.getClusterHealth();
-        Assert.assertNotNull(health);
-        Assert.assertEquals("c9.test.cluster", health.getClusterName());
-        Assert.assertEquals(1, health.getNumberOfNodes());
+        assertNotNull(health);
+        assertEquals("c9.test.cluster", health.getClusterName());
+        assertEquals(1, health.getNumberOfNodes());
     }
 
     @Test
     public void testState() {
         ClusterState state = searchService.getClusterState();
-        Assert.assertNotNull(state);
-        Assert.assertEquals(1, state.getNodes().size());
+        assertNotNull(state);
+        assertEquals(1, state.getNodes().size());
     }
 
     @Test
     public void testIndexStatus() {
         // TODO add more tests once we have more index operations such as create and delete
         Map<String, IndexStatus> indexStatus = searchService.getIndexStatus("doesnotexistindex");
-        Assert.assertNull(indexStatus);
+        assertNull(indexStatus);
         indexStatus = searchService.getIndexStatus();
-        Assert.assertNotNull(indexStatus);
-        Assert.assertEquals(0, indexStatus.size());
+        assertNotNull(indexStatus);
+        assertEquals(0, indexStatus.size());
     }
 
     @Test
     public void testNodeInfo() {
         Map<String, NodeInfo> info = searchService.getNodeInfo();
-        Assert.assertNotNull(info);
-        Assert.assertEquals(1, info.size());
-        Assert.assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
+        assertNotNull(info);
+        assertEquals(1, info.size());
+        assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
     }
 
     @Test
     public void testNodeStats() {
         Map<String, NodeStats> stats = searchService.getNodeStats();
-        Assert.assertNotNull(stats);
-        Assert.assertEquals(1, stats.size());
-        Assert.assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
+        assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
     }
 
     @Test
     public void testCreateIndex() throws Exception {
         ClusterIndexHealth index = null;
 
-        Assert.assertFalse(searchService.hasIndex("doesnotexist"));
+        assertFalse(searchService.hasIndex("doesnotexist"));
 
         searchService.createIndex("exists");
         index = searchService.getClusterHealth().indices().get("exists");
-        Assert.assertTrue(searchService.hasIndex("exists"));
-        Assert.assertEquals(config.getNodeSettings().getAsInt("index.number_of_shards", null).intValue(), index.numberOfShards());
-        Assert.assertEquals(config.getNodeSettings().getAsInt("index.number_of_replicas", null).intValue(),
+        assertTrue(searchService.hasIndex("exists"));
+        assertEquals(config.getNodeSettings().getAsInt("index.number_of_shards", null).intValue(), index.numberOfShards());
+        assertEquals(config.getNodeSettings().getAsInt("index.number_of_replicas", null).intValue(),
                 index.numberOfReplicas());
 
         try {
             searchService.createIndex("exists");
-            Assert.fail();
+            fail();
         } catch (IndexExistsException e) {
         };
 
         try {
             searchService.createIndex("BADNAME");
-            Assert.fail();
+            fail();
         } catch (IndexCreationException e) {
         }
-        Assert.assertFalse(searchService.hasIndex("BADNAME"));
+        assertFalse(searchService.hasIndex("BADNAME"));
 
         searchService.createIndex("oneshardnoreplicas", 1, 0);
         index = searchService.getClusterHealth().indices().get("oneshardnoreplicas");
-        Assert.assertTrue(searchService.hasIndex("oneshardnoreplicas"));
-        Assert.assertEquals(1, index.numberOfShards());
-        Assert.assertEquals(0, index.numberOfReplicas());
+        assertTrue(searchService.hasIndex("oneshardnoreplicas"));
+        assertEquals(1, index.numberOfShards());
+        assertEquals(0, index.numberOfReplicas());
 
         searchService.createIndex("oneshardonereplicas", 1, 1);
         index = searchService.getClusterHealth().indices().get("oneshardonereplicas");
-        Assert.assertTrue(searchService.hasIndex("oneshardonereplicas"));
-        Assert.assertEquals(1, index.numberOfShards());
-        Assert.assertEquals(1, index.numberOfReplicas());
+        assertTrue(searchService.hasIndex("oneshardonereplicas"));
+        assertEquals(1, index.numberOfShards());
+        assertEquals(1, index.numberOfReplicas());
 
         searchService.createIndex("twoshardssixreplicas", 2, 6);
         index = searchService.getClusterHealth().indices().get("twoshardssixreplicas");
-        Assert.assertTrue(searchService.hasIndex("twoshardssixreplicas"));
-        Assert.assertEquals(2, index.numberOfShards());
-        Assert.assertEquals(6, index.numberOfReplicas());
+        assertTrue(searchService.hasIndex("twoshardssixreplicas"));
+        assertEquals(2, index.numberOfShards());
+        assertEquals(6, index.numberOfReplicas());
 
         try {
             searchService.createIndex("validnamebadcounts", -5, -1);
-            Assert.fail();
+            fail();
         } catch (IndexCreationException e) {
         }
-        Assert.assertFalse(searchService.hasIndex("validnamebadcounts"));
+        assertFalse(searchService.hasIndex("validnamebadcounts"));
 
         // TODO check mappings created successfully
         Map<String, String> mappings = new HashMap<String, String>();
@@ -164,19 +164,19 @@ public class SearchServiceTest {
 
         searchService.createIndex("indexwithhtmlmapping", mappings);
         index = searchService.getClusterHealth().indices().get("indexwithhtmlmapping");
-        Assert.assertTrue(searchService.hasIndex("indexwithhtmlmapping"));
+        assertTrue(searchService.hasIndex("indexwithhtmlmapping"));
 
         mappings.put("css", config.getCssMapping());
         searchService.createIndex("indexwithcssmapping", mappings);
         index = searchService.getClusterHealth().indices().get("indexwithcssmapping");
-        Assert.assertTrue(searchService.hasIndex("indexwithcssmapping"));
+        assertTrue(searchService.hasIndex("indexwithcssmapping"));
 
         mappings.put("bad", "bad.junk.mapping");
         try {
             searchService.createIndex("indexbadmapping", mappings);
-            Assert.fail();
+            fail();
         } catch (IndexCreationException e) {
         }
-        Assert.assertFalse(searchService.hasIndex("indexbadmapping"));
+        assertFalse(searchService.hasIndex("indexbadmapping"));
     }
 }
