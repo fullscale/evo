@@ -178,4 +178,55 @@ public class SearchServiceTest {
         }
         assertFalse(searchService.hasIndex("indexbadmapping"));
     }
+
+    @Test
+    public void testCreateApp() throws Exception {
+        ClusterIndexHealth index = null;
+
+        assertFalse(searchService.hasIndex("testapp.app"));
+
+        searchService.createAppIndex("testapp");
+        index = searchService.getClusterHealth().indices().get("testapp.app");
+        assertTrue(searchService.hasIndex("testapp.app"));
+        assertEquals(1, index.numberOfShards());
+        assertEquals(1, index.numberOfReplicas());
+
+        try {
+            searchService.createAppIndex("testapp");
+            fail();
+        } catch (IndexExistsException e) {
+        };
+
+        searchService.createAppIndex("testapp2", 3, 3);
+        index = searchService.getClusterHealth().indices().get("testapp2.app");
+        assertTrue(searchService.hasIndex("testapp2.app"));
+        assertEquals(3, index.numberOfShards());
+        assertEquals(3, index.numberOfReplicas());
+
+        try {
+            searchService.createAppIndex("css");
+            fail();
+        } catch (IndexCreationException e) {
+        }
+        assertFalse(searchService.hasIndex("css.app"));
+
+        try {
+            searchService.createAppIndex("js");
+            fail();
+        } catch (IndexCreationException e) {
+        }
+        assertFalse(searchService.hasIndex("js.app"));
+
+        try {
+            searchService.createAppIndex("images");
+            fail();
+        } catch (IndexCreationException e) {
+        }
+        assertFalse(searchService.hasIndex("images.app"));
+
+        searchService.createAppIndex("anotherapp.app");
+        assertTrue(searchService.hasIndex("anotherapp.app"));
+        assertFalse(searchService.hasIndex("anotherapp.app.app"));
+
+    }
 }

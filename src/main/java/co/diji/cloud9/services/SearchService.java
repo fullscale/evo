@@ -330,4 +330,48 @@ public class SearchService {
         logger.trace("exit createIndex: {}", resp.acknowledged());
         return resp.acknowledged();
     }
+
+    /**
+     * Create application index with default 1 shard and 1 replica
+     * 
+     * @param appName the name of the application
+     * @return if the application was ack'd by the cluster or not
+     * @throws IndexException
+     */
+    public boolean createAppIndex(String appName) throws IndexException {
+        logger.trace("in createAppIndex appName:{}", appName);
+        return createAppIndex(appName, 1, 1);
+    }
+
+    /**
+     * Create application with the specified number of shards and replicas
+     * 
+     * @param appName the name of the application
+     * @param shards the number of shards for the application
+     * @param replicas the number of replicas for the application
+     * @return if the application was ack'd by the cluster or not
+     * @throws IndexException
+     */
+    public boolean createAppIndex(String appName, int shards, int replicas) throws IndexException {
+        logger.trace("in createAppIndex appName:{} shards:{} replicas:{}", new Object[]{appName, shards, replicas});
+        if (!appName.endsWith(".app")) {
+            appName = appName + ".app";
+        }
+
+        logger.debug("appName: {}", appName);
+        if (appName.equals("css.app") || appName.equals("js.app") || appName.equals("images.app")) {
+            throw new IndexCreationException("Invalid application name: " + appName);
+        }
+
+        Map<String, String> mappings = new HashMap<String, String>();
+        mappings.put("html", config.getHtmlMapping());
+        mappings.put("css", config.getCssMapping());
+        mappings.put("js", config.getJsMapping());
+        mappings.put("images", config.getImagesMapping());
+        mappings.put("controllers", config.getControllerMapping());
+
+        boolean ack = createIndex(appName, shards, replicas, mappings);
+        logger.trace("exit createAppIndex: {}", ack);
+        return ack;
+    }
 }
