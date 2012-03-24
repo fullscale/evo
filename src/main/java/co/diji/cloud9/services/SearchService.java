@@ -2,6 +2,7 @@ package co.diji.cloud9.services;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -17,10 +18,14 @@ import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsRequest;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
@@ -28,6 +33,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
+
+import co.diji.cloud9.exceptions.index.IndexCreationException;
+import co.diji.cloud9.exceptions.index.IndexException;
+import co.diji.cloud9.exceptions.index.IndexExistsException;
+import co.diji.cloud9.utils.C9Helper;
 
 @Service
 public class SearchService {
@@ -130,7 +140,7 @@ public class SearchService {
         logger.trace("in getIndexStatus indices:{}", indices);
         Map<String, IndexStatus> indexStatus = null;
         ListenableActionFuture<IndicesStatusResponse> action = client.admin().indices().prepareStatus(indices).execute();
-        
+
         try {
             IndicesStatusResponse resp = action.actionGet();
             indexStatus = resp.indices();
@@ -188,5 +198,136 @@ public class SearchService {
 
         logger.trace("exit getNodeStats: {}", nodeStats);
         return nodeStats;
+    }
+
+    /**
+     * Checks if the specified index exists or not
+     * 
+     * @param name the name of the index to check for
+     * @return true if exists, false otherwise
+     */
+    public boolean hasIndex(String name) {
+        logger.trace("in hasIndex name:{}", name);
+        boolean exists = false;
+        ClusterState state = getClusterState();
+        logger.debug("cluster state: {}", state);
+        if (state != null) {
+            exists = state.metaData().hasIndex(name);
+        }
+
+        logger.trace("exit hasIndex: {}", exists);
+        return exists;
+    }
+
+    /**
+     * Creates an index with default settings
+     * 
+     * @param name the name of the index to create
+     * @return if the creation of the index was ack'd by the cluster
+     * @throws IndexException
+     */
+    public boolean createIndex(String name) throws IndexException {
+        logger.trace("in createIndex name:{}", name);
+        return createIndex(name, null, null);
+    }
+
+    /**
+     * Creates an index with the the given type mappings
+     * 
+     * @param name the name of the index to create
+     * @param mappings the key is the type of the mapping, the value is the json mapping
+     * @return if the creation of the index was ack'd by the cluster
+     * @throws IndexException
+     */
+    public boolean createIndex(String name, Map<String, String> mappings) throws IndexException {
+        logger.trace("in createIndex name:{} mappings:{}", name, mappings);
+        return createIndex(name, null, mappings);
+    }
+
+    /**
+     * Creates an index with the specified number of shards and replicas
+     * 
+     * @param name the name of the index to create
+     * @param shards the number of shards for the index
+     * @param replicas the number of replicas for the idnex
+     * @return if the creation of the index was ack'd by the cluster
+     * @throws IndexException
+     */
+    public boolean createIndex(String name, int shards, int replicas) throws IndexException {
+        logger.trace("in createIndex name:{} shards:{} replicas:{}", new Object[]{name, shards, replicas});
+        ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+        settings.put("number_of_shards", shards);
+        settings.put("number_of_replicas", replicas);
+        return createIndex(name, settings.build(), null);
+    }
+
+    /**
+     * Creates an index with the specified number of shards, replicas, and type mappings.
+     * 
+     * @param name the name of the index to create
+     * @param shards the number of shards for the index
+     * @param replicas the number of replicas for the index
+     * @param mappings the key is the type of mapping, the value is the json mapping
+     * @return if the creation of the index was ack'd by the cluster
+     * @throws IndexException
+     */
+    public boolean createIndex(String name, int shards, int replicas, Map<String, String> mappings) throws IndexException {
+        logger.trace("in createIndex name:{} shards:{} replicas:{} mappings:{}", new Object[]{name, shards, replicas, mappings});
+        ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+        settings.put("number_of_shards", shards);
+        settings.put("number_of_replicas", replicas);
+        return createIndex(name, settings.build(), mappings);
+    }
+
+    /**
+     * Creates an index with the specified settings and mappings.
+     * 
+     * @param name the name of the index to create
+     * @param settings the settings for the index
+     * @param mappings the key is the type of mapping, the value is the json mapping
+     * @return if the creation of the index was ack'd by the cluster
+     * @throws IndexException
+     */
+    public boolean createIndex(String name, Settings settings, Map<String, String> mappings) throws IndexException {
+        logger.trace("in createIndex name:{} settings:{} mappings:{}", new Object[]{name, settings, mappings});
+        boolean valid = C9Helper.isValidName(name);
+        logger.debug("is valid name: {}", valid);
+        if (!valid) {
+            throw new IndexCreationException("Invalid index name: " + name);
+        }
+
+        boolean exists = hasIndex(name);
+        logger.debug("index exists: {}", exists);
+        if (exists) {
+            throw new IndexExistsException("Index already exists: " + name);
+        }
+
+        CreateIndexRequest request;
+        logger.debug("settings: {}", settings);
+        if (settings != null) {
+            request = new CreateIndexRequest(name, settings);
+        } else {
+            request = new CreateIndexRequest(name);
+        }
+
+        logger.debug("mappings: {}", mappings);
+        if (mappings != null) {
+            for (Entry<String, String> mapping : mappings.entrySet()) {
+                request.mapping(mapping.getKey(), mapping.getValue());
+            }
+        }
+
+        ActionFuture<CreateIndexResponse> action = client.admin().indices().create(request);
+        CreateIndexResponse resp = null;
+
+        try {
+            resp = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error creating index: {}", name);
+            throw new IndexCreationException("Error creating index: " + name, e);
+        }
+
+        logger.trace("exit createIndex: {}", resp.acknowledged());
+        return resp.acknowledged();
     }
 }
