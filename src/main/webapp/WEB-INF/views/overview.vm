@@ -1,19 +1,52 @@
-<html>
-	<head>
-		<title>Overview</title>
-	</head>
+<!DOCTYPE html>
 
-	<body>
-		<p>This is the Overview ${stats}</p>
-    #foreach( $node in $stats )
-      <tr><td>$node.key</td><td>$node.hostname</td><td>$node.os</td></tr>
-    #end
-    <br>
-    #foreach ($mapEntry in $stats.entrySet())
-      #set ($os = $mapEntry.value.getOs() )
-      <name>$mapEntry.key</name>
-      <value>$mapEntry.value.hostname</value>
-      <value>$os</value>
-    #end
-	</body>
+<%@ page contentType="text/html;charset=UTF-8" %>
+
+<html class="c9">
+  <head>
+    <meta name="layout" content="one_column"></meta>
+    <script src="/js/jquery-1.6.2.min.js"></script>
+    <script src="/js/protovis-d3.1.js"></script>
+    <script src="/js/c9/nodestats.js"></script>
+    <title>Cloud9 - Overview</title>
+    <script>
+      $(document).ready(function() {
+        $("#c9-overview-page").addClass("selected");
+      });
+    </script>
+  </head>
+
+  <body>
+    <br><br>
+    <div class="overview-node-container">
+      <span class="newCollection">Node Statistics</span>
+      #foreach ($node in $nodes.entrySet())
+        #set ($stat = $stats.get($node.key))
+        <div class="overview-node-header gradient-dark">
+          <img style="margin-left:5px;" align="absmiddle" src="/images/c9/bar_chart.png">
+          <span class="node-title">$node.value.hostname&nbsp;-&nbsp;$stat.network().address()</span>
+        </div>
+        <div class="overview-node-body">
+          <div class="overview-node-data">
+            <span>System uptime: $stat.os().uptime()</span><br>
+            <span>JVM uptime: $stat.jvm().uptime()</span><br><br>
+            <div id="cpu-load-1m-$node.key"></div>
+            <div id="sys-mem-bytes-$node.key"></div>
+            <div id="proc-mem-bytes-$node.key"></div>
+            <div id="jvm-thread-count-$node.key"></div>
+            <script>
+              barChart("cpu-load-1m-$node.key")
+                .data([
+                  $stat.os().loadAverage()[0],
+                  100-$stats.os().loadAverage()[0]])
+                .label("CPU Load (1m)")
+                .unit("%")
+                .draw();
+            </script>
+          </div>
+        </div>
+        <br><br>
+      #end
+    </div>
+  </body>
 </html>

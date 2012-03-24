@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
+import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 
 import co.diji.cloud9.services.SearchService;
 
@@ -53,12 +54,13 @@ public class OverviewController {
         //logger.info("overview get");
 
     	//searchService.indices();
-    	//Map<String, NodeInfo> nodeinfo = searchService.getNodeInfo();
-    	Map<String, NodeStats> nodestats = searchService.getNodeStats();
+    	Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
+    	Map<String, NodeStats> nodeStats = searchService.getNodeStats();
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("overview");
-        mav.addObject("stats", nodestats);
+        mav.addObject("stats", nodeStats);
+        mav.addObject("nodes", nodeInfo);
         return mav;
     }
 
