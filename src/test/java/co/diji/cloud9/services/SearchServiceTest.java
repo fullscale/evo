@@ -117,8 +117,7 @@ public class SearchServiceTest {
         index = searchService.getClusterHealth().indices().get("exists");
         assertTrue(searchService.hasIndex("exists"));
         assertEquals(config.getNodeSettings().getAsInt("index.number_of_shards", null).intValue(), index.numberOfShards());
-        assertEquals(config.getNodeSettings().getAsInt("index.number_of_replicas", null).intValue(),
-                index.numberOfReplicas());
+        assertEquals(config.getNodeSettings().getAsInt("index.number_of_replicas", null).intValue(), index.numberOfReplicas());
 
         try {
             searchService.createIndex("exists");
