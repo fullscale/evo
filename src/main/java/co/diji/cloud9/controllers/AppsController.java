@@ -82,7 +82,8 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{app}/{dir}/{resource}")
+    //@RequestMapping(value = "/{app}/{dir}/{resource}")
+    @RequestMapping(value = "/{app:!(css|images|js)}/{dir}/{resource}")
     public void processResource(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletRequest request) {
         logger.info(request.getMethod() + ": apps processResource app:" + app + " dir:" + dir + " resource:" + resource);
