@@ -1,0 +1,65 @@
+<div class="navigation-header gradient-dark rounded-top">
+  <ul class="navigation-list">
+    <li>
+      <img align="top" src="/images/c9/cloud.png" alt="build" title="build">
+      <span class="cloud9-logo">Cloud9</span>
+    </li>
+    <li><a id="c9-overview-page" href="/cloud9/overview">Overview</a></li>
+    <li><a id="c9-content-page" href="/cloud9/content">Collections</a></li>
+    <li><a id="c9-apps-page" href="/cloud9/apps">Applications</a></li>
+    <li><a id="c9-user-page" href="/cloud9/user">Users</a></li>
+  </ul>
+</div>
+
+<div class="status-header gradient-light"><a href="/cloud9/auth/logout">Log Out (<span class="c9-session-username">session.user.id</span>)</a></div>
+
+<div class="status-body">
+  <div class="status-body-title">
+    <table>
+      <tr>
+        <td>
+          <img align="absmiddle" src="/images/c9/cluster.png" />
+        </td>
+        <td>
+          <div class="c9-cluster-banner">Cluster Name: <span class="c9-cluster-name">${cluster.clusterName()}</span></div>
+          #if ($cluster.numberOfNodes == 1)
+            <div class="c9-cluster-banner-sub">There is currently ${cluster.numberOfNodes()} active node</div>
+          #else
+            <div class="c9-cluster-banner-sub">There are currently ${cluster.numberOfNodes()} active nodes</div>
+          #end
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr class="c9-cluster-hr">
+  <div class="status-body-data">
+    <center>
+    <table class="c9-cluster-details-table">
+      <tr>
+        <td>
+          <span>Cluster contains status.indices.count collections totaling status.indices.docs documents.</span>
+        </td>
+        <td class="c9-cluster-health">
+          <span>Cluster Health&nbsp;</span>
+          #if ($cluster.status() == "GREEN")
+            <img align="top" alt="Severe" title="Severe" src="/images/c9/admin/offline.png">
+            <img align="top" alt="Warning" title="Warning" src="/images/c9/admin/offline.png">
+            <img align="top" alt="Healthy" title="Healthy" src="/images/c9/admin/healthy.png">
+          #elseif ($cluster.status() == "YELLOW")
+            <img align="top" alt="Severe" title="Severe" src="/images/c9/admin/offline.png">
+            <img align="top" alt="Warning" title="Warning" src="/images/c9/admin/warning.png">
+            <img align="top" alt="Healthy" title="Healthy" src="/images/c9/admin/offline.png">
+          #else
+            <img align="top" alt="Critical" title="Critical" src="/images/c9/admin/severe.png">
+            <img align="top" alt="Warning" title="Warning" src="/images/c9/admin/offline.png">
+            <img align="top" alt="Healthy" title="Healthy" src="/images/c9/admin/offline.png">
+          #end
+        </td>
+      </tr>
+    </table>
+    </center>
+  </div>
+  <div class="status-body-data-right">
+    &nbsp;
+  </div>
+</div>
