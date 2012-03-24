@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 
-<%@ page contentType="text/html;charset=UTF-8" %>
-
 <html class="c9">
   <head>
     <meta name="layout" content="one_column"></meta>
+    <meta charset="UTF-8" />
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/protovis-d3.1.js"></script>
     <script src="/js/c9/nodestats.js"></script>
@@ -24,7 +23,7 @@
         #set ($stat = $stats.get($node.key))
         <div class="overview-node-header gradient-dark">
           <img style="margin-left:5px;" align="absmiddle" src="/images/c9/bar_chart.png">
-          <span class="node-title">$node.value.hostname&nbsp;-&nbsp;$stat.network().address()</span>
+          <span class="node-title">$node.value.hostname&nbsp;-&nbsp;$node.value.network().primaryInterface().address()</span>
         </div>
         <div class="overview-node-body">
           <div class="overview-node-data">
@@ -37,10 +36,31 @@
             <script>
               barChart("cpu-load-1m-$node.key")
                 .data([
-                  $stat.os().loadAverage()[0],
-                  100-$stats.os().loadAverage()[0]])
+                  ${stat.os().loadAverage()[0]},
+                  100-${stat.os().loadAverage()[0]}])
                 .label("CPU Load (1m)")
                 .unit("%")
+                .draw();
+              barChart("sys-mem-bytes-$node.key")
+                .data([
+                  ${stat.os().mem().actualUsed().gbFrac()},
+                  ${stat.os().mem().actualFree().gbFrac()}])
+                .label("System Memory")
+                .unit("GB")
+                .draw();
+              barChart("proc-mem-bytes-$node.key")
+                .data([
+                  ${stat.process().mem().resident().gbFrac()},
+                  ${stat.process().mem().totalVirtual().gbFrac()} - ${stat.process().mem().resident().gbFrac()}])
+                .label("Process Memory")
+                .unit("GB")
+                .draw();
+              barChart("jvm-thread-count-$node.key")
+                .data([
+                  ${stat.jvm().threads().count()},
+                  ${stat.jvm().threads().peakCount()} - ${stat.jvm().threads().count()}])
+                .label("JVM Threads")
+                .unit("")
                 .draw();
             </script>
           </div>
