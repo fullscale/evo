@@ -16,8 +16,8 @@
     <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
 
-    <script src="json2.js"></script>
-    <script src="c9/c9.js"></script>
+    <script src="/js/json2.js"></script>
+    <script src="/js/c9/c9.js"></script>
 
     <script>
       $(document).ready(function() {
