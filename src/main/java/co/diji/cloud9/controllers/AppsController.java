@@ -32,8 +32,11 @@ public class AppsController {
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/ide/{app}", method = RequestMethod.GET)
-    public void showIde(@PathVariable String app) {
-        logger.info("apps showIde app:" + app);
+    public ModelAndView showIde(@PathVariable String app) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("editor");
+        mav.addObject("app", app);
+        return mav;
     }
 
     @ResponseBody
