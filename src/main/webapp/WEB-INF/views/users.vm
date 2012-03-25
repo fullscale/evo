@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="c9">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cloud9 - Users</title>
+
+    <!-- Common CSS files -->
+    <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+    <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/bootstrap-light.css" />
+    <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
+
+    <script src="/js/jquery-1.6.2.min.js"></script>
+    <script src="/js/json2.js"></script>
+    <script src="/js/jquery.qtip-1.0.0-rc3.min.js"></script>
+    <script src="/js/c9/c9.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script type="text/javascript">
+        // change underscore.js template settings not to conflict with grails
+        // interpolate = {%= doc.title %}
+        // evaluate = {% _.each(docs, function...) %}
+        _.templateSettings = {
+            interpolate: /\{%=(.+?)%\}/g,
+            evaluate: /\{%(.+?)%\}/g
+        };
+    </script>
+    
+    <%-- javascript templates --%>
+    <script id="c9-user-table-row" type="text/template">
+      <tr class="odd gradient-light" id="c9-user-table-row-{%= uname %}">
+        <td>
+          <a href="#" onClick="editUser('{%= uname %}', '{%= name %}', '{%= role %}')">{%= name %}</a>
+        </td>
+        <td>{%= uname %}</td>
+        <td>{%= role %}</td>
+        <td>
+          <span style="font-size:22px;">
+            &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
+          </span>
+        </td>
+        <td style="text-align:right;">
+            <a href="#" class="c9-user-delete-icon" onClick="c9.deleteUser('{%= uname %}')">
+                <img class="removeLink" src="/images/c9/trans.png">
+            </a>
+        </td>
+      </tr>
+    </script>
+      
+    <script id="c9-user-table" type="text/template">
+        <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light" id="{%= 'row'+cnt %}">
+            <td><input style="width:90%" type="text" id="name-{%= cnt %}"></td>
+            <td><input style="width:90%;" type="text" id="login-{%= cnt %}"></td>
+            <td>
+                <select id="role-{%= cnt %}">
+                    <option value="developer">developer</option>
+                    <option value="admin">admin</option>
+                </select>
+            </td>
+            <td><input style="width:90%;" type="password" id="pass-{%= cnt %}"></td>
+            <td>
+                &nbsp;<a href="#" style="color:#ff8000;font-size:10px;" id="linkSaveUser">Save</a>
+            </td>
+        </tr>
+    </script>
+      
+    <script id="c9-edit-user-table" type="text/template">
+        <tr class="{%= cls %}" id="edit-row-{%= uname %}">
+            <td><input style="width:90%" type="text" id="txtName" value="{%= name %}"></td>
+            <td>{%= uname %}</td>
+            <td>
+                <select id="selRole">
+                    <option value="developer" {%= role === 'developer' ? 'selected="selected"' : '' %}>developer</option>
+                    <option value="admin" {%= role === 'admin' ? 'selected="selected"' : '' %}>admin</option>
+                </select>
+            </td>
+            <td><input style="width:90%;" type="password" id="txtPassword"></td>
+            <td>
+                &nbsp;<a href="#" style="color:#ff8000;font-size:10px;" id="linkSaveEdit">Save</a>
+            </td>
+        </tr>
+    </script>
+      
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+        var users = ${usersData};
+        _.each(users, function(userInfo, userName) {
+            $('#userTable > tbody:last tr:eq(0)').after(
+                _.template($('#c9-user-table-row').html(), userInfo)
+            );
+        });
+
+        $('.searchinput').val('');
+        $("#c9-user-page").addClass("selected");
+        c9 = new cloud9();
+        
+        $('#createUserElement').qtip({
+           content: 'Create User',
+           show: 'mouseover',
+           hide: 'mouseout',
+           position: {
+              corner: {
+                 target: 'leftMiddle',
+                 tooltip: 'rightMiddle'
+              }
+           },
+           style: { 
+              name: 'dark',
+              tip: 'rightMiddle',
+              border: {
+                width:1,
+                radius:3
+              }
+           }
+        });
+        $('.c9-user-delete-icon').qtip({
+           content: 'Delete User',
+           show: 'mouseover',
+           hide: 'mouseout',
+           position: {
+              corner: {
+                 target: 'rightMiddle',
+                 tooltip: 'leftMiddle'
+              }
+           },
+           style: { 
+              name: 'dark',
+              tip: 'leftMiddle',
+              border: {
+                width:1,
+                radius:3
+              }
+           }
+        });
+      });
+
+
+      function editUser(uname, name, role) { 
+        var cnt = $('#userTable tbody tr').length;
+        var row = $('#c9-user-table-row-' + uname);
+        var cls = row.attr('class');
+        row.replaceWith(
+            _.template($('#c9-edit-user-table').html(), {
+                cls: cls,
+                uname: uname,
+                name: name,
+                role: role
+            })
+        );
+
+        $('#linkSaveEdit').click(function(e) {
+            var name = $('#txtName').val();
+            var role = $('#selRole').val();
+            var password = $('#txtPassword').val();
+            var url = '/cloud9/user/' + encodeURIComponent(uname);
+
+            var data = {
+                uname: uname,
+                name: name,
+                role: role
+            };
+
+            if (password !== '') {
+                data.password = password;
+            }
+
+            $.ajax({
+                url: url,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                type: 'put',
+                success: function(data) {
+                    if (data.status === 'ok') {
+                        console.log("edit user success");
+                        $('#edit-row-' + uname).replaceWith(
+                            _.template($("#c9-user-table-row").html(), data.response)
+                        );
+                    } else {
+                        console.log('error editing user');
+                        c9.showError($('#users'), data.response);
+                    }
+                }
+            });
+        });
+      }
+
+      function createUser() {
+        var cnt = $('#userTable tbody tr').length;
+
+        $('#userTable > tbody:last').append(
+            _.template($("#c9-user-table").html(), {cnt: cnt})
+        );
+
+        $('#linkSaveUser').click(function(e) {
+            var uname = $('#login-' + cnt).val();
+            var name = $('#name-' + cnt).val();
+            var role = $('#role-' + cnt).val();
+            var password = $('#pass-' + cnt).val();
+            var row = $('#row' + cnt);
+            var url = '/cloud9/user/' + encodeURIComponent(uname); 
+
+            var data = {
+                uname: uname,
+                name: name,
+                role: role,
+                password: password
+            };
+                
+            $.ajax({
+                url: url,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                type: 'post',
+                success: function(data) {
+                    if (data.status === 'ok') {
+                        console.log("create user success");
+                        row.replaceWith(
+                            _.template($("#c9-user-table-row").html(), data.response)
+                        );
+                    } else {
+                        console.log('error creating user');
+                        c9.showError($('#users'), data.response);
+                    }
+                }
+            });
+        });
+      }
+    </script>
+      
+  </head>
+  
+  <body class="yui-skin-sam">
+    <div id="container"> 
+
+      <div id="header"> 
+            #include ( "templates/header.vm" )
+      </div> 
+
+      <div id="content"> 
+        <div id="center" style="width:100%">
+
+          #parse ( "templates/status.vm" )
+          <br><br>
+          
+          <div class="userLayout">
+            <div class="userTableContainer" id="usersContainer">
+              <div style="float:left;width:855px;text-align:left;" id="users">
+                <a href="#" id="createUserElement" onClick="createUser()">
+                  <img class="addLink" src="/images/c9/trans.png">
+                </a>
+                <span class="newCollection">Users</span><br />
+                <table id="userTable">
+                  <tr class="c9-table-header gradient-dark">
+                    <th style="width:220px;">Name</th>
+                    <th>Login</th>
+                    <th>Role</th>
+                    <th>Password</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                  
+                </table>
+                <br>
+              </div>
+            </div>  
+          </div>
+  
+        </div>
+      </div> 
+
+      <div id="footer"> 
+            #include ( "templates/footer.vm" )
+      </div> 
+      
+    </div>
+  </body>
+</html>
