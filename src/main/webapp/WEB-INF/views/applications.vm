@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="c9">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cloud9 - Applications</title>
+
+    <!-- Common CSS files -->
+    <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+    <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/bootstrap-light.css" />
+    <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
+
+    <script src="/js/jquery-1.6.2.min.js"></script>
+    <script src="/js/json2.js"></script>
+    <script src="/js/jquery.qtip-1.0.0-rc3.min.js"></script>
+    <script src="/js/c9/c9.js"></script>
+    <script src="/js/underscore-min.js"></script>
+    <script type="text/javascript">
+        // change underscore.js template settings not to conflict with grails
+        // interpolate = {%= doc.title %}
+        // evaluate = {% _.each(docs, function...) %}
+        _.templateSettings = {
+            interpolate: /\{%=(.+?)%\}/g,
+            evaluate: /\{%(.+?)%\}/g
+        };
+    </script>
+   
+    <script id="c9-input-row" type="text/template">
+        <tr class="even gradient-light row{%= cnt %}">
+            <td colspan="4">
+                <input style="width:170px;" type="text" id="txt{%= cnt %}" placeholder="Name" />
+                &nbsp;<a href="#" style="color:#ff8000;font-size:12px;" id="link{%= cnt %}">Create</a>
+                &nbsp;|&nbsp;&nbsp;<a href="#" style="color:#ff8000;font-size:12px;" id="link-cancel{%= cnt %}">Cancel</a>
+            </td>
+        </tr>
+    </script>
+
+    <script id="c9-app-table-row" type="text/template">
+        <tr class="even gradient-light" id="col-{%= app %}">
+            <td class="app-open-link">
+                <a target="_blank" href="/{%= app %}">{%= app %}</a>
+            </td>
+            <td>{%= info.docs %} Documents</td>
+            <td>
+              <a target="_blank" href="/{%= app %}" style="color:#ff8000;font-size:12px;">Open</a>
+              &nbsp;|&nbsp;&nbsp;<a target="_blank" href="/cloud9/ide/{%= app %}" style="color:#ff8000;font-size:12px;">Edit</a>
+            </td>
+            <td style="text-align:right;">
+                <a href="#" class="c9-application-delete-icon" onClick="c9.deleteApplication('/cloud9/apps/{%= app %}')">
+                    <img class="removeLink" src="/images/c9/trans.png">
+                </a>
+            </td>
+        </tr>
+    </script>
+ 
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+          var apps = ${apps};
+          var cnt = 0;
+          _.each(apps, function(appInfo, appName) {
+            $('#applicationTable > tbody:last tr:eq(0)').after(
+                _.template($('#c9-app-table-row').html(), {
+                    cnt: cnt++,
+                    app: appName,
+                    info: appInfo
+                })
+            );    
+          });
+
+          $("#c9-apps-page").addClass("selected");
+          c9 = new cloud9();
+
+          $('.app-open-link').qtip({
+             content: 'Open in Browser',
+             show: 'mouseover',
+             hide: 'mouseout',
+             position: {
+                corner: {
+                   target: 'leftMiddle',
+                   tooltip: 'rightMiddle'
+                }
+             },
+             style: { 
+                name: 'dark',
+                tip: 'rightMiddle',
+                border: {
+                  width:1,
+                  radius:3
+                }
+             }
+          });
+          
+          $('#createApplicationElement').qtip({
+             content: 'Create Application',
+             show: 'mouseover',
+             hide: 'mouseout',
+             position: {
+                corner: {
+                   target: 'leftMiddle',
+                   tooltip: 'rightMiddle'
+                }
+             },
+             style: { 
+                name: 'dark',
+                tip: 'rightMiddle',
+                border: {
+                  width:1,
+                  radius:3
+                }
+             }
+          });
+          $('.c9-application-delete-icon').qtip({
+             content: 'Delete Application',
+             show: 'mouseover',
+             hide: 'mouseout',
+             position: {
+                corner: {
+                   target: 'rightMiddle',
+                   tooltip: 'leftMiddle'
+                }
+             },
+             style: { 
+                name: 'dark',
+                tip: 'leftMiddle',
+                border: {
+                  width:1,
+                  radius:3
+                }
+             }
+          })
+        });
+        
+        function createApplication() {
+            var cnt = $('#applicationTable tbody tr').length;
+            $('#applicationTable > tbody:last tr:eq(0)').after(
+                _.template($('#c9-input-row').html(), {cnt:cnt})
+            );
+
+            $('#link-cancel' + cnt).click(function (e) {
+             $('#applicationTable > tbody:last tr:eq(1)').remove();   
+            });
+
+            $('#link' + cnt).click(function (e) {
+                var name = encodeURIComponent($('#txt' + cnt).val());
+                var row = $('.row' + cnt);
+                var url = '/cloud9/apps/' + name;
+
+                $.post(url, function(data) {
+                    if (data.status === 'ok') {
+                        row.replaceWith(
+                            _.template($('#c9-app-table-row').html(), {
+                                cnt: cnt,
+                                app: name,
+                                info: {docs:3, size:'104b'}
+                            })
+                        );
+                    } else if (data.status === 'error') {
+                        row.remove();
+                        c9.showError($('#applications'), data.response);
+                    } else {
+                        console.log("Sorry, an unknown error occurred");
+                    }
+                });
+            });
+        };
+    </script>
+    
+  </head>
+  
+  <body class="yui-skin-sam">
+    <div id="container"> 
+
+      <div id="header"> 
+            #include ( "templates/header.vm" )
+      </div> 
+
+      <div id="content"> 
+        <div id="center" style="width:100%">
+
+          #parse ( "templates/status.vm" )
+          <br><br>
+          
+          <div class="userLayout">
+
+            <div class="userTableContainer">
+              
+              <div style="float:left;width:855px;text-align:left;" id="applications">
+                <a href="#" id="createApplicationElement" onClick="createApplication()">
+                  <img class="addLink" src="/images/c9/trans.png">
+                </a>
+                <span class="newCollection">Applications</span><br />
+                <table id="applicationTable">
+                  <tr class="c9-table-header gradient-dark">
+                    <th style="width:220px;">Name</th>
+                    <th>Resources</th>
+                    <th>Actions</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+    
+        </div>
+      </div> 
+
+      <div id="footer"> 
+            #include ( "templates/footer.vm" )
+      </div> 
+      
+    </div>
+  </body>
+</html>
