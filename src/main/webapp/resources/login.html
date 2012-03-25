@@ -1,55 +1,105 @@
 <!DOCTYPE html>
 
-<html>
-    <head>
-        <meta name="layout" content="one_column"></meta>
+<html class="c9">
+  <head>
+    <meta charset="UTF-8" />
         <title>Cloud9 - Login</title>
-    </head>
+
+    <!-- Common CSS files -->
+    <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+    <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/c9/bootstrap-light.css" />
+    <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
+  </head>
   
-    <body style="margin:0px;">
+  <body class="yui-skin-sam">
+    <div id="container"> 
+
+      <div id="header"> 
+        <div class="topbar">
+          <div class="fill">
+            <div class="container">
+              <a class="brand" style="padding:3px 20px 2px;" href="http://www.cloud9search.com">
+                <img src="/images/c9/C9Logo_mini.png">
+              </a>
+              <ul class="nav">
+                <li><a href="/cloud9/overview" target="_blank">Home</a></li>
+                <li><a href="http://www.cloud9search.com/blog" target="_blank">Blog</a></li>
+                <li><a href="http://www.cloud9search.com/docs.html" target="_blank">Documentation</a></li>
+                <li><a href="http://www.cloud9search.com/faqs.html" target="_blank">FAQ</a></li>
+                <li><a href="http://www.cloud9search.com/contact.html" target="_blank">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div> 
+
+      <div id="content"> 
+        <div id="center" style="width:100%">
     
-        <%-- the main content --%>
+
         <br><br>
         <div style="height:50px;">&nbsp;</div>
     
-        <center>
-            <g:form controller="auth" action="authenticate" method="post">
-                <table border="0">
-                    <tr>
-                        <td><img src="/images/c9/cloud9-logo.png"></td>
-                        <td>    
-      
-                            <div style="margin-top:6px;">
+          <center>
+              <form controller="auth" action="authenticate" method="post">
+                  <table border="0">
+                      <tr>
+                          <td><img src="/images/c9/cloud9-logo.png"></td>
+                          <td>    
+        
+                              <div style="margin-top:6px;">
 
-                                <table>
-                                    <tr>
-                                        <td style="padding-bottom:5px">
-                                            <input style="height:16px;font-size:14px" type="text" id="login" name="login" placeholder="Username" size="30">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding-bottom:5px">
-                                            <input style="height:16px;font-size:14px" type="password" id="password" name="password" placeholder="Password" size="30">
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                
-                    <tr>
-                        <td>
-                            <input type="hidden" name="c" value="${flash.controller ?: 'overview'}">
-                            <input type="hidden" name="a" value="">
-                        </td>
-                        <td style="text-align:right">
-                            <button class="sbab image_link" type="submit" id="loginBtn">
-                                <strong>Login</strong>
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </g:form>
-        </center>
-    </body>
+                                  <table>
+                                      <tr>
+                                          <td style="padding-bottom:5px">
+                                              <input style="height:16px;font-size:14px" type="text" id="login" name="login" placeholder="Username" size="30">
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td style="padding-bottom:5px">
+                                              <input style="height:16px;font-size:14px" type="password" id="password" name="password" placeholder="Password" size="30">
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </div>
+                          </td>
+                      </tr>
+                  
+                      <tr>
+                          <td>
+                              <input type="hidden" name="c" value="flash.controller ?: 'overview'">
+                              <input type="hidden" name="a" value="">
+                          </td>
+                          <td style="text-align:right">
+                              <button class="sbab image_link" type="submit" id="loginBtn">
+                                  <strong>Login</strong>
+                              </button>
+                          </td>
+                      </tr>
+                  </table>
+              </form>
+          </center>
+        </div>
+      </div> 
+
+      <div id="footer"> 
+        <div id="footer-left">
+          <p>
+            COPYRIGHT &copy; 2010-2012 Diji Inc.
+          </p>
+        </div>
+
+        <div id="footer-center">
+        </div>
+
+        <div id="footer-right">
+          <span style="color:#666;font-size:13px;">Developer Preview Release</span>
+        </div>
+      </div> 
+      
+    </div>
+  </body>
 </html>
