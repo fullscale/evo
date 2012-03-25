@@ -9,7 +9,7 @@
     <title>Cloud9 - Overview</title>
 
     <!-- Common CSS files -->
-    <link rel="stylesheet" type="text/css" href="/css/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+    <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
     <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
     <link rel="stylesheet" type="text/css" href="/css/c9/main.css" />
     <link rel="stylesheet" type="text/css" href="/css/c9/bootstrap-light.css" />
