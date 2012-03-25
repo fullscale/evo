@@ -162,6 +162,13 @@
             <version>1.7</version>
         </dependency>
 
+        <!-- Rhino Javascript Engine -->
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>1.7R3</version>
+        </dependency>
+
         <!-- AspectJ -->
         <dependency>
             <groupId>org.aspectj</groupId>
