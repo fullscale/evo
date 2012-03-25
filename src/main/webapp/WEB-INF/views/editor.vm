@@ -3,6 +3,7 @@
 <html class="c9 yui-skin-cloud9">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
     <title>Editor - ${app}</title>
     <link type="text/css" rel="stylesheet" href="/css/layout.css" />
     <link type="text/css" rel="stylesheet" href="/js/yui/2.9.0/build/fonts/fonts-min.css" /> 

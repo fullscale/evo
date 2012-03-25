@@ -3,6 +3,7 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/protovis-d3.1.js"></script>
     <script src="/js/c9/nodestats.js"></script>

@@ -3,6 +3,7 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
     <title>Cloud9 - Collections</title>
 
     <!-- Common CSS files -->
