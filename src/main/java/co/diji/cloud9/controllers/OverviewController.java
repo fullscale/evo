@@ -20,7 +20,6 @@ import org.elasticsearch.cluster.ClusterState;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
-@RequestMapping("/cloud9/overview")
 public class OverviewController {
 
     private static final Logger logger = LoggerFactory.getLogger(OverviewController.class);
@@ -29,7 +28,7 @@ public class OverviewController {
     protected SearchService searchService;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/cloud9", "/cloud9/overview"}, method = RequestMethod.GET)
     public ModelAndView get() {
 
     	ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
