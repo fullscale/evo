@@ -263,4 +263,11 @@ public class SearchServiceTest {
         appStatus = searchService.getAppStatus("testapp.app", "does.not.exist.app");
         assertEquals(0, appStatus.size());
     }
+
+    @Test
+    public void testGetTotalCollectionDocCount() {
+        // TODO add more tests once we can add/remove docs
+        long cnt = searchService.getTotalCollectionDocCount();
+        assertEquals(0, cnt);
+    }
 }

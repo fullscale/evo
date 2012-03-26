@@ -212,6 +212,27 @@ public class SearchService {
     }
 
     /**
+     * Gets the total number of collection documents that exist in the cluster
+     * 
+     * @return the sum of all collection document counts.
+     */
+    public long getTotalCollectionDocCount() {
+        logger.trace("in getTotalCollectionDocCount");
+        long numDocs = 0;
+        Map<String, IndexStatus> collections = getCollectionStatus();
+
+        logger.debug("collections: {}", collections);
+        if (collections != null) {
+            for (Entry<String, IndexStatus> collection : collections.entrySet()) {
+                numDocs = numDocs + collection.getValue().docs().numDocs();
+            }
+        }
+
+        logger.trace("exit getTotalCollectionDocCount: {}", numDocs);
+        return numDocs;
+    }
+
+    /**
      * Get information about nodes in the cluster.
      * 
      * @return a map where the key is the node id and the value is the info for that node, null on error
