@@ -229,4 +229,22 @@ public class SearchServiceTest {
         assertFalse(searchService.hasIndex("anotherapp.app.app"));
 
     }
+
+    @Test
+    public void testGetCollectionStatus() {
+        // all these collections should have been created in tests above
+        String[] collections = {
+                "exists", "oneshardnoreplicas", "oneshardonereplicas", "twoshardssixreplicas", "indexwithhtmlmapping",
+                "indexwithcssmapping"};
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        assertEquals(collections.length, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("does.not.exist");
+        assertEquals(0, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("exists");
+        assertEquals(1, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus(collections);
+        assertEquals(collections.length, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("exists", "does.not.exist");
+        assertEquals(0, collectionStatus.size());
+    }
 }

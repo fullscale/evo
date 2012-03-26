@@ -158,6 +158,33 @@ public class SearchService {
     }
 
     /**
+     * Gets all the collections and their status.
+     * 
+     * @param collections the collections to get the status for
+     * @return a map where the key is the collection name and the value is the status
+     */
+    public Map<String, IndexStatus> getCollectionStatus(String... collections) {
+        logger.trace("in getCollectionStatus collections:{}, collections");
+        Map<String, IndexStatus> collectionStatus = new HashMap<String, IndexStatus>();
+        Map<String, IndexStatus> indices = getIndexStatus(collections);
+
+        logger.debug("indices: {}", indices);
+        if (indices != null) {
+            for (Entry<String, IndexStatus> index : indices.entrySet()) {
+                String indexName = index.getKey();
+                IndexStatus indexStatus = index.getValue();
+                logger.debug("indexName: {}", indexName);
+                if (!indexName.equals(SYSTEM_INDEX) && !indexName.endsWith(APP_SUFFIX)) {
+                    collectionStatus.put(indexName, indexStatus);
+                }
+            }
+        }
+
+        logger.trace("exit getCollectionStatus: {}", collectionStatus);
+        return collectionStatus;
+    }
+
+    /**
      * Get information about nodes in the cluster.
      * 
      * @return a map where the key is the node id and the value is the info for that node, null on error
