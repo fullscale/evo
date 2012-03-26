@@ -229,4 +229,52 @@ public class SearchServiceTest {
         assertFalse(searchService.hasIndex("anotherapp.app.app"));
 
     }
+
+    @Test
+    public void testGetCollectionStatus() {
+        // all these collections should have been created in tests above
+        String[] collections = {
+                "exists", "oneshardnoreplicas", "oneshardonereplicas", "twoshardssixreplicas", "indexwithhtmlmapping",
+                "indexwithcssmapping"};
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        assertEquals(collections.length, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("does.not.exist");
+        assertEquals(0, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("exists");
+        assertEquals(1, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus(collections);
+        assertEquals(collections.length, collectionStatus.size());
+        collectionStatus = searchService.getCollectionStatus("exists", "does.not.exist");
+        assertEquals(0, collectionStatus.size());
+    }
+
+    @Test
+    public void testGetAppStatus() {
+        // all these collections should have been created in tests above
+        String[] apps = {"testapp.app", "testapp2.app", "anotherapp.app"};
+        Map<String, IndexStatus> appStatus = searchService.getAppStatus();
+        assertEquals(apps.length, appStatus.size());
+        appStatus = searchService.getAppStatus("does.not.exist.app");
+        assertEquals(0, appStatus.size());
+        appStatus = searchService.getAppStatus("testapp.app");
+        assertEquals(1, appStatus.size());
+        appStatus = searchService.getAppStatus(apps);
+        assertEquals(apps.length, appStatus.size());
+        appStatus = searchService.getAppStatus("testapp.app", "does.not.exist.app");
+        assertEquals(0, appStatus.size());
+    }
+
+    @Test
+    public void testGetTotalCollectionDocCount() {
+        // TODO add more tests once we can add/remove docs
+        long cnt = searchService.getTotalCollectionDocCount();
+        assertEquals(0, cnt);
+    }
+
+    @Test
+    public void testGetTotalAppDocCount() {
+        // TODO add more tests once we can add/remove docs
+        long cnt = searchService.getTotalAppDocCount();
+        assertEquals(0, cnt);
+    }
 }

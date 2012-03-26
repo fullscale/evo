@@ -1,5 +1,6 @@
 package co.diji.cloud9.services;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,10 @@ import co.diji.cloud9.utils.C9Helper;
 
 @Service
 public class SearchService {
+
+    private static final String SYSTEM_INDEX = "sys";
+    private static final String APP_SUFFIX = ".app";
+    private static final String[] RESERVED_APPS = {"css.app", "js.app", "images.app"};
 
     private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
     private Node node;
@@ -150,6 +155,102 @@ public class SearchService {
 
         logger.trace("exit getIndexStatus: {}", indexStatus);
         return indexStatus;
+    }
+
+    /**
+     * Gets all the collections and their status.
+     * 
+     * @param collections the collections to get the status for
+     * @return a map where the key is the collection name and the value is the status
+     */
+    public Map<String, IndexStatus> getCollectionStatus(String... collections) {
+        logger.trace("in getCollectionStatus collections:{}, collections");
+        Map<String, IndexStatus> collectionStatus = new HashMap<String, IndexStatus>();
+        Map<String, IndexStatus> indices = getIndexStatus(collections);
+
+        logger.debug("indices: {}", indices);
+        if (indices != null) {
+            for (Entry<String, IndexStatus> index : indices.entrySet()) {
+                String indexName = index.getKey();
+                IndexStatus indexStatus = index.getValue();
+                logger.debug("indexName: {}", indexName);
+                if (!indexName.equals(SYSTEM_INDEX) && !indexName.endsWith(APP_SUFFIX)) {
+                    collectionStatus.put(indexName, indexStatus);
+                }
+            }
+        }
+
+        logger.trace("exit getCollectionStatus: {}", collectionStatus);
+        return collectionStatus;
+    }
+
+    /**
+     * Gets all the apps and their status.
+     * 
+     * @param apps the apps to get the status for
+     * @return a map where the key is the app name and the value is the status
+     */
+    public Map<String, IndexStatus> getAppStatus(String... apps) {
+        logger.trace("in getAppStatus apps:{}", apps);
+        Map<String, IndexStatus> appStatus = new HashMap<String, IndexStatus>();
+        Map<String, IndexStatus> indices = getIndexStatus(apps);
+
+        logger.debug("indices: {}", indices);
+        if (indices != null) {
+            for (Entry<String, IndexStatus> index : indices.entrySet()) {
+                String indexName = index.getKey();
+                IndexStatus indexStatus = index.getValue();
+                logger.debug("indexName: {}", indexName);
+                if (!indexName.equals(SYSTEM_INDEX) && indexName.endsWith(APP_SUFFIX)) {
+                    appStatus.put(indexName, indexStatus);
+                }
+            }
+        }
+
+        logger.trace("exit getAppStatus: {}", appStatus);
+        return appStatus;
+    }
+
+    /**
+     * Gets the total number of collection documents that exist in the cluster
+     * 
+     * @return the sum of all collection document counts.
+     */
+    public long getTotalCollectionDocCount() {
+        logger.trace("in getTotalCollectionDocCount");
+        long numDocs = 0;
+        Map<String, IndexStatus> collections = getCollectionStatus();
+
+        logger.debug("collections: {}", collections);
+        if (collections != null) {
+            for (Entry<String, IndexStatus> collection : collections.entrySet()) {
+                numDocs = numDocs + collection.getValue().docs().numDocs();
+            }
+        }
+
+        logger.trace("exit getTotalCollectionDocCount: {}", numDocs);
+        return numDocs;
+    }
+
+    /**
+     * Gets the total number of app documents that exist in the cluster
+     * 
+     * @return the sum of all app document counts
+     */
+    public long getTotalAppDocCount() {
+        logger.trace("in getTotalAppDocCount");
+        long numDocs = 0;
+        Map<String, IndexStatus> apps = getAppStatus();
+
+        logger.debug("apps: {}", apps);
+        if (apps != null) {
+            for (Entry<String, IndexStatus> app : apps.entrySet()) {
+                numDocs = numDocs + app.getValue().docs().numDocs();
+            }
+        }
+
+        logger.trace("exit getTotalAppDocCount: {}", numDocs);
+        return numDocs;
     }
 
     /**
@@ -354,12 +455,12 @@ public class SearchService {
      */
     public boolean createAppIndex(String appName, int shards, int replicas) throws IndexException {
         logger.trace("in createAppIndex appName:{} shards:{} replicas:{}", new Object[]{appName, shards, replicas});
-        if (!appName.endsWith(".app")) {
-            appName = appName + ".app";
+        if (!appName.endsWith(APP_SUFFIX)) {
+            appName = appName + APP_SUFFIX;
         }
 
         logger.debug("appName: {}", appName);
-        if (appName.equals("css.app") || appName.equals("js.app") || appName.equals("images.app")) {
+        if (Arrays.asList(RESERVED_APPS).contains(appName)) {
             throw new IndexCreationException("Invalid application name: " + appName);
         }
 
