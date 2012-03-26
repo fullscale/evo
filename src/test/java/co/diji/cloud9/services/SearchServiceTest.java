@@ -270,4 +270,11 @@ public class SearchServiceTest {
         long cnt = searchService.getTotalCollectionDocCount();
         assertEquals(0, cnt);
     }
+
+    @Test
+    public void testGetTotalAppDocCount() {
+        // TODO add more tests once we can add/remove docs
+        long cnt = searchService.getTotalAppDocCount();
+        assertEquals(0, cnt);
+    }
 }

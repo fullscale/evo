@@ -233,6 +233,27 @@ public class SearchService {
     }
 
     /**
+     * Gets the total number of app documents that exist in the cluster
+     * 
+     * @return the sum of all app document counts
+     */
+    public long getTotalAppDocCount() {
+        logger.trace("in getTotalAppDocCount");
+        long numDocs = 0;
+        Map<String, IndexStatus> apps = getAppStatus();
+
+        logger.debug("apps: {}", apps);
+        if (apps != null) {
+            for (Entry<String, IndexStatus> app : apps.entrySet()) {
+                numDocs = numDocs + app.getValue().docs().numDocs();
+            }
+        }
+
+        logger.trace("exit getTotalAppDocCount: {}", numDocs);
+        return numDocs;
+    }
+
+    /**
      * Get information about nodes in the cluster.
      * 
      * @return a map where the key is the node id and the value is the info for that node, null on error
