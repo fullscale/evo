@@ -25,6 +25,11 @@
             <name>OSS Sonatype</name>
             <url>http://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
+        <repository>
+            <id>org.fuin</id>
+            <name>Fuin</name>
+            <url>http://www.fuin.org/maven-repository/</url>
+        </repository>
     </repositories>
 
     <profiles>
@@ -59,6 +64,7 @@
                                 <configuration>
                                     <artifactSet>
                                         <includes>
+                                            <include>org.fuin:*</include>
                                             <include>log4j:*</include>
                                             <include>org.slf4j:*</include>
                                             <include>org.eclipse.jetty:*</include>
@@ -167,6 +173,13 @@
             <groupId>org.mozilla</groupId>
             <artifactId>rhino</artifactId>
             <version>1.7R3</version>
+        </dependency>
+
+        <!-- utils4j -->
+        <dependency>
+            <groupId>org.fuin</groupId>
+            <artifactId>utils4j</artifactId>
+            <version>0.6.8</version>
         </dependency>
 
         <!-- AspectJ -->
