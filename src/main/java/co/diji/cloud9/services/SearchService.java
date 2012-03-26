@@ -1,5 +1,6 @@
 package co.diji.cloud9.services;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,10 @@ import co.diji.cloud9.utils.C9Helper;
 
 @Service
 public class SearchService {
+
+    private static final String SYSTEM_INDEX = "sys";
+    private static final String APP_SUFFIX = ".app";
+    private static final String[] RESERVED_APPS = {"css.app", "js.app", "images.app"};
 
     private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
     private Node node;
@@ -354,12 +359,12 @@ public class SearchService {
      */
     public boolean createAppIndex(String appName, int shards, int replicas) throws IndexException {
         logger.trace("in createAppIndex appName:{} shards:{} replicas:{}", new Object[]{appName, shards, replicas});
-        if (!appName.endsWith(".app")) {
-            appName = appName + ".app";
+        if (!appName.endsWith(APP_SUFFIX)) {
+            appName = appName + APP_SUFFIX;
         }
 
         logger.debug("appName: {}", appName);
-        if (appName.equals("css.app") || appName.equals("js.app") || appName.equals("images.app")) {
+        if (Arrays.asList(RESERVED_APPS).contains(appName)) {
             throw new IndexCreationException("Invalid application name: " + appName);
         }
 
