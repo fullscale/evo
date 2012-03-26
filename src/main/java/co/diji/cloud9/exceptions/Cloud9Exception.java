@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions;
 
 public class Cloud9Exception extends Exception {
 
-    public Cloud9Exception(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public Cloud9Exception(String message) {
         super(message);
     }
 

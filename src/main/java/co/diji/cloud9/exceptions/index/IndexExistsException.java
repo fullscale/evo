@@ -3,7 +3,9 @@ package co.diji.cloud9.exceptions.index;
 
 public class IndexExistsException extends IndexException {
 
-    public IndexExistsException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public IndexExistsException(String message) {
         super(message);
     }
 

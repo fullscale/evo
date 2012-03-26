@@ -15,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.cluster.ClusterState;
 
 import co.diji.cloud9.services.SearchService;
 
@@ -30,7 +29,8 @@ public class OverviewController {
     @ResponseBody
     @RequestMapping(value = {"/", "/cloud9", "/cloud9/overview"}, method = RequestMethod.GET)
     public ModelAndView get() {
-
+    	logger.trace("enter overview controller");
+    	
     	ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
     	//Map<String, Integer> clusterStatus = searchService.getClusterStatus();
     	Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();

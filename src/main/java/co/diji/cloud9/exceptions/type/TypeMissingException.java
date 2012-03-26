@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions.type;
 
 public class TypeMissingException extends TypeException {
 
-    public TypeMissingException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public TypeMissingException(String message) {
         super(message);
     }
 

@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.cluster.ClusterState;
 
 import co.diji.cloud9.services.SearchService;
 

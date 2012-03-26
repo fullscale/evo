@@ -3,7 +3,9 @@ package co.diji.cloud9.exceptions.index;
 
 public class IndexMissingException extends IndexException {
 
-    public IndexMissingException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public IndexMissingException(String message) {
         super(message);
     }
 

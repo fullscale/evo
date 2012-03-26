@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions.index;
 
 public class IndexCreationException extends IndexException {
 
-    public IndexCreationException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public IndexCreationException(String message) {
         super(message);
     }
 

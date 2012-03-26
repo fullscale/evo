@@ -4,7 +4,9 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 
 public class IndexException extends Cloud9Exception {
 
-    public IndexException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public IndexException(String message) {
         super(message);
     }
 

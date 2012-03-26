@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions.type;
 
 public class TypeExistsException extends TypeException {
 
-    public TypeExistsException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public TypeExistsException(String message) {
         super(message);
     }
 

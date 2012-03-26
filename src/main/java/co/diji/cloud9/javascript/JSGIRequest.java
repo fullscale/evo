@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.BufferedReader;
-import java.io.Reader;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -92,7 +91,7 @@ public class JSGIRequest {
      */
 	private JavascriptObject headers(HttpServletRequest request) {
         JavascriptObject headers = new JavascriptObject();
-        Enumeration headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
 
         while(headerNames.hasMoreElements()) {
         String headerName = (String)headerNames.nextElement();
@@ -104,9 +103,10 @@ public class JSGIRequest {
     /*
      * creates the session specific request variables.
      */
+    @SuppressWarnings("unchecked")
     private JavascriptObject session(HttpSession userSession) {
         JavascriptObject session = null;
-        Map<String, String> user = (Map<String, String>) userSession.getAttribute("user");
+		Map<String, String> user = (Map<String, String>) userSession.getAttribute("user");
         if (user != null) {
             session = new JavascriptObject();
             session.put("user", (String) user.get("name"));

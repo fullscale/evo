@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions.type;
 
 public class TypeCreationException extends TypeException {
 
-    public TypeCreationException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public TypeCreationException(String message) {
         super(message);
     }
 

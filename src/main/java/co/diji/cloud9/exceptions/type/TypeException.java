@@ -4,7 +4,9 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 
 public class TypeException extends Cloud9Exception {
 
-    public TypeException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public TypeException(String message) {
         super(message);
     }
 

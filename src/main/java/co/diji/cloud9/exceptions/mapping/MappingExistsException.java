@@ -2,7 +2,9 @@ package co.diji.cloud9.exceptions.mapping;
 
 public class MappingExistsException extends MappingException {
 
-    public MappingExistsException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public MappingExistsException(String message) {
         super(message);
     }
 

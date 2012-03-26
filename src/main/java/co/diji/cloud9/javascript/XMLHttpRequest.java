@@ -3,7 +3,6 @@ package co.diji.cloud9.javascript;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -11,8 +10,9 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -52,7 +52,7 @@ public class XMLHttpRequest extends ScriptableObject {
         this.requestHeaders.put(headerName, value);
     }
 
-    public Map jsFunction_getAllResponseHeaders() {
+    public Map<String,List<String>> jsFunction_getAllResponseHeaders() {
         if (this.readyState < 3) {
             throw new IllegalStateException(
                 "must call send before getting response headers");
@@ -203,7 +203,7 @@ public class XMLHttpRequest extends ScriptableObject {
 
     private void setRequestHeaders() {
         if (this.requestHeaders != null) {
-            for (Iterator i = this.requestHeaders.keySet().iterator(); i.hasNext(); ) {
+            for (Iterator<String> i = this.requestHeaders.keySet().iterator(); i.hasNext(); ) {
                 String header = (String)i.next();
                 String value = (String)this.requestHeaders.get(header);
                 this.urlConnection.setRequestProperty(header, value);
