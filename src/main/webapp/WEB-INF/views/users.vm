@@ -29,7 +29,7 @@
         };
     </script>
     
-    <%-- javascript templates --%>
+    <!-- javascript templates -->
     <script id="c9-user-table-row" type="text/template">
       <tr class="odd gradient-light" id="c9-user-table-row-{%= uname %}">
         <td>
