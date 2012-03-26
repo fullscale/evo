@@ -185,6 +185,33 @@ public class SearchService {
     }
 
     /**
+     * Gets all the apps and their status.
+     * 
+     * @param apps the apps to get the status for
+     * @return a map where the key is the app name and the value is the status
+     */
+    public Map<String, IndexStatus> getAppStatus(String... apps) {
+        logger.trace("in getAppStatus apps:{}", apps);
+        Map<String, IndexStatus> appStatus = new HashMap<String, IndexStatus>();
+        Map<String, IndexStatus> indices = getIndexStatus(apps);
+
+        logger.debug("indices: {}", indices);
+        if (indices != null) {
+            for (Entry<String, IndexStatus> index : indices.entrySet()) {
+                String indexName = index.getKey();
+                IndexStatus indexStatus = index.getValue();
+                logger.debug("indexName: {}", indexName);
+                if (!indexName.equals(SYSTEM_INDEX) && indexName.endsWith(APP_SUFFIX)) {
+                    appStatus.put(indexName, indexStatus);
+                }
+            }
+        }
+
+        logger.trace("exit getAppStatus: {}", appStatus);
+        return appStatus;
+    }
+
+    /**
      * Get information about nodes in the cluster.
      * 
      * @return a map where the key is the node id and the value is the info for that node, null on error

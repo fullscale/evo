@@ -247,4 +247,20 @@ public class SearchServiceTest {
         collectionStatus = searchService.getCollectionStatus("exists", "does.not.exist");
         assertEquals(0, collectionStatus.size());
     }
+
+    @Test
+    public void testGetAppStatus() {
+        // all these collections should have been created in tests above
+        String[] apps = {"testapp.app", "testapp2.app", "anotherapp.app"};
+        Map<String, IndexStatus> appStatus = searchService.getAppStatus();
+        assertEquals(apps.length, appStatus.size());
+        appStatus = searchService.getAppStatus("does.not.exist.app");
+        assertEquals(0, appStatus.size());
+        appStatus = searchService.getAppStatus("testapp.app");
+        assertEquals(1, appStatus.size());
+        appStatus = searchService.getAppStatus(apps);
+        assertEquals(apps.length, appStatus.size());
+        appStatus = searchService.getAppStatus("testapp.app", "does.not.exist.app");
+        assertEquals(0, appStatus.size());
+    }
 }
