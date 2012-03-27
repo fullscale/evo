@@ -37,7 +37,19 @@
     <table class="c9-cluster-details-table">
       <tr>
         <td>
-          <span>Cluster contains status.indices.count collections totaling status.indices.docs documents.</span>
+        	#if ($status.size() == 1)
+        		#if ($count == 1)
+          			<span>Cluster contains ${status.size()} collection totaling ${count} document.</span>
+          		#else
+          			<span>Cluster contains ${status.size()} collection totaling ${count} documents.</span>
+          		#end
+          	#else
+          		#if ($count == 1)
+          			<span>Cluster contains ${status.size()} collections totaling ${count} document.</span>
+          		#else
+          			<span>Cluster contains ${status.size()} collections totaling ${count} documents.</span>
+          		#end
+          	#end
         </td>
         <td class="c9-cluster-health">
           <span>Cluster Health&nbsp;</span>
