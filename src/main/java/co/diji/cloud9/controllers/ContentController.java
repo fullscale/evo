@@ -6,6 +6,7 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,24 @@ public class ContentController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView get() {
-    	logger.trace("enter controller=content action=get");
-    	
+        logger.trace("enter controller=content action=get");
+
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-    	long count = searchService.getTotalCollectionDocCount();
-    	Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        long count = searchService.getTotalCollectionDocCount();
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
         Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
         Map<String, NodeStats> nodeStats = searchService.getNodeStats();
+
+        JSONObject indices = new JSONObject();
+
+        for (String indexItem : collectionStatus.keySet()) {
+            IndexStatus indexStatus = collectionStatus.get(indexItem);
+
+            JSONObject stats = new JSONObject();
+            stats.put("docs", String.valueOf(indexStatus.docs().numDocs()));
+            stats.put("size", indexStatus.getPrimaryStoreSize().toString());
+            indices.put(indexItem, stats);
+        }
 
         ModelAndView mav = new ModelAndView();
 
@@ -51,8 +63,9 @@ public class ContentController {
         mav.addObject("nodes", nodeInfo);
         mav.addObject("status", collectionStatus);
         mav.addObject("count", count);
-        //mav.addObject("build", "build" + app.build);
-        
+        mav.addObject("indices", indices.toString());
+        // mav.addObject("build", "build" + app.build);
+
         mav.setViewName("collections");
         return mav;
     }
