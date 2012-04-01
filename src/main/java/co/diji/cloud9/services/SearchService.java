@@ -331,6 +331,22 @@ public class SearchService {
     }
 
     /**
+     * Checks if the specified app exists or not
+     * 
+     * @param appName the name of the app to check for
+     * @return true if exists, false otherwise
+     */
+    public boolean hasApp(String appName) {
+        logger.trace("in hasApp appName:{}", appName);
+        if (!appName.endsWith(APP_SUFFIX)) {
+            appName = appName + APP_SUFFIX;
+            logger.debug("final appName: {}", appName);
+        }
+
+        return hasIndex(appName);
+    }
+
+    /**
      * Creates an index with default settings
      * 
      * @param name the name of the index to create

@@ -1,9 +1,9 @@
 package co.diji.cloud9.services;
 
+import static junit.framework.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static junit.framework.Assert.*;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.health.ClusterIndexHealth;
@@ -188,6 +188,7 @@ public class SearchServiceTest {
         searchService.createAppIndex("testapp");
         index = searchService.getClusterHealth().indices().get("testapp.app");
         assertTrue(searchService.hasIndex("testapp.app"));
+        assertTrue(searchService.hasApp("testapp"));
         assertEquals(1, index.numberOfShards());
         assertEquals(1, index.numberOfReplicas());
 
@@ -199,7 +200,7 @@ public class SearchServiceTest {
 
         searchService.createAppIndex("testapp2", 3, 3);
         index = searchService.getClusterHealth().indices().get("testapp2.app");
-        assertTrue(searchService.hasIndex("testapp2.app"));
+        assertTrue(searchService.hasApp("testapp2.app"));
         assertEquals(3, index.numberOfShards());
         assertEquals(3, index.numberOfReplicas());
 
@@ -208,24 +209,24 @@ public class SearchServiceTest {
             fail();
         } catch (IndexCreationException e) {
         }
-        assertFalse(searchService.hasIndex("css.app"));
+        assertFalse(searchService.hasApp("css"));
 
         try {
             searchService.createAppIndex("js");
             fail();
         } catch (IndexCreationException e) {
         }
-        assertFalse(searchService.hasIndex("js.app"));
+        assertFalse(searchService.hasApp("js"));
 
         try {
             searchService.createAppIndex("images");
             fail();
         } catch (IndexCreationException e) {
         }
-        assertFalse(searchService.hasIndex("images.app"));
+        assertFalse(searchService.hasApp("images"));
 
         searchService.createAppIndex("anotherapp.app");
-        assertTrue(searchService.hasIndex("anotherapp.app"));
+        assertTrue(searchService.hasApp("anotherapp"));
         assertFalse(searchService.hasIndex("anotherapp.app.app"));
 
     }
