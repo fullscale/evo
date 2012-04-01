@@ -192,8 +192,18 @@ public class SearchService {
      */
     public Map<String, IndexStatus> getAppStatus(String... apps) {
         logger.trace("in getAppStatus apps:{}", apps);
+        String[] appsWithSuffix = new String[apps.length];
+        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
+            String app = apps[appIdx];
+            if (!app.endsWith(APP_SUFFIX)) {
+                appsWithSuffix[appIdx] = app + APP_SUFFIX;
+            } else {
+                appsWithSuffix[appIdx] = app;
+            }
+        }
+
         Map<String, IndexStatus> appStatus = new HashMap<String, IndexStatus>();
-        Map<String, IndexStatus> indices = getIndexStatus(apps);
+        Map<String, IndexStatus> indices = getIndexStatus(appsWithSuffix);
 
         logger.debug("indices: {}", indices);
         if (indices != null) {
@@ -202,7 +212,7 @@ public class SearchService {
                 IndexStatus indexStatus = index.getValue();
                 logger.debug("indexName: {}", indexName);
                 if (!indexName.equals(SYSTEM_INDEX) && indexName.endsWith(APP_SUFFIX)) {
-                    appStatus.put(indexName, indexStatus);
+                    appStatus.put(indexName.replace(APP_SUFFIX, ""), indexStatus);
                 }
             }
         }
