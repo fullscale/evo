@@ -180,6 +180,35 @@ public class SearchServiceTest {
     }
 
     @Test
+    public void testCreateCollection() throws Exception {
+        // we just need to test that we cant create system
+        // index or a collection that ends with .app
+        try {
+            searchService.createCollectionIndex("sys");
+            fail();
+        } catch (IndexCreationException e) {     
+        }
+        
+        try {
+            searchService.createCollectionIndex("sys", 3, 3);
+            fail();
+        } catch (IndexCreationException e) {     
+        }
+        
+        try {
+            searchService.createCollectionIndex("whatever.app");
+            fail();
+        } catch (IndexCreationException e) {     
+        }
+        
+        try {
+            searchService.createCollectionIndex("whatever.app", 2, 1);
+            fail();
+        } catch (IndexCreationException e) {     
+        }
+    }
+    
+    @Test
     public void testCreateApp() throws Exception {
         ClusterIndexHealth index = null;
 

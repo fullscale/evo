@@ -459,6 +459,42 @@ public class SearchService {
     }
 
     /**
+     * Create collection with default number of shards and replicas
+     * 
+     * @param name the collection name
+     * @return if the collection was ack'd by the cluster or not
+     * @throws IndexException
+     */
+    public boolean createCollectionIndex(String name) throws IndexException {
+        logger.trace("in createCollectionIndex name:{}", name);
+
+        if (name.equals(SYSTEM_INDEX) || name.endsWith(APP_SUFFIX)) {
+            throw new IndexCreationException("Invliad collection name: " + name);
+        }
+
+        return createIndex(name);
+    }
+
+    /**
+     * Create collection with the specified number of shards and replicas
+     * 
+     * @param name the collection name
+     * @param shards the number of shards for the collection
+     * @param replicas the number of replicas for the collection
+     * @return if the collection was ack'd by the cluster or not
+     * @throws IndexException
+     */
+    public boolean createCollectionIndex(String name, int shards, int replicas) throws IndexException {
+        logger.trace("in createCollectionIndex name:{}, shards:{}, replicas:{}", new Object[]{name, shards, replicas});
+
+        if (name.equals(SYSTEM_INDEX) || name.endsWith(APP_SUFFIX)) {
+            throw new IndexCreationException("Invliad collection name: " + name);
+        }
+
+        return createIndex(name, shards, replicas);
+    }
+
+    /**
      * Create application index with default 1 shard and 1 replica
      * 
      * @param appName the name of the application
