@@ -196,7 +196,7 @@ public class SearchServiceTest {
             searchService.createAppIndex("testapp");
             fail();
         } catch (IndexExistsException e) {
-        };
+        }
 
         searchService.createAppIndex("testapp2", 3, 3);
         index = searchService.getClusterHealth().indices().get("testapp2.app");
