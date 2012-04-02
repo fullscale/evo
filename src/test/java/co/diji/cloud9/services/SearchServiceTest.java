@@ -68,7 +68,7 @@ public class SearchServiceTest {
 
     @Test
     public void testHealth() {
-        ClusterHealthResponse health = searchService.getClusterHealth();
+        ClusterHealthResponse health = searchService.getClusterHealth(true);
         assertNotNull(health);
         assertEquals("c9.test.cluster", health.getClusterName());
         assertEquals(1, health.getNumberOfNodes());

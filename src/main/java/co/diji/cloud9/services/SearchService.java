@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
@@ -101,8 +102,26 @@ public class SearchService {
      */
     public ClusterHealthResponse getClusterHealth() {
         logger.trace("in getClusterHealth");
+        return getClusterHealth(false);
+    }
+
+    /**
+     * Gets the cluster health
+     * 
+     * @param waitForYellow if we wait for the cluster to be initialized
+     * @return the cluster health, null when there is an error
+     */
+    public ClusterHealthResponse getClusterHealth(boolean waitForYellow) {
+        logger.trace("in getClusterHealth waitForYellow:{}", waitForYellow);
         ClusterHealthResponse resp = null;
-        ListenableActionFuture<ClusterHealthResponse> healthAction = client.admin().cluster().prepareHealth().execute();
+        ClusterHealthRequestBuilder healthBuilder = client.admin().cluster().prepareHealth();
+
+        logger.debug("wait for yellow: {}", waitForYellow);
+        if (waitForYellow) {
+            healthBuilder.setWaitForYellowStatus();
+        }
+
+        ListenableActionFuture<ClusterHealthResponse> healthAction = healthBuilder.execute();
 
         try {
             resp = healthAction.actionGet();
