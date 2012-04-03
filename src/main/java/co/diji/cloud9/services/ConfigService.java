@@ -25,11 +25,6 @@ public class ConfigService {
 
     private Settings cloud9Settings;
     private Settings nodeSettings;
-    private String htmlMapping;
-    private String cssMapping;
-    private String jsMapping;
-    private String imagesMapping;
-    private String controllerMapping;
 
     @Autowired
     private WebApplicationContext applicationContext;
@@ -46,11 +41,6 @@ public class ConfigService {
 
         cloud9Settings = getSettingsFromResource("classpath:cloud9.yml");
         nodeSettings = createNodeSettings();
-        htmlMapping = getResourceContent("classpath:mappings/html.json");
-        cssMapping = getResourceContent("classpath:mappings/css.json");
-        jsMapping = getResourceContent("classpath:mappings/js.json");
-        imagesMapping = getResourceContent("classpath:mappings/images.json");
-        controllerMapping = getResourceContent("classpath:mappings/controller.json");
     }
 
     /**
@@ -137,7 +127,7 @@ public class ConfigService {
      * @return html mapping
      */
     public String getHtmlMapping() {
-        return htmlMapping;
+        return getResourceContent("classpath:mappings/html.json");
     }
 
     /**
@@ -146,7 +136,7 @@ public class ConfigService {
      * @return css mapping
      */
     public String getCssMapping() {
-        return cssMapping;
+        return getResourceContent("classpath:mappings/css.json");
     }
 
     /**
@@ -155,7 +145,7 @@ public class ConfigService {
      * @return js mapping
      */
     public String getJsMapping() {
-        return jsMapping;
+        return getResourceContent("classpath:mappings/js.json");
     }
 
     /**
@@ -164,7 +154,7 @@ public class ConfigService {
      * @return images mapping
      */
     public String getImagesMapping() {
-        return imagesMapping;
+        return getResourceContent("classpath:mappings/images.json");
     }
 
     /**
@@ -173,7 +163,7 @@ public class ConfigService {
      * @return controller mapping
      */
     public String getControllerMapping() {
-        return controllerMapping;
+        return getResourceContent("classpath:mappings/controller.json");
     }
 
     /**
