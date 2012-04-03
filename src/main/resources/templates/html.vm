@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <title>${app}</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+  <link rel="stylesheet" href="${app}/css/style.css">
+
+  <!-- All JavaScript at the bottom, except for Modernizr.
+       Modernizr enables HTML5 elements & feature detects; -->
+  <script src="/js/modernizr-2.0.6.min.js"></script>
+  
+  <!-- Example search template using underscore.js -->
+  <script type="text/template" id="results">
+    <span class="result-title">Search Results Example (10 results)</span>
+    <% _.each(hits, function(hit) { %>
+        <li><%= hit._source.title %></li> 
+    <% }); %>
+  </script>
+      
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="welcome">
+        <img src="images/c9/C9Logo_mini.png" /><br>
+        <div class="indent">
+          <span class="project-name">Project (${app})</span>&nbsp;&nbsp;<a target="_blank" href="/cloud9/ide/${app}">edit</a>
+          <p>This is the default project page. It contains links
+          to various resources as well as a sample application. To
+          enable the application, install the blogsearch demo (see below)
+          or modify the code to point to a valid collection.</p>
+        
+          <br><span class="section">Javascript MVC Frameworks</span><br>
+          <a target="_blank" href="http://documentcloud.github.com/backbone/">Backbone.js</a><br>
+          <a target="_blank" href="http://knockoutjs.com/">Knockout.js</a><br>
+          <a target="_blank" href="http://www.sproutcore.com/">Sproutcore</a><br>
+          <a target="_blank" href="http://cappuccino.org/">Cappuccino</a><br>
+            
+          <br><span class="section">Javascript Template Libraries</span><br>
+          <a target="_blank" href="http://documentcloud.github.com/underscore/">underscore.js</a><br>
+          <a target="_blank" href="https://github.com/janl/mustache.js">mustache.js</a><br>
+          <a target="_blank" href="http://www.handlebarsjs.com/">handlebars.js</a><br>
+          <a target="_blank" href="http://www.youtube.com/watch?v=4ZGRbJ2Ng0g">jQuery Templates</a><br>
+          <a target="_blank" href="http://embeddedjs.com/">EJS</a><br>
+        
+          <br><span class="section">Cloud9 Demos Apps</span><br>
+          <a target="_blank" href="https://github.com/diji/cloud9-demos/tree/master/blogsearch">Blog Search</a><br>
+          <a target="_blank" href="https://github.com/diji/cloud9-demos/tree/master/filesearch">File Search</a><br>
+          <a target="_blank" href="https://github.com/diji/cloud9-demos/tree/master/peepfinder">People Search</a><br>
+          <a target="_blank" href="https://github.com/diji/cloud9-demos/tree/master/todos">Todo App (Backbone.js)</a><br>
+          <a target="_blank" href="https://github.com/diji/cloud9-demos/tree/master/sctodos">Todo App (Sproutcore 2.0)</a><br>
+        
+          <br><span class="section">Cloud9 Videos</span><br>
+          <a target="_blank" href="http://youtu.be/TTjbqkqHIdY">Blog Search Demo</a><br>
+          <a target="_blank" href="http://youtu.be/XbVBdaFCY2w">File Search Demo<a/><br>
+          <a target="_blank" href="http://youtu.be/yFTdh0ahx90">Instant Search Demo</a><br>
+          <a target="_blank" href="http://youtu.be/4ZGRbJ2Ng0g">Todo Demo</a><br>
+        </div>
+      </div>
+    <div class="search"></div>
+  </div>
+
+  <!-- JavaScript at the bottom for fast page loading -->
+  <script src="js/jquery-1.6.2.min.js"></script>
+  <script src="js/underscore-min.js"></script>
+  <script src="js/c9/c9api.min.js"></script>
+  <script defer src="${app}/js/${app}.js"></script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

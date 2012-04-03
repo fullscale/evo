@@ -1,0 +1,116 @@
+importPackage(java.util);
+
+/* Controller: examples
+ * Some basic examples of controller actions.
+ *
+ * URLs:
+ *
+ *  /${app}/examples/hello
+ *  /${app}/examples/goodbye
+ *  /${app}/examples/fib
+ *  /${app}/examples/date
+ *  /${app}/examples/xhr
+ *  /${app}/examples/search
+ */
+function examples() {
+
+    var fibonacci = function(n) {
+        return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2);
+    };
+    
+    /* example of using underscore.js template */
+    var resultTmpl = _.template(
+        "<span class=\"result-title\">Search Results</span>" +
+        "<% _.each(hits, function(hit) {" +
+        "<li><%= hit._source.title </li>" +
+        "<% }); %>"
+    );
+
+    /* controller actions */
+    return {
+        /* simple hello world */
+        hello: function(env) {
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/plain" },
+                body: ["Hello World!"]
+            };
+        },
+
+        /* specifying a content-type */
+        goodbye: function(env) {
+            var name = env.params.name;
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/html" },
+                body: ["<h1>Goodbye ", name, "</h1>"]
+            };
+        },
+        
+        /* calling private functions */
+        fib: function(env) {
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/plain" },
+                body: ["Result: ", fibonacci(8)]
+            };
+        },
+        
+        /* calling Java */
+        date: function(env) {
+            var date = new java.util.Date();
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/plain" },
+                body: ["Today is ", date.toString()]
+            };
+        },
+        
+        /* ajax proxy using xhr */
+        xhr: function(env) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET","http://www.google.com");
+            xhr.send(null);
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/html" },
+                body: [xhr.responseText]
+            };
+        },
+        
+        /* example using Cloud9 javascript client */
+        search: function(env) {
+        
+            /* create a query object */
+            var query = c9.query.QueryString("*");
+
+            /* Creates a search request object.
+             * provide your collection/type */
+            var searchRequest = c9.search.Request({
+                collections:["index1"],
+                types:["type1"]
+            });
+
+            /* a function to display results */
+            var resultsCallBack = function(results) {
+                return resultTmpl(results.hits);
+            };
+
+            /* execute the request */
+            var searchResults = searchRequest.query(query).get(resultsCallBack);
+        
+            if (searchResults === null) {
+                return {
+                    status: 500,
+                    body: ['Error executing search (did you specify a valid index and type?)']
+                };
+            } else {
+                return {
+                    status: 200,
+                    headers: { "Content-Type": "text/html" },
+                    body: [searchResults]
+                };
+            }
+        }
+    };
+}

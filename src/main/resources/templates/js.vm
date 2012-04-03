@@ -1,0 +1,28 @@
+/* A simple search example using the Cloud9 API
+ * along with underscore.js templates. */
+(function($) {
+
+    /* create a query object */
+    var query = c9.query.QueryString("*");
+    
+    /* Creates a search request object.
+     * provide your collection/type */
+    var searchRequest = c9.search.Request({
+        collections:["index1"],
+        types:["type1"]
+    });
+    
+    /* a function to display results */
+    var resultsCallBack = function(results) {
+        $(".search").empty();
+        if (results.hits.hits.length) {
+            var template = _.template($("#results").html(), results.hits);
+            $(".search").append(template);
+        }
+    };
+    
+    /* execute the request */
+    searchRequest.query(query).get(resultsCallBack);
+
+})(jQuery);
+

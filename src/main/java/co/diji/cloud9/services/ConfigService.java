@@ -2,6 +2,7 @@ package co.diji.cloud9.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
@@ -9,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.slf4j.Logger;
@@ -131,6 +134,22 @@ public class ConfigService {
     }
 
     /**
+     * Gets the rendered velocity html template
+     * 
+     * @return the velocity template
+     */
+    public String getHtmlTemplate(String app) {
+        VelocityContext context = new VelocityContext();
+        context.put("app", app);
+
+        StringWriter rendered = new StringWriter();
+        String tmpl = getResourceContent("classpath:templates/html.vm");
+
+        Velocity.evaluate(context, rendered, "html", tmpl);
+        return rendered.toString();
+    }
+
+    /**
      * Gets the json css mapping as a string
      * 
      * @return css mapping
@@ -140,12 +159,44 @@ public class ConfigService {
     }
 
     /**
+     * Gets the rendered velocity css template
+     * 
+     * @return the velocity template
+     */
+    public String getCssTemplate(String app) {
+        VelocityContext context = new VelocityContext();
+        context.put("app", app);
+
+        StringWriter rendered = new StringWriter();
+        String tmpl = getResourceContent("classpath:templates/css.vm");
+
+        Velocity.evaluate(context, rendered, "css", tmpl);
+        return rendered.toString();
+    }
+
+    /**
      * Gets the json js mapping as a string
      * 
      * @return js mapping
      */
     public String getJsMapping() {
         return getResourceContent("classpath:mappings/js.json");
+    }
+
+    /**
+     * Gets the rendered velocity js template
+     * 
+     * @return the velocity template
+     */
+    public String getJsTemplate(String app) {
+        VelocityContext context = new VelocityContext();
+        context.put("app", app);
+
+        StringWriter rendered = new StringWriter();
+        String tmpl = getResourceContent("classpath:templates/js.vm");
+
+        Velocity.evaluate(context, rendered, "js", tmpl);
+        return rendered.toString();
     }
 
     /**
@@ -164,6 +215,22 @@ public class ConfigService {
      */
     public String getControllerMapping() {
         return getResourceContent("classpath:mappings/controller.json");
+    }
+
+    /**
+     * Gets the rendered velocity controller template
+     * 
+     * @return the velocity template
+     */
+    public String getControllerTemplate(String app) {
+        VelocityContext context = new VelocityContext();
+        context.put("app", app);
+
+        StringWriter rendered = new StringWriter();
+        String tmpl = getResourceContent("classpath:templates/controller.vm");
+
+        Velocity.evaluate(context, rendered, "controller", tmpl);
+        return rendered.toString();
     }
 
     /**
