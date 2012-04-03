@@ -1,6 +1,11 @@
 package co.diji.cloud9.services;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
+import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
 
@@ -28,7 +34,7 @@ public class SearchServiceTest {
     private static ConfigService config;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Cloud9Exception {
         searchService = new SearchService();
         config = new ConfigService();
 
@@ -88,7 +94,7 @@ public class SearchServiceTest {
         assertNull(indexStatus);
         indexStatus = searchService.getIndexStatus();
         assertNotNull(indexStatus);
-        assertEquals(0, indexStatus.size());
+        assertEquals(1, indexStatus.size());
     }
 
     @Test
@@ -186,28 +192,28 @@ public class SearchServiceTest {
         try {
             searchService.createCollectionIndex("sys");
             fail();
-        } catch (IndexCreationException e) {     
+        } catch (IndexCreationException e) {
         }
-        
+
         try {
             searchService.createCollectionIndex("sys", 3, 3);
             fail();
-        } catch (IndexCreationException e) {     
+        } catch (IndexCreationException e) {
         }
-        
+
         try {
             searchService.createCollectionIndex("whatever.app");
             fail();
-        } catch (IndexCreationException e) {     
+        } catch (IndexCreationException e) {
         }
-        
+
         try {
             searchService.createCollectionIndex("whatever.app", 2, 1);
             fail();
-        } catch (IndexCreationException e) {     
+        } catch (IndexCreationException e) {
         }
     }
-    
+
     @Test
     public void testCreateApp() throws Exception {
         ClusterIndexHealth index = null;

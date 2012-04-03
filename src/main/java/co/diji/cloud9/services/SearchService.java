@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
@@ -62,11 +63,23 @@ public class SearchService {
 
     /**
      * Initialize and start our ElasticSearch node.
+     * 
+     * @throws Cloud9Exception
      */
     @PostConstruct
-    public void booststrap() {
+    public void booststrap() throws Cloud9Exception {
+        logger.trace("in bootstrap");
+        logger.info("Initializing data/search services");
         node = NodeBuilder.nodeBuilder().settings(config.getNodeSettings()).node();
         client = node.client();
+
+        logger.info("Waiting for cluster status");
+        ClusterHealthResponse health = getClusterHealth(true);
+        logger.info("Cluster Initialized [name:{}, status:{}]", health.clusterName(), health.status());
+
+        setupSystemIndex();
+        logger.info("Node is bootstrapped and online");
+        logger.trace("exit bootstrap");
     }
 
     /**
@@ -95,6 +108,40 @@ public class SearchService {
      */
     public Client getClient() {
         return client;
+    }
+
+    /**
+     * Creates the Cloud9 system index
+     * 
+     * @throws Cloud9Exception
+     */
+    public void setupSystemIndex() throws Cloud9Exception {
+        logger.trace("in setupSystemIndex");
+        boolean hasSysIndex = hasIndex(SYSTEM_INDEX);
+        logger.debug("hasSysIndex: {}", hasSysIndex);
+        if (!hasSysIndex) {
+            logger.info("Initializing system accounts");
+            try {
+                createIndex(SYSTEM_INDEX, 1, 1);
+            } catch (IndexException e) {
+                logger.error("Error creating system index");
+                throw new Cloud9Exception("Error creating system index", e);
+            }
+
+            Map<String, Object> admin = new HashMap<String, Object>();
+            admin.put("name", "Administrator");
+            admin.put("role", "admin");
+            admin.put("uname", "admin");
+            admin.put("email", "root@localhost");
+            admin.put("password", config.get("admin.password"));
+
+            logger.debug("admin user: {}", admin);
+            indexDoc(SYSTEM_INDEX, "users", "admin", admin);
+        } else {
+            logger.info("Recovering system account information");
+        }
+
+        logger.trace("exit setupSystemIndex");
     }
 
     /**
