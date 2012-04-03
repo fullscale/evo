@@ -24,6 +24,8 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -555,5 +557,29 @@ public class SearchService {
         boolean ack = createIndex(appName, shards, replicas, mappings);
         logger.trace("exit createAppIndex: {}", ack);
         return ack;
+    }
+
+    /**
+     * Index a document
+     * 
+     * @param index what index to store the document in
+     * @param type the type of the indexed document
+     * @param id the document id
+     * @param source the document contents
+     * @return the index response object, null on error
+     */
+    public IndexResponse indexDoc(String index, String type, String id, Map<String, Object> source) {
+        logger.trace("in indexDoc index:{}, type:{}, id:{}, source:{}", new Object[]{index, type, id, source});
+        IndexRequest req = new IndexRequest(index, type, id).source(source);
+        ActionFuture<IndexResponse> action = client.index(req);
+        IndexResponse resp = null;
+        try {
+            resp = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.warn("Error indexing document: index:{}, type:{}, id:{}. source:{}", new Object[]{index, type, id, source}, e);
+        }
+
+        logger.trace("exit indexDoc: {}", resp);
+        return resp;
     }
 }
