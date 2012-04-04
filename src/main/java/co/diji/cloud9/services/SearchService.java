@@ -22,6 +22,7 @@ import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -628,5 +629,47 @@ public class SearchService {
 
         logger.trace("exit indexDoc: {}", resp);
         return resp;
+    }
+
+    /**
+     * Refreshes the specified indices
+     * 
+     * @param indices the indices to refresh
+     * @return the refresh response, null on error
+     */
+    public RefreshResponse refreshIndex(String... indices) {
+        logger.trace("in refreshIndex indices:{}", indices);
+        RefreshResponse refreshResponse = null;
+        ListenableActionFuture<RefreshResponse> action = client.admin().indices().prepareRefresh(indices).execute();
+
+        try {
+            refreshResponse = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error refreshing indices:{}", indices);
+        }
+
+        logger.trace("exit refreshIndex: {}", refreshResponse);
+        return refreshResponse;
+    }
+
+    /**
+     * Refreshes the specified apps
+     * 
+     * @param apps the apps to refresh
+     * @return the refresh status, null on error
+     */
+    public RefreshResponse refreshApp(String... apps) {
+        logger.trace("in refreshApp apps:{}", apps);
+        String[] appsWithSuffix = new String[apps.length];
+        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
+            String app = apps[appIdx];
+            if (!app.endsWith(APP_SUFFIX)) {
+                appsWithSuffix[appIdx] = app + APP_SUFFIX;
+            } else {
+                appsWithSuffix[appIdx] = app;
+            }
+        }
+
+        return refreshIndex(appsWithSuffix);
     }
 }

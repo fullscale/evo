@@ -120,6 +120,7 @@ public class SearchServiceTest {
         assertFalse(searchService.hasIndex("doesnotexist"));
 
         searchService.createIndex("exists");
+        searchService.refreshIndex("exists");
         index = searchService.getClusterHealth().indices().get("exists");
         assertTrue(searchService.hasIndex("exists"));
         assertEquals(config.getNodeSettings().getAsInt("index.number_of_shards", null).intValue(), index.numberOfShards());
@@ -139,18 +140,21 @@ public class SearchServiceTest {
         assertFalse(searchService.hasIndex("BADNAME"));
 
         searchService.createIndex("oneshardnoreplicas", 1, 0);
+        searchService.refreshIndex("oneshardnoreplicas");
         index = searchService.getClusterHealth().indices().get("oneshardnoreplicas");
         assertTrue(searchService.hasIndex("oneshardnoreplicas"));
         assertEquals(1, index.numberOfShards());
         assertEquals(0, index.numberOfReplicas());
 
         searchService.createIndex("oneshardonereplicas", 1, 1);
+        searchService.refreshIndex("oneshardonereplicas");
         index = searchService.getClusterHealth().indices().get("oneshardonereplicas");
         assertTrue(searchService.hasIndex("oneshardonereplicas"));
         assertEquals(1, index.numberOfShards());
         assertEquals(1, index.numberOfReplicas());
 
         searchService.createIndex("twoshardssixreplicas", 2, 6);
+        searchService.refreshIndex("twoshardssixreplicas");
         index = searchService.getClusterHealth().indices().get("twoshardssixreplicas");
         assertTrue(searchService.hasIndex("twoshardssixreplicas"));
         assertEquals(2, index.numberOfShards());
@@ -168,11 +172,13 @@ public class SearchServiceTest {
         mappings.put("html", config.getHtmlMapping());
 
         searchService.createIndex("indexwithhtmlmapping", mappings);
+        searchService.refreshIndex("indexwithhtmlmapping");
         index = searchService.getClusterHealth().indices().get("indexwithhtmlmapping");
         assertTrue(searchService.hasIndex("indexwithhtmlmapping"));
 
         mappings.put("css", config.getCssMapping());
         searchService.createIndex("indexwithcssmapping", mappings);
+        searchService.refreshIndex("indexwithcssmapping");
         index = searchService.getClusterHealth().indices().get("indexwithcssmapping");
         assertTrue(searchService.hasIndex("indexwithcssmapping"));
 
@@ -221,6 +227,7 @@ public class SearchServiceTest {
         assertFalse(searchService.hasIndex("testapp.app"));
 
         searchService.createAppIndex("testapp");
+        searchService.refreshApp("testapp");
         index = searchService.getClusterHealth().indices().get("testapp.app");
         assertTrue(searchService.hasIndex("testapp.app"));
         assertTrue(searchService.hasApp("testapp"));
@@ -233,11 +240,12 @@ public class SearchServiceTest {
         } catch (IndexExistsException e) {
         }
 
-        searchService.createAppIndex("testapp2", 3, 3);
+        searchService.createAppIndex("testapp2", 3, 1);
+        searchService.refreshApp("testapp2");
         index = searchService.getClusterHealth().indices().get("testapp2.app");
         assertTrue(searchService.hasApp("testapp2.app"));
         assertEquals(3, index.numberOfShards());
-        assertEquals(3, index.numberOfReplicas());
+        assertEquals(1, index.numberOfReplicas());
 
         try {
             searchService.createAppIndex("css");
@@ -261,6 +269,7 @@ public class SearchServiceTest {
         assertFalse(searchService.hasApp("images"));
 
         searchService.createAppIndex("anotherapp.app");
+        searchService.refreshApp("anotherapp");
         assertTrue(searchService.hasApp("anotherapp"));
         assertFalse(searchService.hasIndex("anotherapp.app.app"));
 
