@@ -632,6 +632,48 @@ public class SearchService {
     }
 
     /**
+     * Indexes a document specifically for apps
+     * 
+     * @param app the app to index the doc in
+     * @param type the resource type of the doc
+     * @param id the id of the doc
+     * @param code the source code
+     * @param mime the mime type of the source code
+     * @return the index response object, null on error
+     */
+    public IndexResponse indexAppDoc(String app, String type, String id, String code, String mime) {
+        logger.trace("in indexAppDoc app:{}, type:{}, id:{}, code:{}, mime:{}", new Object[]{app, type, id, code, mime});
+        if (!app.endsWith(APP_SUFFIX)) {
+            logger.debug("final app name: {}", app);
+            app = app + APP_SUFFIX;
+        }
+
+        Map<String, Object> source = new HashMap<String, Object>();
+        source.put("code", code);
+        source.put("mime", mime);
+        logger.debug("app {} source: {}", app, source);
+
+        return indexDoc(app, type, id, source);
+    }
+
+    /**
+     * Creates an app
+     * 
+     * @param appName the name of the app
+     * @throws IndexException
+     */
+    public void createApp(String appName) throws IndexException {
+        logger.trace("in createApp appName:{}", appName);
+        appName = appName.replace(APP_SUFFIX, "");
+        createAppIndex(appName);
+        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
+        indexAppDoc(appName, "css", "style.css", config.getCssTemplate(appName), "text/css");
+        indexAppDoc(appName, "js", appName + ".js", config.getJsTemplate(appName), "application/javascript");
+        indexAppDoc(appName, "controllers", "examples.js", config.getControllerTemplate(appName), "application/javascript");
+        logger.trace("exit createApp");
+    }
+
+    /**
      * Refreshes the specified indices
      * 
      * @param indices the indices to refresh

@@ -221,7 +221,7 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void testCreateApp() throws Exception {
+    public void testCreateAppIndex() throws Exception {
         ClusterIndexHealth index = null;
 
         assertFalse(searchService.hasIndex("testapp.app"));
@@ -321,5 +321,30 @@ public class SearchServiceTest {
         // TODO add more tests once we can add/remove docs
         long cnt = searchService.getTotalAppDocCount();
         assertEquals(0, cnt);
+    }
+
+    @Test
+    public void testCreateApp() throws Exception {
+        ClusterIndexHealth index = null;
+        Map<String, IndexStatus> indexStatus = null;
+
+        assertFalse(searchService.hasApp("appwithdocs"));
+
+        searchService.createApp("appwithdocs");
+        searchService.refreshApp("appwithdocs");
+        index = searchService.getClusterHealth().indices().get("appwithdocs.app");
+        indexStatus = searchService.getAppStatus("appwithdocs");
+        assertTrue(searchService.hasIndex("appwithdocs.app"));
+        assertTrue(searchService.hasApp("appwithdocs"));
+        assertEquals(1, index.numberOfShards());
+        assertEquals(1, index.numberOfReplicas());
+        assertEquals(1, indexStatus.size());
+        assertEquals(4, indexStatus.get("appwithdocs").docs().getNumDocs());
+
+        try {
+            searchService.createAppIndex("appwithdocs");
+            fail();
+        } catch (IndexExistsException e) {
+        }
     }
 }
