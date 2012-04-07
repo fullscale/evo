@@ -775,6 +775,28 @@ public class SearchService {
     }
 
     /**
+     * Get a specific type mapping for the specified index
+     * 
+     * @param index the index to get the type mapping from
+     * @param type the type you want the mapping for
+     * @return the mapping object or null on error
+     */
+    public MappingMetaData getMapping(String index, String type) {
+        logger.trace("in getMapping index:{}, type:{}", index, type);
+        ClusterState state = getClusterState();
+        MappingMetaData mapping = null;
+
+        try {
+            mapping = state.metaData().index(index).mapping(type);
+        } catch (Exception e) {
+            logger.debug("Error getting mapping for index:{} and type:{}", new Object[]{index, type}, e);
+        }
+
+        logger.trace("exit getMapping:{}", mapping);
+        return mapping;
+    }
+
+    /**
      * Applies a mapping to a given index and type. Does not create index if it does not exist.
      * 
      * @param index the index the type belongs to

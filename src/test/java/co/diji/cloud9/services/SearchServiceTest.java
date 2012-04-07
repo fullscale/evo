@@ -395,6 +395,19 @@ public class SearchServiceTest {
     }
 
     @Test
+    public void testGetMapping() {
+        MappingMetaData mapping = null;
+        mapping = searchService.getMapping("indexwithhtmlmapping", "html");
+        assertNotNull(mapping);
+        mapping = searchService.getMapping("indexwithcssmapping", "html");
+        assertNotNull(mapping);
+        mapping = searchService.getMapping("indexwithcssmapping", "css");
+        assertNotNull(mapping);
+        mapping = searchService.getMapping("indexwithcssmapping", "junkmapping");
+        assertNull(mapping);
+    }
+
+    @Test
     public void testPutMapping() throws Exception {
         Map<String, MappingMetaData> mappings = null;
         String testMapping = "{\"testmapping\":{\"properties\":{\"test\":{\"type\":\"string\",\"index\":\"no\",\"store\":\"yes\"}}}}";
