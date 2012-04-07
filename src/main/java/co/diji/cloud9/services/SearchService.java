@@ -59,6 +59,26 @@ public class SearchService {
     private ConfigService config;
 
     /**
+     * Utility method to make sure a list of apps has the app suffix
+     * 
+     * @param apps the list of apps to check
+     * @return the list of apps, all containing the app suffix
+     */
+    private String[] appsWithSuffix(String... apps) {
+        String[] appsWithSuffix = new String[apps.length];
+        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
+            String app = apps[appIdx];
+            if (!app.endsWith(APP_SUFFIX)) {
+                appsWithSuffix[appIdx] = app + APP_SUFFIX;
+            } else {
+                appsWithSuffix[appIdx] = app;
+            }
+        }
+
+        return appsWithSuffix;
+    }
+
+    /**
      * Initialize and start our ElasticSearch node.
      * 
      * @throws Cloud9Exception
@@ -257,16 +277,7 @@ public class SearchService {
      */
     public Map<String, IndexStatus> getAppStatus(String... apps) {
         logger.trace("in getAppStatus apps:{}", apps);
-        String[] appsWithSuffix = new String[apps.length];
-        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
-            String app = apps[appIdx];
-            if (!app.endsWith(APP_SUFFIX)) {
-                appsWithSuffix[appIdx] = app + APP_SUFFIX;
-            } else {
-                appsWithSuffix[appIdx] = app;
-            }
-        }
-
+        String[] appsWithSuffix = appsWithSuffix(apps);
         Map<String, IndexStatus> appStatus = new HashMap<String, IndexStatus>();
         Map<String, IndexStatus> indices = getIndexStatus(appsWithSuffix);
 
@@ -698,14 +709,9 @@ public class SearchService {
      */
     public RefreshResponse refreshApp(String... apps) {
         logger.trace("in refreshApp apps:{}", apps);
-        String[] appsWithSuffix = new String[apps.length];
-        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
-            String app = apps[appIdx];
-            if (!app.endsWith(APP_SUFFIX)) {
-                appsWithSuffix[appIdx] = app + APP_SUFFIX;
-            } else {
-                appsWithSuffix[appIdx] = app;
-            }
+        String[] appsWithSuffix = appsWithSuffix(apps);
+        return refreshIndex(appsWithSuffix);
+    }
         }
 
         return refreshIndex(appsWithSuffix);
