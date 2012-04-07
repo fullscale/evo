@@ -22,6 +22,7 @@ import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
@@ -712,8 +713,40 @@ public class SearchService {
         String[] appsWithSuffix = appsWithSuffix(apps);
         return refreshIndex(appsWithSuffix);
     }
+
+    /**
+     * Deletes one or more index
+     * 
+     * @param indices the list of indices to delete
+     * @return if the delete was ack'd by the cluster or not
+     */
+    public boolean deleteIndex(String... indices) {
+        logger.trace("in deleteIndex indices:{}", indices);
+        ListenableActionFuture<DeleteIndexResponse> action = client.admin().indices().prepareDelete(indices).execute();
+        DeleteIndexResponse resp = null;
+        boolean acked = false;
+
+        try {
+            resp = action.actionGet();
+            acked = resp.acknowledged();
+        } catch (ElasticSearchException e) {
+            logger.error("Error deleting index: {}", indices);
         }
 
-        return refreshIndex(appsWithSuffix);
+        logger.trace("exit deleteIndex: {}", acked);
+        return acked;
     }
+
+    /**
+     * Deletes one or more apps
+     * 
+     * @param apps the list of apps to delete
+     * @return if the delete was ack'd by the cluster or not
+     */
+    public boolean deleteApp(String... apps) {
+        logger.trace("in deleteApp apps:{}", apps);
+        String[] appsWithSuffix = appsWithSuffix(apps);
+        return deleteIndex(appsWithSuffix);
+    }
+
 }

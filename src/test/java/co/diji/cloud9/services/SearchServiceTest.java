@@ -346,4 +346,38 @@ public class SearchServiceTest {
         } catch (IndexExistsException e) {
         }
     }
+
+    @Test
+    public void testDeleteIndex() throws Exception {
+        assertTrue(searchService.hasIndex("exists"));
+        searchService.deleteIndex("exists");
+        searchService.refreshIndex();
+        assertFalse(searchService.hasIndex("exists"));
+        assertTrue(searchService.hasIndex("oneshardnoreplicas"));
+        assertTrue(searchService.hasIndex("oneshardonereplicas"));
+        searchService.deleteIndex("oneshardnoreplicas", "oneshardonereplicas");
+        searchService.refreshIndex();
+        assertFalse(searchService.hasIndex("oneshardnoreplicas"));
+        assertFalse(searchService.hasIndex("oneshardonereplicas"));
+
+        // no exception should be thrown
+        searchService.deleteIndex("some.junk.index.does.not.exist");
+    }
+
+    @Test
+    public void testDeleteApp() throws Exception {
+        assertTrue(searchService.hasApp("testapp"));
+        searchService.deleteApp("testapp");
+        searchService.refreshApp();
+        assertFalse(searchService.hasApp("testapp"));
+        assertTrue(searchService.hasApp("testapp2"));
+        assertTrue(searchService.hasApp("anotherapp"));
+        searchService.deleteApp("testapp2", "anotherapp");
+        searchService.refreshApp();
+        assertFalse(searchService.hasApp("testapp2"));
+        assertFalse(searchService.hasApp("anotherapp"));
+
+        // no exception should be thrown
+        searchService.deleteApp("some.junk.app.does.not.exist");
+    }
 }
