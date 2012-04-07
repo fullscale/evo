@@ -41,7 +41,6 @@ public class SearchServiceTest {
         // mock appplication context and inject into search service
         MockServletContext servletContext = new MockServletContext();
         WebApplicationContext webappContext = new GenericWebApplicationContext(servletContext);
-        ReflectionTestUtils.setField(searchService, "applicationContext", webappContext, WebApplicationContext.class);
         ReflectionTestUtils.setField(config, "applicationContext", webappContext, WebApplicationContext.class);
         ReflectionTestUtils.setField(searchService, "config", config, ConfigService.class);
         System.setProperty("c9.cluster.name", "c9.test.cluster");

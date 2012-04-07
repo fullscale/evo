@@ -12,7 +12,11 @@
 	
 	<!-- Application Loggers -->
 	<logger name="co.diji.cloud9">
-		<level value="trace" />
+		<level value="info" />
+	</logger>
+	
+	<logger name="co.diji.cloud9.config">
+		<level value="warn" />
 	</logger>
 	
 	<!-- 3rdparty Loggers -->
@@ -45,11 +49,11 @@
 	</logger>
 
 	<logger name="org.eclipse.jetty">
-		<level value="info" />
+		<level value="warn" />
 	</logger>
 
 	<logger name="org.elasticsearch">
-		<level value="info" />
+		<level value="warn" />
 	</logger>
 
 	<!-- Root Logger -->
