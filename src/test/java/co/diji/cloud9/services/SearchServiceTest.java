@@ -16,6 +16,7 @@ import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -379,5 +380,17 @@ public class SearchServiceTest {
 
         // no exception should be thrown
         searchService.deleteApp("some.junk.app.does.not.exist");
+    }
+
+    @Test
+    public void testGetMappings() {
+        Map<String, MappingMetaData> mappings = null;
+        mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertEquals(1, mappings.size());
+        assertTrue(mappings.containsKey("html"));
+        mappings = searchService.getMappings("indexwithcssmapping");
+        assertEquals(2, mappings.size());
+        assertTrue(mappings.containsKey("html"));
+        assertTrue(mappings.containsKey("css"));
     }
 }

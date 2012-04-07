@@ -749,4 +749,23 @@ public class SearchService {
         return deleteIndex(appsWithSuffix);
     }
 
+    /**
+     * Gets all the mappings for a specified index
+     * 
+     * @param index the index to get the mappings for
+     * @return a map where the key is the type, and the value is the mapping. null when there is an error.
+     */
+    public Map<String, MappingMetaData> getMappings(String index) {
+        logger.trace("in getMappings index:{}", index);
+        ClusterState state = getClusterState();
+        Map<String, MappingMetaData> mappings = null;
+
+        try {
+            mappings = state.metaData().index(index).mappings();
+        } catch (Exception e) {
+            logger.debug("Error getting mapping for index: {}", index, e);
+        }
+
+        return mappings;
+    }
 }
