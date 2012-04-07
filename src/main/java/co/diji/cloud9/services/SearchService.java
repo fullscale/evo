@@ -770,6 +770,7 @@ public class SearchService {
             logger.debug("Error getting mapping for index: {}", index, e);
         }
 
+        logger.trace("exit getMappings: {}", mappings);
         return mappings;
     }
 
