@@ -393,4 +393,26 @@ public class SearchServiceTest {
         assertTrue(mappings.containsKey("html"));
         assertTrue(mappings.containsKey("css"));
     }
+
+    @Test
+    public void testPutMapping() throws Exception {
+        Map<String, MappingMetaData> mappings = null;
+        String testMapping = "{\"testmapping\":{\"properties\":{\"test\":{\"type\":\"string\",\"index\":\"no\",\"store\":\"yes\"}}}}";
+        assertTrue(searchService.hasIndex("indexwithhtmlmapping"));
+        mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertEquals(1, mappings.size());
+        searchService.putMapping("indexwithhtmlmapping", "testmapping", testMapping);
+        mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertEquals(2, mappings.size());
+        assertTrue(mappings.containsKey("testmapping"));
+        assertEquals(mappings.get("testmapping").source().string(), testMapping);
+        assertFalse(searchService.hasIndex("indexwithtestmapping"));
+        searchService.putMapping("indexwithtestmapping", "testmapping", testMapping, true);
+        searchService.refreshIndex("indexwithtestmapping");
+        mappings = searchService.getMappings("indexwithtestmapping");
+        assertTrue(searchService.hasIndex("indexwithtestmapping"));
+        assertEquals(1, mappings.size());
+        assertTrue(mappings.containsKey("testmapping"));
+        assertEquals(mappings.get("testmapping").source().string(), testMapping);
+    }
 }

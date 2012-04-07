@@ -23,6 +23,8 @@ import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
@@ -30,6 +32,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -43,6 +46,7 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
+import co.diji.cloud9.exceptions.mapping.MappingException;
 import co.diji.cloud9.utils.C9Helper;
 
 @Service
@@ -767,5 +771,59 @@ public class SearchService {
         }
 
         return mappings;
+    }
+
+    /**
+     * Applies a mapping to a given index and type. Does not create index if it does not exist.
+     * 
+     * @param index the index the type belongs to
+     * @param type the type you want to apply the mapping for
+     * @param mapping the mapping
+     * @return if the mapping was ack'd by the cluster or not
+     * @throws MappingException
+     */
+    public boolean putMapping(String index, String type, String mapping) throws MappingException {
+        logger.trace("in putMapping index:{}. type:{}, mapping:{}", new Object[]{index, type, mapping});
+        return putMapping(index, type, mapping, false);
+    }
+
+    /**
+     * Applies a mapping to a given index and type.
+     * 
+     * @param index the index the type belongs to
+     * @param type the type you want to apply the mapping for
+     * @param mapping the mapping
+     * @param createIndex if you want to create the index if it does not exist
+     * @return if the mapping was ack'd by the cluster or not
+     * @throws MappingException
+     */
+    public boolean putMapping(String index, String type, String mapping, boolean createIndex) throws MappingException {
+        logger.trace("in putMapping index:{} type:{} mapping:{} createIndex:{}", new Object[]{index, type, mapping, createIndex});
+        boolean resp = false;
+
+        boolean exists = hasIndex(index);
+        logger.debug("hasIndex:{} createIndex:{}", exists, createIndex);
+        try {
+            if (!exists && createIndex) {
+                Map<String, String> mappings = new HashMap<String, String>();
+                mappings.put(type, mapping);
+                resp = createIndex(index, mappings);
+            } else {
+                PutMappingRequest req = new PutMappingRequest();
+                req.indices(new String[]{index});
+                req.type(type);
+                req.source(mapping);
+
+                ActionFuture<PutMappingResponse> action = client.admin().indices().putMapping(req);
+                PutMappingResponse mappingResp = action.actionGet();
+                resp = mappingResp.acknowledged();
+            }
+        } catch (Exception e) {
+            logger.warn("Error installing mapping for index {} and type {}", new Object[]{index, type}, e);
+            throw new MappingException("Error installing mapping", e);
+        }
+
+        logger.trace("exit putMapping: {}", resp);
+        return resp;
     }
 }
