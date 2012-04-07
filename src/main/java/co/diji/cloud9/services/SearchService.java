@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
@@ -55,9 +54,6 @@ public class SearchService {
     private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
     private Node node;
     private Client client;
-
-    @Autowired
-    private WebApplicationContext applicationContext;
 
     @Autowired
     private ConfigService config;
