@@ -28,6 +28,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
+import co.diji.cloud9.exceptions.index.IndexMissingException;
+import co.diji.cloud9.exceptions.type.TypeCreationException;
+import co.diji.cloud9.exceptions.type.TypeExistsException;
 
 public class SearchServiceTest {
 
@@ -449,5 +452,33 @@ public class SearchServiceTest {
         assertEquals(false, searchService.deleteMapping("doesnotexistindex", "badmappingtype"));
         // if you try to delete missing type on existing index, operation will succeed
         assertTrue(searchService.deleteType("indexwithhtmlmapping", "badmappingtype"));
+    }
+
+    @Test
+    public void testCreateType() throws Exception {
+        try {
+            searchService.createType("indexwithhtmlmapping", "junk#W#$name");
+            fail();
+        } catch (TypeCreationException e) {
+        }
+
+        try {
+            searchService.createType("doesnotexistindex", "dummytype");
+            fail();
+        } catch (IndexMissingException e) {
+        }
+
+        try {
+            searchService.createType("indexwithhtmlmapping", "html");
+            fail();
+        } catch (TypeExistsException e) {
+        }
+
+        Map<String, MappingMetaData> mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertFalse(mappings.containsKey("mynewtype"));
+        searchService.createType("indexwithhtmlmapping", "mynewtype");
+        searchService.refreshIndex("indexwithhtmlmapping");
+        mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertTrue(mappings.containsKey("mynewtype"));
     }
 }

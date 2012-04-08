@@ -47,7 +47,10 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
+import co.diji.cloud9.exceptions.index.IndexMissingException;
 import co.diji.cloud9.exceptions.mapping.MappingException;
+import co.diji.cloud9.exceptions.type.TypeCreationException;
+import co.diji.cloud9.exceptions.type.TypeExistsException;
 import co.diji.cloud9.utils.C9Helper;
 
 @Service
@@ -885,5 +888,45 @@ public class SearchService {
     public boolean deleteType(String index, String type) {
         logger.trace("in deleteType index:{}, type:{}", index, type);
         return deleteMapping(index, type);
+    }
+
+    /**
+     * Creates a type
+     * 
+     * @param index the index you want to create the type for
+     * @param type the name of the type to create
+     * @return if the type creation was ack'd by the cluster or not
+     * @throws Cloud9Exception
+     */
+    public boolean createType(String index, String type) throws Cloud9Exception {
+        logger.trace("in createType index:{} type:{}", index, type);
+        Map<String, MappingMetaData> mappings = getMappings(index);
+        boolean resp = false;
+
+        boolean validName = C9Helper.isValidName(type);
+        logger.debug("validName:{}", validName);
+        if (!validName) {
+            throw new TypeCreationException("Invalid type name: " + type);
+        }
+
+        logger.debug("mappings:{}", mappings);
+        if (mappings == null) {
+            throw new IndexMissingException("Index does not exist: " + index);
+        }
+
+        if (mappings.containsKey(type)) {
+            throw new TypeExistsException("Type already exists: " + type);
+        }
+
+        try {
+            // put an empty mapping to create the type
+            resp = putMapping(index, type, "{\"" + type + "\":{}}");
+        } catch (MappingException e) {
+            logger.error("Error creating type:{} in index:{}", new Object[]{type, index}, e);
+            throw new TypeCreationException("Error creating type: " + type, e);
+        }
+
+        logger.trace("exit createType: {}", resp);
+        return resp;
     }
 }
