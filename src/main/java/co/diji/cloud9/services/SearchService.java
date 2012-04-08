@@ -779,6 +779,17 @@ public class SearchService {
     }
 
     /**
+     * Alias for getMappings
+     * 
+     * @param index the index to get the mappings for
+     * @return a map where the key is the type and the value is the mapping info. null when there is an error.
+     */
+    public Map<String, MappingMetaData> getTypes(String index) {
+        logger.trace("in getTypes index:{}", index);
+        return getMappings(index);
+    }
+
+    /**
      * Get a specific type mapping for the specified index
      * 
      * @param index the index to get the type mapping from
@@ -798,6 +809,18 @@ public class SearchService {
 
         logger.trace("exit getMapping:{}", mapping);
         return mapping;
+    }
+
+    /**
+     * Alias for getMapping
+     * 
+     * @param index the index to get the type from
+     * @param type the type you want
+     * @return the type mapping info or null on error
+     */
+    public MappingMetaData getType(String index, String type) {
+        logger.trace("in getType index:{} type:{}", index, type);
+        return getMapping(index, type);
     }
 
     /**

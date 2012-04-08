@@ -395,7 +395,7 @@ public class SearchServiceTest {
         assertEquals(2, mappings.size());
         assertTrue(mappings.containsKey("html"));
         assertTrue(mappings.containsKey("css"));
-        mappings = searchService.getMappings("doesnotexistindex");
+        mappings = searchService.getTypes("doesnotexistindex");
         assertNull(mappings);
     }
 
@@ -404,11 +404,11 @@ public class SearchServiceTest {
         MappingMetaData mapping = null;
         mapping = searchService.getMapping("indexwithhtmlmapping", "html");
         assertNotNull(mapping);
-        mapping = searchService.getMapping("indexwithcssmapping", "html");
+        mapping = searchService.getType("indexwithcssmapping", "html");
         assertNotNull(mapping);
         mapping = searchService.getMapping("indexwithcssmapping", "css");
         assertNotNull(mapping);
-        mapping = searchService.getMapping("indexwithcssmapping", "junkmapping");
+        mapping = searchService.getType("indexwithcssmapping", "junkmapping");
         assertNull(mapping);
     }
 
