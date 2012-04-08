@@ -23,6 +23,7 @@ import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -848,5 +849,41 @@ public class SearchService {
 
         logger.trace("exit putMapping: {}", resp);
         return resp;
+    }
+
+    /**
+     * Deletes a mapping
+     * 
+     * @param index the index to delete the type mapping from
+     * @param type the type name of the mapping to delete
+     * @return true on success, false on fail
+     */
+    public boolean deleteMapping(String index, String type) {
+        logger.trace("in deleteMapping index:{}, type:{}", index, type);
+        boolean resp = false;
+
+        try {
+            DeleteMappingRequest req = new DeleteMappingRequest(index);
+            req.type(type);
+            client.admin().indices().deleteMapping(req).actionGet();
+            resp = true;
+        } catch (Exception e) {
+            logger.debug("Error deleting mapping for index:{} and type:{}", new Object[]{index, type}, e);
+        }
+
+        logger.trace("exit getMapping:{}", resp);
+        return resp;
+    }
+
+    /**
+     * Alias for deleteMapping
+     * 
+     * @param index the index to delete the type from
+     * @param type the type to delete
+     * @return true on success, false otherwise
+     */
+    public boolean deleteType(String index, String type) {
+        logger.trace("in deleteType index:{}, type:{}", index, type);
+        return deleteMapping(index, type);
     }
 }

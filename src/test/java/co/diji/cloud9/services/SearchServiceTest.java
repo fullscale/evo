@@ -428,4 +428,26 @@ public class SearchServiceTest {
         assertTrue(mappings.containsKey("testmapping"));
         assertEquals(mappings.get("testmapping").source().string(), testMapping);
     }
+
+    @Test
+    public void testDeleteMapping() throws Exception {
+        Map<String, MappingMetaData> mappings = null;
+        assertTrue(searchService.deleteMapping("indexwithtestmapping", "testmapping"));
+        searchService.refreshIndex();
+        Thread.sleep(500);
+        mappings = searchService.getMappings("indexwithtestmapping");
+        assertNotNull(mappings);
+        assertEquals(false, mappings.containsKey("testmapping"));
+        assertEquals(0, mappings.size());
+        assertTrue(searchService.deleteType("indexwithhtmlmapping", "testmapping"));
+        searchService.refreshIndex();
+        Thread.sleep(500);
+        mappings = searchService.getMappings("indexwithhtmlmapping");
+        assertNotNull(mappings);
+        assertEquals(false, mappings.containsKey("testmapping"));
+        assertEquals(1, mappings.size());
+        assertEquals(false, searchService.deleteMapping("doesnotexistindex", "badmappingtype"));
+        // if you try to delete missing type on existing index, operation will succeed
+        assertTrue(searchService.deleteType("indexwithhtmlmapping", "badmappingtype"));
+    }
 }
