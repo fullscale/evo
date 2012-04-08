@@ -395,6 +395,8 @@ public class SearchServiceTest {
         assertEquals(2, mappings.size());
         assertTrue(mappings.containsKey("html"));
         assertTrue(mappings.containsKey("css"));
+        mappings = searchService.getMappings("doesnotexistindex");
+        assertNull(mappings);
     }
 
     @Test
