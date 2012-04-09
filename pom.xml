@@ -15,7 +15,7 @@
         <org.aspectj-version>1.6.9</org.aspectj-version>
         <org.slf4j-version>1.6.4</org.slf4j-version>
         <jetty.version>8.1.2.v20120308</jetty.version>
-        <elasticsearch.version>0.19.1</elasticsearch.version>
+        <elasticsearch.version>0.19.2</elasticsearch.version>
         <tika.version>1.0</tika.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
