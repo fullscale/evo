@@ -113,9 +113,12 @@ public class SearchService {
      */
     @PreDestroy
     public void shutdown() {
+        logger.info("Shutdown initiated");
         if (node != null) {
+            logger.info("Node is terminating");
             node.close();
         }
+        logger.info("Shutdown complete");
     }
 
     /**
