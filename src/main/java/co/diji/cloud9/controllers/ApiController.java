@@ -103,7 +103,9 @@ public class ApiController {
                 resp.addHeader("X-Opaque-Id", opaque);
             }
             try {
-                int contentLength = response.contentLength() + response.prefixContentLength() + response.suffixContentLength();
+                int contentLength = response.contentLength()
+                        + (response.prefixContentLength() != -1 ? response.prefixContentLength() : 0)
+                        + (response.suffixContentLength() != -1 ? response.suffixContentLength() : 0);
                 logger.debug("response content length: {}", contentLength);
                 resp.setContentLength(contentLength);
 
