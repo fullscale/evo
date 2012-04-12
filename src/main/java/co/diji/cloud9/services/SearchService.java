@@ -528,6 +528,7 @@ public class SearchService {
         logger.debug("mappings: {}", mappings);
         if (mappings != null) {
             for (Entry<String, String> mapping : mappings.entrySet()) {
+                logger.debug("mapping key:{} value:{}", mapping.getKey(), mapping.getValue());
                 request.mapping(mapping.getKey(), mapping.getValue());
             }
         }
