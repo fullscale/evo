@@ -7,6 +7,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -482,5 +483,55 @@ public class SearchServiceTest {
         searchService.refreshIndex("indexwithhtmlmapping");
         mappings = searchService.getMappings("indexwithhtmlmapping");
         assertTrue(mappings.containsKey("mynewtype"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testImportApp() throws Exception {
+        InputStream testzip = getClass().getClassLoader().getResourceAsStream("testappimport.zip");
+        assertNotNull(testzip);
+        assertEquals(false, searchService.hasApp("testappimport"));
+        assertEquals(false, searchService.hasIndex("testappimport"));
+        searchService.importApp("testappimport", testzip, false);
+        searchService.refreshIndex();
+        Thread.sleep(500);
+        assertTrue(searchService.hasApp("testappimport"));
+        assertTrue(searchService.hasIndex("testappimport"));
+        MappingMetaData testAppMeta = searchService.getType("testappimport", "testapptype");
+        assertNotNull(testAppMeta);
+        Map<String, Object> testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
+        assertNotNull(testAppFields);
+        assertEquals(4, testAppFields.size());
+        assertTrue(testAppFields.containsKey("txtfield"));
+        assertTrue(testAppFields.containsKey("intfield"));
+        assertTrue(testAppFields.containsKey("datefield"));
+        assertTrue(testAppFields.containsKey("strfield"));
+        testzip = getClass().getClassLoader().getResourceAsStream("testappimport.zip");
+        try {
+            searchService.importApp("testappimport", null, false);
+            fail();
+        } catch (Cloud9Exception e) {
+        }
+
+        try {
+            searchService.importApp("testappimport", testzip, false);
+            fail();
+        } catch (Cloud9Exception e) {
+        }
+
+        searchService.importApp("testappimport", testzip, true);
+        searchService.refreshIndex();
+        Thread.sleep(500);
+        assertTrue(searchService.hasApp("testappimport"));
+        assertTrue(searchService.hasIndex("testappimport"));
+        testAppMeta = searchService.getType("testappimport", "testapptype");
+        assertNotNull(testAppMeta);
+        testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
+        assertNotNull(testAppFields);
+        assertEquals(4, testAppFields.size());
+        assertTrue(testAppFields.containsKey("txtfield"));
+        assertTrue(testAppFields.containsKey("intfield"));
+        assertTrue(testAppFields.containsKey("datefield"));
+        assertTrue(testAppFields.containsKey("strfield"));
     }
 }

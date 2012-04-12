@@ -1,13 +1,20 @@
 package co.diji.cloud9.services;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ListenableActionFuture;
@@ -38,6 +45,8 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +68,7 @@ public class SearchService {
     private static final String SYSTEM_INDEX = "sys";
     private static final String APP_SUFFIX = ".app";
     private static final String[] RESERVED_APPS = {"css.app", "js.app", "images.app"};
+    private static final String[] VALID_TYPES = {"conf", "html", "css", "images", "js", "controllers"};
 
     private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
     private Node node;
@@ -955,5 +965,131 @@ public class SearchService {
 
         logger.trace("exit createType: {}", resp);
         return resp;
+    }
+
+    /**
+     * Imports an application
+     * 
+     * @param app the name of the application to import
+     * @param input the input stream of the zip file containing the application's files
+     * @param force to force install the application
+     * @throws Cloud9Exception
+     */
+    @SuppressWarnings("unchecked")
+    public void importApp(String app, InputStream input, boolean force) throws Cloud9Exception {
+        logger.trace("in importApp app:{}, input:{}, force:{}", new Object[]{app, input, force});
+        String sep = System.getProperty("file.separator");
+        String appIndex = appsWithSuffix(app)[0];
+        logger.debug("sep:{} appIndex:{}", sep, appIndex);
+
+        logger.debug("input: {}", input);
+        if (input == null) {
+            logger.error("input stream for {} is null", app);
+            throw new Cloud9Exception("Error importing app:" + app + ", input stream is null");
+        }
+
+        Map<String, IndexStatus> apps = getAppStatus();
+        logger.debug("force:{} apps:{}", force, apps.keySet());
+        if (!force && apps.containsKey(app)) {
+            logger.error("Application already exists: {}, foce to override", app);
+            throw new Cloud9Exception("Application already exists: " + app);
+        }
+
+        if (force && apps.containsKey(app)) {
+            logger.info("Forcing overwrite of {}", app);
+            deleteApp(app);
+        }
+
+        createAppIndex(app);
+
+        ZipInputStream zip = null;
+        try {
+            zip = new ZipInputStream(new BufferedInputStream(input));
+            ZipEntry entry = null;
+
+            while ((entry = zip.getNextEntry()) != null) {
+                logger.debug("isDirectory: {}", entry.isDirectory());
+                if (entry.isDirectory()) {
+                    logger.info("Skipping directory entry: {}", entry.getName());
+                    continue;
+                }
+
+                String[] pathParts = entry.getName().split(sep);
+                logger.debug("pathParts: {}", pathParts);
+
+                logger.debug("number of parts: {}", pathParts.length);
+                if (pathParts.length != 3) {
+                    logger.warn("Invalid resource: {}", entry.getName());
+                    throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                }
+
+                String partApp = pathParts[0];
+                String partType = pathParts[1];
+                String partName = pathParts[2];
+
+                logger.debug("force:{} partApp:{}", force, partApp);
+                if (!force && !partApp.equals(app)) {
+                    logger.warn("Name mismatch, found {}, expecting {}, use force option to override", partApp, app);
+                    throw new Cloud9Exception("Name mismatch, use force?");
+                }
+
+                logger.debug("partType: {}", partType);
+                if (!Arrays.asList(VALID_TYPES).contains(partType)) {
+                    logger.warn("Invalid resource: {}", entry.getName());
+                    throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                }
+
+                if (partType.equals("conf")) {
+                    String indexName = partName.replaceAll("\\.json", "");
+                    logger.debug("indexName: {}", indexName);
+                    JSONObject json = (JSONObject) JSONValue.parse(IOUtils.toString(zip, "UTF-8"));
+                    logger.debug("json: {}", json);
+                    for (Object k : json.entrySet()) {
+                        logger.debug("type: {}", k);
+                        Map.Entry<String, JSONObject> type = (Map.Entry<String, JSONObject>) k;
+                        JSONObject mapping = new JSONObject();
+                        mapping.put(type.getKey(), type.getValue());
+                        putMapping(indexName, type.getKey(), mapping.toString(), true);
+                    }
+                } else if (partType.equals("html")) {
+                    indexAppDoc(app, "html", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
+                } else if (partType.equals("css")) {
+                    indexAppDoc(app, "css", partName, IOUtils.toString(zip, "UTF-8"), "text/css");
+                } else if (partType.equals("images")) {
+                    int sIdx = partName.indexOf('.');
+                    if (sIdx == -1) {
+                        logger.warn("Image without extension: {}", partName);
+                        throw new Cloud9Exception("Image without extension: " + partName);
+                    }
+                    String suffix = partName.substring(sIdx + 1, partName.length());
+                    new Base64();
+                    indexAppDoc(app, "images", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
+                } else if (partType.equals("js")) {
+                    indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
+                } else if (partType.equals("controllers")) {
+                    indexAppDoc(app, "controllers", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
+                } else {
+                    logger.warn("Unknown resource type: {}", partType);
+                    continue;
+                }
+            }
+
+            logger.info("Application {} successfully imported", app);
+        } catch (Exception e) {
+            logger.error("Error importing application: " + app);
+            deleteApp(app);
+            throw new Cloud9Exception("Error importing application: " + app, e);
+        } finally {
+            logger.debug("closing zip");
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing zip", e);
+                }
+            }
+        }
+
+        logger.trace("exit importApp");
     }
 }
