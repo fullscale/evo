@@ -1,14 +1,20 @@
 package co.diji.cloud9.services;
 
+import static org.elasticsearch.index.query.FilterBuilders.matchAllFilter;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -38,6 +44,7 @@ import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
@@ -45,6 +52,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.slf4j.Logger;
@@ -1091,5 +1099,100 @@ public class SearchService {
         }
 
         logger.trace("exit importApp");
+    }
+
+    public void exportApp(String app, OutputStream out, Map<String, String[]> mappings) throws Cloud9Exception {
+        logger.trace("in exportApp app:{}, out:{}, mappings:{}", new Object[]{app, out, mappings});
+        String sep = System.getProperty("file.separator");
+        String appIndex = appsWithSuffix(app)[0];
+        logger.debug("sep:{} appIndex:{}", sep, appIndex);
+
+        logger.debug("input: {}", out);
+        if (out == null) {
+            logger.error("output stream for {} is null", app);
+            throw new Cloud9Exception("Error importing app:" + app + ", output stream is null");
+        }
+
+        if (!hasIndex(appIndex)) {
+            logger.error("Application does not exist: {}", app);
+            throw new Cloud9Exception("Application does not exist: " + app);
+        }
+
+        SearchResponse response = client.prepareSearch(appIndex).setFilter(matchAllFilter()).setFrom(0).setSize(250).execute()
+                .actionGet();
+
+        ZipOutputStream zip = null;
+        try {
+            zip = new ZipOutputStream(new BufferedOutputStream(out));
+            for (SearchHit hit : response.hits().hits()) {
+                logger.debug("hit: {}", hit);
+                Map<String, Object> fields = hit.sourceAsMap();
+                logger.debug("fields: {}", fields);
+                String resourcePath = app + sep + hit.type() + sep + hit.id();
+                logger.debug("resourcePath: {}", resourcePath);
+                zip.putNextEntry(new ZipEntry(resourcePath));
+                String code = (String) fields.get("code");
+                logger.debug("code: {}", code);
+                if (hit.type().equals("images")) {
+                    logger.debug("decoding base64");
+                    zip.write(Base64.decodeBase64(code));
+                } else {
+                    zip.write(code.getBytes("UTF-8"));
+                }
+                zip.closeEntry();
+            }
+
+            logger.debug("mappings: {}", mappings);
+            if (mappings != null) {
+                for (Entry<String, String[]> mapping : mappings.entrySet()) {
+                    String exportIndex = mapping.getKey();
+                    String[] exportTypes = mapping.getValue();
+                    logger.debug("exportIndex: {}", exportIndex);
+                    logger.debug("exportTypes: {}", exportTypes);
+
+                    Map<String, Object> exportedMappings = new HashMap<String, Object>();
+                    Map<String, MappingMetaData> types = getTypes(exportIndex);
+                    if (exportTypes != null) {
+                        List<String> exportTypesArray = Arrays.asList(exportTypes);
+                        logger.debug("exportTypesArray: {}", exportTypesArray);
+                        for (Entry<String, MappingMetaData> type : types.entrySet()) {
+                            String typeName = type.getKey();
+                            boolean exportType = exportTypesArray.contains(typeName);
+                            logger.debug("export type {}: {}", typeName, exportType);
+                            if (exportType) {
+                                exportedMappings.put(typeName, type.getValue().sourceAsMap());
+                            }
+                        }
+                    } else {
+                        for (Entry<String, MappingMetaData> type : types.entrySet()) {
+                            exportedMappings.put(type.getKey(), type.getValue().sourceAsMap());
+                        }
+                    }
+
+                    logger.debug("exportedMappings: {}", exportedMappings);
+                    String mappingPath = app + sep + "conf" + sep + exportIndex + ".json";
+                    logger.debug("mappingPath: {}", mappingPath);
+                    zip.putNextEntry(new ZipEntry(mappingPath));
+                    String json = JSONValue.toJSONString(exportedMappings);
+                    logger.debug("json: {}", json);
+                    zip.write(json.getBytes("UTF-8"));
+                    zip.closeEntry();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error exporting application: {}", app);
+            throw new Cloud9Exception("Error exporting application: " + app, e);
+        } finally {
+            logger.debug("closing zip");
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing zip", e);
+                }
+            }
+        }
+
+        logger.trace("exit exportApp");
     }
 }
