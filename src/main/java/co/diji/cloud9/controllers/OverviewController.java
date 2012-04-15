@@ -28,13 +28,13 @@ public class OverviewController {
     @ResponseBody
     @RequestMapping(value = {"/", "/cloud9", "/cloud9/overview"}, method = RequestMethod.GET)
     public ModelAndView get() {
-    	logger.trace("enter controller=overview action=get");
-    	
-    	ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-    	long count = searchService.getTotalCollectionDocCount();
-    	Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
-    	Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
-    	Map<String, NodeStats> nodeStats = searchService.getNodeStats();
+        logger.trace("enter controller=overview action=get");
+
+        ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
+        long count = searchService.getTotalCollectionDocCount();
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
+        Map<String, NodeStats> nodeStats = searchService.getNodeStats();
 
         ModelAndView mav = new ModelAndView();
 

@@ -54,11 +54,11 @@ public class UserController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView list() {
-    	logger.trace("enter controller=user action=list");
+        logger.trace("enter controller=user action=list");
 
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-    	long count = searchService.getTotalCollectionDocCount();
-    	Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        long count = searchService.getTotalCollectionDocCount();
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
         Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
         Map<String, NodeStats> nodeStats = searchService.getNodeStats();
 

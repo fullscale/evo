@@ -35,6 +35,7 @@ public class ContentController {
     }
 
     @ResponseBody
+    @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView get() {
         logger.trace("enter controller=content action=get");
@@ -67,6 +68,8 @@ public class ContentController {
         // mav.addObject("build", "build" + app.build);
 
         mav.setViewName("collections");
+        
+        logger.trace("exit get: {}", mav);
         return mav;
     }
 

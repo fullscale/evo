@@ -40,11 +40,11 @@ public class AppsController {
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
     public ModelAndView list() {
-    	logger.trace("enter controller=apps action=list");
+        logger.trace("enter controller=apps action=list");
 
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-    	long count = searchService.getTotalCollectionDocCount();
-    	Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        long count = searchService.getTotalCollectionDocCount();
+        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
         Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
         Map<String, NodeStats> nodeStats = searchService.getNodeStats();
 
