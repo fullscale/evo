@@ -1076,7 +1076,7 @@ public class SearchService {
 
             logger.info("Application {} successfully imported", app);
         } catch (Exception e) {
-            logger.error("Error importing application: " + app);
+            logger.error("Error importing application: {}", app);
             deleteApp(app);
             throw new Cloud9Exception("Error importing application: " + app, e);
         } finally {
