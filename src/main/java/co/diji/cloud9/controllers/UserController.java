@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.diji.cloud9.services.ConfigService;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
@@ -26,6 +27,9 @@ public class UserController {
 
     @Autowired
     protected SearchService searchService;
+
+    @Autowired
+    protected ConfigService config;
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
@@ -69,8 +73,8 @@ public class UserController {
         mav.addObject("nodes", nodeInfo);
         mav.addObject("status", collectionStatus);
         mav.addObject("count", count);
-        //mav.addObject("build", "build" + app.build);
-        
+        mav.addObject("build", config.get("build"));
+
         mav.setViewName("users");
         return mav;
     }

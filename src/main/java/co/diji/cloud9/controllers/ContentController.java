@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.diji.cloud9.services.ConfigService;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
@@ -27,6 +28,9 @@ public class ContentController {
 
     @Autowired
     protected SearchService searchService;
+
+    @Autowired
+    protected ConfigService config;
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET)
@@ -65,7 +69,7 @@ public class ContentController {
         mav.addObject("status", collectionStatus);
         mav.addObject("count", count);
         mav.addObject("indices", indices.toString());
-        // mav.addObject("build", "build" + app.build);
+        mav.addObject("build", config.get("build"));
 
         mav.setViewName("collections");
         
