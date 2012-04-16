@@ -79,9 +79,13 @@ public class CollectionController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable String collection) {
-        logger.info("collection delete collection:" + collection);
+    @RequestMapping(value = "/{collection}", method = RequestMethod.DELETE, produces = "application/json")
+    public Map<String, Object> delete(@PathVariable String collection) {
+        logger.trace("in controller=collection action=delete collection: {}", collection);
+        Map<String, Object> resp = new HashMap<String, Object>();
+        searchService.deleteIndex(collection);
+        resp.put("status", "ok");
+        return resp;
     }
 
 }
