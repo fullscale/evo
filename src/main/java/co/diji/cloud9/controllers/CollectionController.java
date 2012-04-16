@@ -75,7 +75,7 @@ public class CollectionController {
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.PUT)
     public void update(@PathVariable String collection) {
-        logger.info("collection update collection:" + collection);
+        logger.trace("in controller=collection action=update collection: {}", collection);
     }
 
     @ResponseBody
