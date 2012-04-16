@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
@@ -53,9 +54,22 @@ public class CollectionController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}", method = RequestMethod.POST)
-    public void create(@PathVariable String collection) {
-        logger.info("collection create collection:" + collection);
+    @RequestMapping(value = "/{collection}", method = RequestMethod.POST, produces = "application/json")
+    public Map<String, Object> create(@PathVariable String collection) {
+        logger.trace("in controller=collection action=create collection: {}", collection);
+        Map<String, Object> resp = new HashMap<String, Object>();
+
+        try {
+            searchService.createIndex(collection);
+            logger.info("Successfully created collection: {}", collection);
+            resp.put("status", "ok");
+        } catch (IndexException e) {
+            logger.warn("Error creating collection: {}", e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
     }
 
     @ResponseBody
