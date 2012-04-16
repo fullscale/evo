@@ -2,11 +2,14 @@ package co.diji.cloud9.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import co.diji.cloud9.services.SearchService;
 
 @Controller
 @RequestMapping("/cloud9/content")
@@ -14,6 +17,8 @@ public class CollectionController {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionController.class);
 
+    @Autowired
+    protected SearchService searchService;
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.GET)
     public void get(@PathVariable String collection) {
