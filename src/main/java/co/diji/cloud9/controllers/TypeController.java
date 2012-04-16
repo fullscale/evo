@@ -24,7 +24,7 @@ public class TypeController {
 
     @Autowired
     protected SearchService searchService;
-    
+
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> get(@PathVariable String collection, @PathVariable String type) {
@@ -32,7 +32,7 @@ public class TypeController {
         Map<String, Object> resp = new HashMap<String, Object>();
         resp.put("collection", collection);
         resp.put("type", type);
-        
+
         MappingMetaData typeInfo = searchService.getType(collection, type);
         if (typeInfo != null) {
             try {
@@ -41,7 +41,7 @@ public class TypeController {
                 logger.debug("Error getting type properties", e);
             }
         }
-        
+
         return resp;
     }
 
