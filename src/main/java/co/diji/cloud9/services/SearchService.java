@@ -42,6 +42,8 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -692,6 +694,30 @@ public class SearchService {
         logger.debug("app {} source: {}", app, source);
 
         return indexDoc(app, type, id, source);
+    }
+
+    /**
+     * Deletes a document from an index
+     * 
+     * @param index the index you want to delete the document from
+     * @param type the type you want to delete the document from
+     * @param id the document id of the document you want to delete
+     * @return the delete response object, null on error
+     */
+    public DeleteResponse deleteDoc(String index, String type, String id) {
+        logger.trace("in deleteDoc index:{} type:{} id:{}", new Object[]{index, type, id});
+        DeleteRequest req = new DeleteRequest(index, type, id);
+        ActionFuture<DeleteResponse> action = client.delete(req);
+        DeleteResponse resp = null;
+
+        try {
+            resp = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.warn("Error delete document: index:{}, type:{}, id:{}", new Object[]{index, type, id});
+        }
+
+        logger.trace("exit deleteDoc: {}", resp);
+        return resp;
     }
 
     /**
