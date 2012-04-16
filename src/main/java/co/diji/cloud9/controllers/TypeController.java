@@ -17,25 +17,25 @@ public class TypeController {
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.GET)
     public void get(@PathVariable String collection, @PathVariable String type) {
-        logger.info("type get collection:" + collection + " type:" + type);
+        logger.trace("in controller=type action=get collection: {} type:{}", collection, type);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.POST)
     public void create(@PathVariable String collection, @PathVariable String type) {
-        logger.info("type create collection:" + collection + " type:" + type);
+        logger.trace("in controller=type action=create collection:{} type:{}", collection, type);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.PUT)
     public void update(@PathVariable String collection, @PathVariable String type) {
-        logger.info("type update collection:" + collection + " type:" + type);
+        logger.trace("in controller=type action=update collection:{} type:{}", collection, type);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.DELETE)
     public void delete(@PathVariable String collection, @PathVariable String type) {
-        logger.info("type delete collection:" + collection + " type:" + type);
+        logger.trace("in controller=type action=delete collection:{} type:{}", collection, type);
     }
 
 }

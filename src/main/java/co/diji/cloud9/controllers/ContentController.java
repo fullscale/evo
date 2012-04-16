@@ -35,14 +35,14 @@ public class ContentController {
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET)
     public void add(@PathVariable String collection, @PathVariable String type) {
-        logger.info("content add collection:" + collection + " type:" + type);
+        logger.trace("in controller=content action=add collection:{} type:{}", collection, type);
     }
 
     @ResponseBody
     @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView get() {
-        logger.trace("enter controller=content action=get");
+        logger.trace("in controller=content action=get");
 
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
         long count = searchService.getTotalCollectionDocCount();
