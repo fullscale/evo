@@ -139,6 +139,13 @@
             <version>${spring.security.version}</version>
         </dependency>
 
+        <!-- JSON from Spring Controllers -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.5</version>
+        </dependency>
+            
         <!-- Velocity Templates -->                
         <dependency>
             <groupId>org.apache.velocity</groupId>
