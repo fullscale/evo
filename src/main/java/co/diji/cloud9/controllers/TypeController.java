@@ -113,9 +113,13 @@ public class TypeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable String collection, @PathVariable String type) {
+    @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.DELETE, produces = "application/json")
+    public Map<String, Object> delete(@PathVariable String collection, @PathVariable String type) {
         logger.trace("in controller=type action=delete collection:{} type:{}", collection, type);
+        Map<String, Object> resp = new HashMap<String, Object>();
+        searchService.deleteType(collection, type);
+        resp.put("status", "ok");
+        return resp;
     }
 
 }
