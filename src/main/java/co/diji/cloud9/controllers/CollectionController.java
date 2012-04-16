@@ -1,5 +1,11 @@
 package co.diji.cloud9.controllers;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +25,31 @@ public class CollectionController {
 
     @Autowired
     protected SearchService searchService;
+
     @ResponseBody
-    @RequestMapping(value = "/{collection}", method = RequestMethod.GET)
-    public void get(@PathVariable String collection) {
-        logger.info("collection get collection:" + collection);
+    @RequestMapping(value = "/{collection}", method = RequestMethod.GET, produces = "application/json")
+    public Map<String, Object> get(@PathVariable String collection) {
+        logger.trace("in controller=collection action=get collection: ", collection);
+        Map<String, Object> resp = new HashMap<String, Object>();
+        resp.put("collection", collection);
+
+        Map<String, MappingMetaData> types = searchService.getTypes(collection);
+        logger.debug("types: {}", types);
+        if (types != null) {
+            Map<String, Object> typesResp = new HashMap<String, Object>();
+            for (Entry<String, MappingMetaData> type : types.entrySet()) {
+                logger.debug("type: {}", type);
+                try {
+                    typesResp.put(type.getKey(), type.getValue().sourceAsMap().get("properties"));
+                } catch (IOException e) {
+                    logger.debug("Error getting type properties", e);
+                }
+            }
+
+            resp.put("types", typesResp);
+        }
+
+        return resp;
     }
 
     @ResponseBody
