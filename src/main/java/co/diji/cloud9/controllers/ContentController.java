@@ -1,11 +1,15 @@
 package co.diji.cloud9.controllers;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +37,25 @@ public class ContentController {
     protected ConfigService config;
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET)
-    public void add(@PathVariable String collection, @PathVariable String type) {
+    @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET, produces = "application/json")
+    public Map<String, Object> add(@PathVariable String collection, @PathVariable String type) {
         logger.trace("in controller=content action=add collection:{} type:{}", collection, type);
+        Map<String, Object> resp = new HashMap<String, Object>();
+        resp.put("collection", collection);
+        resp.put("type", type);
+        resp.put("id", UUID.randomUUID().toString());
+
+        MappingMetaData typeInfo = searchService.getType(collection, type);
+        logger.debug("typeInfo: {}", typeInfo);
+        if (typeInfo != null) {
+            try {
+                resp.put("fields", typeInfo.sourceAsMap().get("properties"));
+            } catch (IOException e) {
+                logger.debug("Error getting type properties", e);
+            }
+        }
+
+        return resp;
     }
 
     @ResponseBody
@@ -72,7 +92,7 @@ public class ContentController {
         mav.addObject("build", config.get("build"));
 
         mav.setViewName("collections");
-        
+
         logger.trace("exit get: {}", mav);
         return mav;
     }
