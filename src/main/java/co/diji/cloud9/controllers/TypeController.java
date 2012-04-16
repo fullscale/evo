@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
@@ -46,9 +47,22 @@ public class TypeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.POST)
-    public void create(@PathVariable String collection, @PathVariable String type) {
+    @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.POST, produces = "application/json")
+    public Map<String, Object> create(@PathVariable String collection, @PathVariable String type) {
         logger.trace("in controller=type action=create collection:{} type:{}", collection, type);
+        Map<String, Object> resp = new HashMap<String, Object>();
+
+        try {
+            searchService.createType(collection, type);
+            logger.info("Successfully created type: {}", type);
+            resp.put("status", "ok");
+        } catch (Cloud9Exception e) {
+            logger.warn("Error creating type: {}, {}", type, e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
     }
 
     @ResponseBody
