@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,10 +36,29 @@ public class DocumentController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.POST, produces = "application/json")
-    public Map<String, Object> create(@PathVariable String collection, @PathVariable String type, @PathVariable String id) {
-        logger.trace("in controller=document action=create collection:{} type:{} id:{}", new Object[]{collection, type, id});
+    @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    public Map<String, Object> create(@PathVariable String collection, @PathVariable String type, @PathVariable String id,
+            @RequestBody Map<String, Object> source) {
+        logger.trace("in controller=document action=create collection:{} type:{} id:{} source:{}", new Object[]{
+                collection, type, id, source});
         Map<String, Object> resp = new HashMap<String, Object>();
+
+        try {
+            IndexResponse idxResp = searchService.indexDoc(collection, type, id, source);
+            logger.debug("idxResp: {}", idxResp);
+            if (idxResp == null) {
+                throw new Cloud9Exception("Error indexing document: " + id);
+            }
+
+            resp.put("status", "ok");
+            resp.put("id", idxResp.id());
+            resp.put("version", idxResp.version());
+        } catch (Cloud9Exception e) {
+            logger.warn(e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+        }
+
         return resp;
     }
 
