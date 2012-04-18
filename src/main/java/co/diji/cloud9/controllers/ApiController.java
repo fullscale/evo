@@ -1,6 +1,10 @@
 package co.diji.cloud9.controllers;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.AsyncContext;
@@ -14,6 +18,7 @@ import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.RestResponse;
 import org.elasticsearch.rest.support.RestUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +48,67 @@ public class ApiController {
     }
 
     @ResponseBody
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/apps/{app}", method = RequestMethod.GET)
-    public void exportApp(@PathVariable String app) {
-        logger.trace("exportApp: {}", app);
+    public void exportApp(@PathVariable String app, HttpServletRequest request, HttpServletResponse response) {
+        logger.trace("in controller=api action=exportApp app:{} request:{}", app, request);
+        Map<String, String[]> exportMappings = null;
+        String[] mappings = request.getParameterValues("mapping");
+
+        logger.debug("mappings: {}", mappings);
+        if (mappings != null) {
+            exportMappings = new HashMap<String, String[]>();
+            for (String mapping : mappings) {
+                logger.debug("mapping: {}", mapping);
+                int sep = mapping.indexOf(":");
+                logger.debug("sep idx: {}", sep);
+                if (sep != -1) {
+                    String idxName = mapping.substring(0, sep);
+                    String idxTypes = mapping.substring(sep + 1, mapping.length());
+                    logger.debug("idxName:{} idxTypes:{}", idxName, idxTypes);
+                    exportMappings.put(idxName, idxTypes.split(","));
+                } else {
+                    exportMappings.put(mapping, null);
+                }
+            }
+        }
+
+        ServletOutputStream out = null;
+        try {
+            out = response.getOutputStream();
+            boolean hasApp = searchService.hasApp(app);
+
+            logger.debug("hasApp: {}", hasApp);
+            if (hasApp) {
+                response.setHeader("Content-disposition", "attachment; filename=" + app + ".zip");
+                response.setContentType("application/octet-stream");
+                searchService.exportApp(app, out, exportMappings);
+            } else {
+                JSONObject resp = new JSONObject();
+                resp.put("status", "error");
+                resp.put("response", "Application not found: " + app);
+
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+
+                Writer writer = new OutputStreamWriter(out);
+                resp.writeJSONString(writer);
+                writer.flush();
+                writer.close();
+            }
+        } catch (Exception e) {
+            logger.error("Error exporting application: " + app);
+            logger.debug("Exception:", e);
+        } finally {
+            logger.debug("Closing output stream");
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing output stream", e);
+                }
+            }
+        }
     }
 
     @ResponseBody
