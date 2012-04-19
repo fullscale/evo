@@ -46,7 +46,7 @@ public class AppsController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
     public ModelAndView list() {
-        logger.trace("enter controller=apps action=list");
+        logger.trace("in controller=apps action=list");
 
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
         long count = searchService.getTotalCollectionDocCount();
@@ -77,6 +77,8 @@ public class AppsController {
         mav.addObject("build", config.get("build"));
 
         mav.setViewName("applications");
+        
+        logger.trace("exit list: {}", mav);
         return mav;
     }
 
