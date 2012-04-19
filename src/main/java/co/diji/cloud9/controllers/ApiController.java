@@ -26,8 +26,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.rest.ServletRestRequest;
 import co.diji.cloud9.services.SearchService;
 
@@ -112,9 +116,28 @@ public class ApiController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/apps/{app}", method = RequestMethod.POST)
-    public void importApp(@PathVariable String app) {
-        logger.trace("importApp: {}", app);
+    @RequestMapping(value = "/apps/{app}", method = RequestMethod.POST, produces = "application/json")
+    public Map<String, Object> importApp(@PathVariable String app, @RequestParam(value = "force", required = false) boolean force,
+            @RequestPart(value = "app", required = false) MultipartFile data) {
+        logger.trace("in controller=api action=importApp app:{} force:{} data:{}", new Object[]{app, force, data});
+        Map<String, Object> resp = new HashMap<String, Object>();
+
+        try {
+            if (data == null) {
+                throw new Cloud9Exception("No application file found");
+            }
+
+            searchService.importApp(app, data.getInputStream(), force);
+
+            resp.put("status", "ok");
+            resp.put("response", "Application successfully imported: " + app);
+        } catch (Exception e) {
+            logger.warn("Error importing application: {}", e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
     }
 
     @ResponseBody
