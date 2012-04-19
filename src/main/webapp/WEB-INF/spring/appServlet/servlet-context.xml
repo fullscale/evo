@@ -12,6 +12,9 @@
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
 
+    <!-- Multipart Servlet 3.0 -->
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
+
     <!-- 
         This bean sets up the Velocity environment for us based on a root path for templates.
     -->
