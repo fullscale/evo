@@ -8,6 +8,7 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class AppsController {
     }
 
     @ResponseBody
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
     public ModelAndView list() {
         logger.trace("enter controller=apps action=list");
@@ -49,8 +51,20 @@ public class AppsController {
         ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
         long count = searchService.getTotalCollectionDocCount();
         Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
+        Map<String, IndexStatus> apps = searchService.getAppStatus();
         Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
         Map<String, NodeStats> nodeStats = searchService.getNodeStats();
+
+        JSONObject appResp = new JSONObject();
+
+        for (String app : apps.keySet()) {
+            IndexStatus appStatus = apps.get(app);
+
+            JSONObject stats = new JSONObject();
+            stats.put("docs", String.valueOf(appStatus.docs().numDocs()));
+            stats.put("size", appStatus.getPrimaryStoreSize().toString());
+            appResp.put(app, stats);
+        }
 
         ModelAndView mav = new ModelAndView();
 
@@ -59,6 +73,7 @@ public class AppsController {
         mav.addObject("nodes", nodeInfo);
         mav.addObject("status", collectionStatus);
         mav.addObject("count", count);
+        mav.addObject("apps", appResp.toString());
         mav.addObject("build", config.get("build"));
 
         mav.setViewName("applications");
