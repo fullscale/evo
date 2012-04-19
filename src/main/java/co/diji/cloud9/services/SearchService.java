@@ -1002,16 +1002,42 @@ public class SearchService {
     }
 
     /**
-     * Imports an application
+     * Imports an application, defaults: don't force, install mappings
+     * 
+     * @param app the name of the application to import
+     * @param input the input stream of the zip file containing the application's files
+     * @throws Cloud9Exception
+     */
+    public void importApp(String app, InputStream input) throws Cloud9Exception {
+        logger.trace("in importApp app:{}, input:{}", new Object[]{app, input});
+        importApp(app, input, false, true);
+    }
+    
+    /**
+     * Imports an application, defaults: install mappings
      * 
      * @param app the name of the application to import
      * @param input the input stream of the zip file containing the application's files
      * @param force to force install the application
      * @throws Cloud9Exception
      */
-    @SuppressWarnings("unchecked")
     public void importApp(String app, InputStream input, boolean force) throws Cloud9Exception {
         logger.trace("in importApp app:{}, input:{}, force:{}", new Object[]{app, input, force});
+        importApp(app, input, force, true);
+    }
+    
+    /**
+     * Imports an application
+     * 
+     * @param app the name of the application to import
+     * @param input the input stream of the zip file containing the application's files
+     * @param force to force install the application
+     * @param mappings to install any mappings found in the file or not
+     * @throws Cloud9Exception
+     */
+    @SuppressWarnings("unchecked")
+    public void importApp(String app, InputStream input, boolean force, boolean mappings) throws Cloud9Exception {
+        logger.trace("in importApp app:{}, input:{}, force:{}, mappings:{}", new Object[]{app, input, force, mappings});
         String sep = System.getProperty("file.separator");
         String appIndex = appsWithSuffix(app)[0];
         logger.debug("sep:{} appIndex:{}", sep, appIndex);
@@ -1074,6 +1100,11 @@ public class SearchService {
                 }
 
                 if (partType.equals("conf")) {
+                    if (!mappings) {
+                        logger.debug("Skipping mapping: {}", entry.getName());
+                        continue;
+                    }
+                    
                     String indexName = partName.replaceAll("\\.json", "");
                     logger.debug("indexName: {}", indexName);
                     JSONObject json = (JSONObject) JSONValue.parse(IOUtils.toString(zip, "UTF-8"));

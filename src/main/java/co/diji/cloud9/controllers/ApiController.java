@@ -117,9 +117,11 @@ public class ApiController {
 
     @ResponseBody
     @RequestMapping(value = "/apps/{app}", method = RequestMethod.POST, produces = "application/json")
-    public Map<String, Object> importApp(@PathVariable String app, @RequestParam(value = "force", required = false) boolean force,
+    public Map<String, Object> importApp(@PathVariable String app,
+            @RequestParam(value = "force", defaultValue = "false") boolean force,
+            @RequestParam(value = "mappings", defaultValue = "true") boolean mappings,
             @RequestPart(value = "app", required = false) MultipartFile data) {
-        logger.trace("in controller=api action=importApp app:{} force:{} data:{}", new Object[]{app, force, data});
+        logger.trace("in controller=api action=importApp app:{} force:{} mappings:{} data:{}", new Object[]{app, force, mappings, data});
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -127,7 +129,7 @@ public class ApiController {
                 throw new Cloud9Exception("No application file found");
             }
 
-            searchService.importApp(app, data.getInputStream(), force);
+            searchService.importApp(app, data.getInputStream(), force, mappings);
 
             resp.put("status", "ok");
             resp.put("response", "Application successfully imported: " + app);
