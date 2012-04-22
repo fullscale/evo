@@ -1,16 +1,21 @@
 package co.diji.cloud9.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.search.SearchHit;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.services.ConfigService;
 import co.diji.cloud9.services.SearchService;
 
@@ -156,9 +162,56 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.DELETE)
-    public void deleteApp(@PathVariable String app) {
-        logger.info("apps deleteApp app:" + app);
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
+    public void getResourceFromDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
+            HttpServletResponse response) {
+        logger.trace("in controller=apps action=getResourceFromDir app:{} dir:{} resource:{} response:{}", new Object[]{
+                app, dir, resource, response});
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+
+        GetResponse res = searchService.getDoc(appIdx, dir, resource, null);
+        ServletOutputStream out = null;
+        try {
+            out = response.getOutputStream();
+
+            logger.debug("res: {}", res);
+            if (res == null) {
+                throw new Cloud9Exception("Unable to get resource");
+            }
+
+            Map<String, Object> source = res.sourceAsMap();
+            logger.debug("source: {}", source);
+            if (source == null) {
+                throw new Cloud9Exception("Unable to get resource source");
+            }
+
+            String mime = (String) source.get("mime");
+            logger.debug("mime: {}", mime);
+            response.setContentType(mime);
+
+            String code = (String) source.get("code");
+            logger.debug("code: {}", code);
+            if (mime.startsWith("image")) {
+                logger.debug("decoding base64 data");
+                byte[] data = Base64.decodeBase64(code);
+                out.write(data);
+            } else {
+                out.print(code);
+            }
+        } catch (Exception e) {
+            logger.debug("Error getting resource", e);
+            response.setStatus(400);
+        } finally {
+            logger.debug("closing output stream");
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing output stream", e);
+                }
+            }
+        }
     }
 
     @ResponseBody
