@@ -122,6 +122,18 @@ public class AppsController {
 
         return resp;
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.DELETE, produces = "application/json")
+    public Map<String, Object> deleteApp(@PathVariable String app) {
+        logger.trace("in controller=apps action=deleteApp app:{}", app);
+        Map<String, Object> resp = new HashMap<String, Object>();
+
+        searchService.deleteApp(app);
+        resp.put("status", "ok");
+
+        return resp;
+    }
     }
 
     @ResponseBody
