@@ -44,6 +44,8 @@ import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -1302,6 +1304,37 @@ public class SearchService {
         }
 
         logger.trace("exit matchAll: {}", response);
+        return response;
+    }
+
+    /**
+     * Gets a specific document
+     * 
+     * @param index the name of the index where the document exists
+     * @param type the name of the type the document belongs to
+     * @param id the id of the document you want
+     * @param fields a list of fields you want returned, null for the default _source field
+     * @return the get response, null on error
+     */
+    public GetResponse getDoc(String index, String type, String id, String[] fields) {
+        logger.trace("in getDoc index:{} type:{} id:{} fields:{}", new Object[]{index, type, id, fields});
+        GetRequestBuilder request = client.prepareGet(index, type, id);
+
+        logger.debug("fields: {}", fields);
+        if (fields != null) {
+            request.setFields(fields);
+        }
+
+        GetResponse response = null;
+        ListenableActionFuture<GetResponse> action = request.execute();
+
+        try {
+            response = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error executing get", e);
+        }
+
+        logger.trace("exit getDoc: {}", response);
         return response;
     }
 }
