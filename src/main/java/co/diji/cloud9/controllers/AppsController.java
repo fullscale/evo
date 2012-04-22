@@ -16,6 +16,7 @@ import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.search.SearchHit;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,6 +46,24 @@ public class AppsController {
 
     @Autowired
     protected ConfigService config;
+
+    /**
+     * Validates that the resource has the correct extension, if not, it adds it.
+     * 
+     * @param resource the resource name to validate
+     * @param type the type of the resource
+     * @return the resource name with the correct extension
+     */
+    private String validateResource(String resource, String type) {
+        logger.trace("in validateResource resource:{} type:{}", resource, type);
+        if (!resource.endsWith(type)) {
+            resource = resource + "." + type;
+            logger.debug("resource with extension: {}", resource);
+        }
+
+        logger.trace("exit validateResource: {}", resource);
+        return resource;
+    }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/ide/{app}", method = RequestMethod.GET)
@@ -215,9 +235,54 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}", method = RequestMethod.GET)
-    public void listResources(@PathVariable String app, @PathVariable String dir) {
-        logger.info("apps listResources app:" + app + " dir:" + dir);
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.POST, produces = "application/json")
+    public Map<String, Object> createResourceInDir(@PathVariable String app, @PathVariable String dir,
+            @PathVariable String resource, @RequestBody String data) {
+        logger.trace("in controller=apps action=createResourceInDir app:{} dir:{} resource:{} data:{}", new Object[]{
+                app, dir, resource, data});
+        Map<String, Object> resp = new HashMap<String, Object>();
+        String mime = "text/plain";
+
+        try {
+            if ("html".equals(dir)) {
+                mime = "text/html";
+                resource = validateResource(resource, dir);
+            } else if ("css".equals(dir)) {
+                mime = "text/css";
+                resource = validateResource(resource, dir);
+            } else if ("js".equals(dir)) {
+                mime = "application/javascript";
+                resource = validateResource(resource, dir);
+            } else if ("images".equals(dir)) {
+                int sIdx = resource.indexOf('.');
+                logger.debug("sIdx: {}", sIdx);
+                if (sIdx == -1) {
+                    logger.warn("Image without extension: {}", resource);
+                    throw new Cloud9Exception("Image without extension: " + resource);
+                }
+                String suffix = resource.substring(sIdx + 1, resource.length());
+                logger.debug("suffix: {}", suffix);
+                if ("jpg".equals(suffix)) {
+                    suffix = "jpeg";
+                    logger.debug("new suffix: {}", suffix);
+                }
+
+                mime = "image/" + suffix;
+            } else if ("controllers".equals(dir)) {
+                mime = "application/javascript";
+            }
+
+            IndexResponse indexResponse = searchService.indexAppDoc(app, dir, resource, data, mime);
+            resp.put("status", "ok");
+            resp.put("id", indexResponse.id());
+            resp.put("version", indexResponse.version());
+        } catch (Cloud9Exception e) {
+            logger.debug("Error creating resource", e);
+            resp.put("status", "failed");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
     }
 
     @ResponseBody
