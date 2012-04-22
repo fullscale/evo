@@ -1188,8 +1188,7 @@ public class SearchService {
             throw new Cloud9Exception("Application does not exist: " + app);
         }
 
-        SearchResponse response = client.prepareSearch(appIndex).setFilter(matchAllFilter()).setFrom(0).setSize(250).execute()
-                .actionGet();
+        SearchResponse response = matchAll(appIndex, null, new String[]{});
 
         ZipOutputStream zip = null;
         try {
