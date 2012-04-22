@@ -77,7 +77,7 @@ public class AppsController {
         mav.addObject("build", config.get("build"));
 
         mav.setViewName("applications");
-        
+
         logger.trace("exit list: {}", mav);
         return mav;
     }
