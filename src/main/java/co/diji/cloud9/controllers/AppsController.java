@@ -1,6 +1,7 @@
 package co.diji.cloud9.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,9 +105,23 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.POST)
-    public void createApp(@PathVariable String app) {
-        logger.info("apps createApp app:" + app);
+    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.POST, produces = "application/json")
+    public Map<String, Object> createApp(@PathVariable String app) {
+        logger.trace("in controller=apps action=createApp app:{}", app);
+        Map<String, Object> resp = new HashMap<String, Object>();
+
+        try {
+            searchService.createApp(app);
+            resp.put("status", "ok");
+        } catch (IndexException e) {
+            logger.warn(e.getMessage());
+            logger.trace("exception: ", e);
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
+    }
     }
 
     @ResponseBody
