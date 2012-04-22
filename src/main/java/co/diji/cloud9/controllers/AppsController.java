@@ -15,6 +15,7 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -303,9 +304,19 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource}", method = RequestMethod.POST)
-    public void createResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
-        logger.info("apps createResourceInDir app:" + app + " dir:" + dir + " resource:" + resource);
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.DELETE, produces = "application/json")
+    public Map<String, Object> deleteResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
+        logger.trace("in controller=apps action=deleteResourceInDir app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        Map<String, Object> resp = new HashMap<String, Object>();
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+
+        DeleteResponse deleteResponse = searchService.deleteDoc(appIdx, dir, resource);
+        resp.put("status", "ok");
+        resp.put("id", deleteResponse.id());
+        resp.put("version", deleteResponse.version());
+
+        return resp;
     }
 
     @ResponseBody
