@@ -26,7 +26,8 @@ public class RequestParams {
         scheme = request.getScheme();
         server = request.getServerName();
         port = Integer.toString(request.getServerPort());
-        String path = (String)request.getAttribute("javax.servlet.forward.servlet_path");
+        //String path = (String)request.getAttribute("javax.servlet.forward.servlet_path");
+        String path = request.getServletPath();
         path = StringUtils.strip(path, "/");
 
         String[] components = path.split("/");
