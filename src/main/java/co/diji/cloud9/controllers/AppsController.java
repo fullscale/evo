@@ -1,5 +1,7 @@
 package co.diji.cloud9.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +10,7 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +86,21 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.GET)
-    public void listContentTypes(@PathVariable String app) {
-        logger.info("apps listContentTypes app:" + app);
+    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.GET, produces = "application/json")
+    public List<String> listContentTypes(@PathVariable String app) {
+        logger.trace("in controller=apps action=listContentTypes app:{}", app);
+        List<String> resp = new ArrayList<String>();
+
+        Map<String, MappingMetaData> appTypes = searchService.getAppTypes(app);
+        logger.debug("appTypes: {}", appTypes);
+        if (appTypes != null) {
+            for (String appType : appTypes.keySet()) {
+                logger.debug("adding appType: {}", appType);
+                resp.add(appType);
+            }
+        }
+
+        return resp;
     }
 
     @ResponseBody
