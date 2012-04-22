@@ -827,6 +827,19 @@ public class SearchService {
     }
 
     /**
+     * Get types for an application
+     * 
+     * @param app the name of the application to get the types for
+     * @return a map where the key is the type and the value is the type info. null when there is an error.
+     */
+    public Map<String, MappingMetaData> getAppTypes(String app) {
+        logger.trace("in getAppTypes app:{}", app);
+        String appIdx = appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+        return getMappings(appIdx);
+    }
+
+    /**
      * Alias for getMappings
      * 
      * @param index the index to get the mappings for
