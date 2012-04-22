@@ -359,8 +359,8 @@ public class AppsController {
         logger.debug("appIdx: {}", appIdx);
 
         try {
-            String oldId = (String) resp.get("from");
-            String newId = (String) resp.get("to");
+            String oldId = (String) data.get("from");
+            String newId = (String) data.get("to");
             if (oldId == null || newId == null) {
                 throw new Cloud9Exception("Must specify the old and new ids");
             }
