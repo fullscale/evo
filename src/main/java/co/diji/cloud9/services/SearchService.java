@@ -1012,7 +1012,7 @@ public class SearchService {
         logger.trace("in importApp app:{}, input:{}", new Object[]{app, input});
         importApp(app, input, false, true);
     }
-    
+
     /**
      * Imports an application, defaults: install mappings
      * 
@@ -1025,7 +1025,7 @@ public class SearchService {
         logger.trace("in importApp app:{}, input:{}, force:{}", new Object[]{app, input, force});
         importApp(app, input, force, true);
     }
-    
+
     /**
      * Imports an application
      * 
@@ -1104,7 +1104,7 @@ public class SearchService {
                         logger.debug("Skipping mapping: {}", entry.getName());
                         continue;
                     }
-                    
+
                     String indexName = partName.replaceAll("\\.json", "");
                     logger.debug("indexName: {}", indexName);
                     JSONObject json = (JSONObject) JSONValue.parse(IOUtils.toString(zip, "UTF-8"));
@@ -1127,7 +1127,6 @@ public class SearchService {
                         throw new Cloud9Exception("Image without extension: " + partName);
                     }
                     String suffix = partName.substring(sIdx + 1, partName.length());
-                    new Base64();
                     indexAppDoc(app, "images", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
