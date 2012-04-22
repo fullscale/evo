@@ -665,8 +665,8 @@ public class AppsController {
 
             try {
                 // pre load apis
-                cx.evaluateReader(scope, new FileReader(config.getResourceFile("js/underscore-min.js")), "underscore", 1, null);
-                cx.evaluateReader(scope, new FileReader(config.getResourceFile("js/c9/c9api.min.js")), "c9api", 1, null);
+                cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/underscore-min.js")), "underscore", 1, null);
+                cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/c9/c9api.min.js")), "c9api", 1, null);
 
                 // eval the javascript code
                 cx.evaluateString(scope, script, controller, 1, null);
