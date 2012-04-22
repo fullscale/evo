@@ -1,5 +1,6 @@
 package co.diji.cloud9.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -324,5 +325,28 @@ public class ConfigService {
 
         logger.trace("exit getResourceContent: {}", content);
         return content;
+    }
+
+    /**
+     * Gets a resource File object
+     * 
+     * @param resource the resource to get
+     * @return the resource File
+     * @throws IOException
+     */
+    public File getResourceFile(String resource) throws IOException {
+        logger.trace("in getResourceFile resource:{}", resource);
+        Resource res = applicationContext.getResource(resource);
+        File outFile = null;
+        logger.debug("exists: {}", res.exists());
+        if (res.exists()) {
+            outFile = res.getFile();
+        } else {
+            logger.debug("Resource does not exist: {}", resource);
+            throw new IOException("Resource does not exist: " + resource);
+        }
+
+        logger.trace("exit getResourceFile: {}", outFile);
+        return outFile;
     }
 }
