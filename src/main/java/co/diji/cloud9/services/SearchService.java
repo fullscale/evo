@@ -93,7 +93,7 @@ public class SearchService {
      * @param apps the list of apps to check
      * @return the list of apps, all containing the app suffix
      */
-    private String[] appsWithSuffix(String... apps) {
+    public String[] appsWithSuffix(String... apps) {
         String[] appsWithSuffix = new String[apps.length];
         for (int appIdx = 0; appIdx < apps.length; appIdx++) {
             String app = apps[appIdx];
