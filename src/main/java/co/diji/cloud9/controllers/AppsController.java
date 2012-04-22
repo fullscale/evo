@@ -320,9 +320,44 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource}", method = RequestMethod.PUT)
-    public void updateResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
-        logger.info("apps updateResourceInDir app:" + app + " dir:" + dir + " resource:" + resource);
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/_rename", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    public Map<String, Object> renameResource(@PathVariable String app, @PathVariable String dir,
+            @RequestBody Map<String, Object> data) {
+        logger.trace("in controller=apps action=renameResource app:{} dir:{} data:{}", new Object[]{app, dir, data});
+        Map<String, Object> resp = new HashMap<String, Object>();
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+
+        try {
+            String oldId = (String) resp.get("from");
+            String newId = (String) resp.get("to");
+            if (oldId == null || newId == null) {
+                throw new Cloud9Exception("Must specify the old and new ids");
+            }
+
+            GetResponse oldDoc = searchService.getDoc(appIdx, dir, oldId, null);
+            if (oldDoc == null) {
+                throw new Cloud9Exception("Resource does not exist");
+            }
+
+            IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, newId, oldDoc.sourceAsMap());
+            if (indexResponse.id().equals(newId)) {
+                searchService.deleteDoc(appIdx, dir, oldId);
+                resp.put("status", "ok");
+                resp.put("id", indexResponse.id());
+                resp.put("version", indexResponse.version());
+            } else {
+                resp.put("status", "failed");
+                resp.put("response", "unable to rename resource");
+            }
+        } catch (Cloud9Exception e) {
+            logger.error("Error renaming resource: {}", e.getMessage());
+            logger.debug("exception", e);
+            resp.put("status", "failed");
+            resp.put("response", e.getMessage());
+        }
+
+        return resp;
     }
 
     @ResponseBody
