@@ -667,7 +667,8 @@ public class SearchService {
         try {
             resp = action.actionGet();
         } catch (ElasticSearchException e) {
-            logger.warn("Error indexing document: index:{}, type:{}, id:{}. source:{}", new Object[]{index, type, id, source}, e);
+            logger.warn("Error indexing document: index:{}, type:{}, id:{}. source:{}: {}", new Object[]{index, type, id, source, e.getMessage()});
+            logger.debug("exception", e);
         }
 
         logger.trace("exit indexDoc: {}", resp);
