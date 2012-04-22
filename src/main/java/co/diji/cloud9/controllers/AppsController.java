@@ -11,7 +11,9 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,6 +136,23 @@ public class AppsController {
 
         return resp;
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}", method = RequestMethod.GET, produces = "application/json")
+    public List<String> listResources(@PathVariable String app, @PathVariable String dir) {
+        logger.trace("in controller=apps action=listResources app:{} dir:{}", app, dir);
+        List<String> resp = new ArrayList<String>();
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+        SearchResponse searchResp = searchService.matchAll(appIdx, dir, null);
+        logger.debug("searchResp:{}", searchResp);
+        if (searchResp != null) {
+            for (SearchHit hit : searchResp.hits()) {
+                resp.add(hit.getId());
+            }
+        }
+
+        return resp;
     }
 
     @ResponseBody
