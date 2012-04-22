@@ -286,9 +286,20 @@ public class AppsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource}", method = RequestMethod.GET)
-    public void getResourceFromDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
-        logger.info("apps getResourceFromDir app:" + app + " dir:" + dir + " resource:" + resource);
+    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    public Map<String, Object> updateResourceInDir(@PathVariable String app, @PathVariable String dir,
+            @PathVariable String resource, @RequestBody Map<String, Object> data) {
+        logger.trace("in controller=apps action=updateResourceInDir app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        Map<String, Object> resp = new HashMap<String, Object>();
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("addIdx: {}", appIdx);
+
+        IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
+        resp.put("status", "ok");
+        resp.put("id", indexResponse.id());
+        resp.put("version", indexResponse.version());
+
+        return resp;
     }
 
     @ResponseBody
