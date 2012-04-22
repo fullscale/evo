@@ -305,7 +305,11 @@ cloud9.prototype.addDocument = function(url, func) {
         data: JSON.stringify(values),
         type: 'post',
         success: function(data) {
-            location.reload();
+        	if (data.status === 'ok') {
+        		location.reload();
+        	} else {
+        		c9.showError($('#newdoc'), data.response);
+        	}
         }
     });
 }
