@@ -46,6 +46,7 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
@@ -1263,5 +1264,45 @@ public class SearchService {
         }
 
         logger.trace("exit exportApp");
+    }
+
+    /**
+     * Executes a matchall query against the specified index and type.
+     * 
+     * @param index the index to search
+     * @param type the type to search, null if you want to search all types in the index
+     * @param fields the fields to return, null if no fields, empty array for default source
+     * @return the search response, null on error
+     */
+    public SearchResponse matchAll(String index, String type, String[] fields) {
+        logger.trace("in matchAll index:{} type:{} fields:{}", new Object[]{index, type, fields});
+        SearchRequestBuilder request = client.prepareSearch(index);
+        request.setFilter(matchAllFilter());
+        request.setFrom(0);
+        request.setSize(250); // TODO make this configurable or use scroll search
+
+        logger.debug("type: {}", type);
+        if (type != null) {
+            request.setTypes(type);
+        }
+
+        logger.debug("fields: {}", fields);
+        if (fields == null) {
+            request.setNoFields();
+        } else if (fields.length > 0) {
+            request.addFields(fields);
+        }
+
+        SearchResponse response = null;
+        ListenableActionFuture<SearchResponse> action = request.execute();
+
+        try {
+            response = action.actionGet();
+        } catch (ElasticSearchException e) {
+            logger.debug("Error executing matchAll search", e);
+        }
+
+        logger.trace("exit matchAll: {}", response);
+        return response;
     }
 }
