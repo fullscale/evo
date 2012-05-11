@@ -27,6 +27,7 @@
 		<beans:property name="cache" value="true" />
 		<beans:property name="prefix" value="" />
 		<beans:property name="suffix" value=".vm" />
+		<beans:property name="exposeSessionAttributes" value="true"/>
 	</beans:bean>
 	
 	<context:component-scan base-package="co.diji.cloud9" />
