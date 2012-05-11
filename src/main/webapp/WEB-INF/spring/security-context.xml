@@ -17,8 +17,7 @@
         <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->
         <intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" />
         <!--intercept-url pattern="/**" access="permitAll" /-->
-        <form-login/>
-        <!--form-login login-page='/login.html' /-->
+        <form-login login-page='/login.html' />
         <logout logout-success-url="/login.html" delete-cookies="JSESSIONID"/>
         <remember-me />
         

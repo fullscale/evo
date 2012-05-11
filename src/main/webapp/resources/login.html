@@ -44,7 +44,7 @@
         <div style="height:50px;">&nbsp;</div>
     
           <center>
-              <form controller="auth" action="authenticate" method="post">
+              <form action="/j_spring_security_check" method="post">
                   <table border="0">
                       <tr>
                           <td><img src="/images/c9/cloud9-logo.png"></td>
@@ -55,12 +55,12 @@
                                   <table>
                                       <tr>
                                           <td style="padding-bottom:5px">
-                                              <input style="height:16px;font-size:14px" type="text" id="login" name="login" placeholder="Username" size="30">
+                                              <input style="height:16px;font-size:14px" type="text" id="login" name="j_username" placeholder="Username" size="30">
                                           </td>
                                       </tr>
                                       <tr>
                                           <td style="padding-bottom:5px">
-                                              <input style="height:16px;font-size:14px" type="password" id="password" name="password" placeholder="Password" size="30">
+                                              <input style="height:16px;font-size:14px" type="password" id="password" name="j_password" placeholder="Password" size="30">
                                           </td>
                                       </tr>
                                   </table>
@@ -70,7 +70,7 @@
                   
                       <tr>
                           <td>
-                              <input type="hidden" name="c" value="flash.controller ?: 'overview'">
+                              <input type="hidden" name="c" value="overview">
                               <input type="hidden" name="a" value="">
                           </td>
                           <td style="text-align:right">
