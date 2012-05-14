@@ -36,7 +36,11 @@
         <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->
         <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
         
-        <form-login login-page="/login.html" login-processing-url="/cloud9_login" />
+        <form-login 
+        	login-page="/login.html" 
+        	login-processing-url="/cloud9_login" 
+        	authentication-failure-url="/login.html" />
+        	
         <logout
         	logout-url="/logout"
         	logout-success-url="/login.html" 
