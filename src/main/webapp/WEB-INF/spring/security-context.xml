@@ -6,6 +6,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
+	<!-- Bean definitions -->
+    <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+    <beans:bean id="encoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder"/>
+    <beans:bean id="cloud9UserDetailsService" class="co.diji.cloud9.security.Cloud9UserDetailsService" />
+
     <!-- enables method annotation -->
     <global-method-security pre-post-annotations="enabled" />
 
@@ -16,7 +21,7 @@
     
     	<!-- Used for Spring redirects -->
     	<port-mappings>
-     		<port-mapping http="2600" https="2643"/>
+     		<port-mapping http="${c9.http.port:2600}" https="${c9.https.port:2643}" />
    		</port-mappings>
    
     	<!-- Everyone can access the login page -->
@@ -42,10 +47,6 @@
         </session-management-->
 
     </http>
-
-    <!--beans:bean id="encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/-->
-    <beans:bean id="encoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder"/>
-    <beans:bean id="cloud9UserDetailsService" class="co.diji.cloud9.security.Cloud9UserDetailsService" />
     
     <authentication-manager>
     
