@@ -11,4 +11,23 @@ public class Cloud9UserDetailsService implements UserDetailsService {
         return new Cloud9User();
     }
 
+    public void createUser(UserDetails user) {
+
+    }
+
+    public void updateUser(final UserDetails user) {
+
+    }
+
+    public void deleteUser(String username) {
+
+    }
+
+    public boolean userExists(String userName) {
+        return true;
+    }
+
+    public void changePassword(String oldPassword, String newPassword) {
+
+    }
 }
