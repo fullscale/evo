@@ -1,35 +1,20 @@
 package co.diji.cloud9.controllers;
 
-import java.util.Map;
-
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
-import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
-import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import co.diji.cloud9.services.ConfigService;
-import co.diji.cloud9.services.SearchService;
-
 @Controller
 @RequestMapping("/cloud9/user")
-public class UserController {
+public class UserController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
-    @Autowired
-    protected SearchService searchService;
-
-    @Autowired
-    protected ConfigService config;
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
@@ -57,26 +42,9 @@ public class UserController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView list() {
+    public ModelAndView list(ModelMap model) {
         logger.trace("enter controller=user action=list");
-
-        ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-        long count = searchService.getTotalCollectionDocCount();
-        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
-        Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
-        Map<String, NodeStats> nodeStats = searchService.getNodeStats();
-
-        ModelAndView mav = new ModelAndView();
-
-        mav.addObject("cluster", clusterHealth);
-        mav.addObject("stats", nodeStats);
-        mav.addObject("nodes", nodeInfo);
-        mav.addObject("status", collectionStatus);
-        mav.addObject("count", count);
-        mav.addObject("build", config.get("build"));
-
-        mav.setViewName("users");
-        return mav;
+        return new ModelAndView("users", model);
     }
 
 }

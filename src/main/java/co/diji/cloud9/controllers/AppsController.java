@@ -4,10 +4,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +24,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.time.DateUtils;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
-import org.elasticsearch.action.admin.cluster.node.stats.NodeStats;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -45,8 +42,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,19 +58,11 @@ import co.diji.cloud9.javascript.JSGIRequest;
 import co.diji.cloud9.javascript.JavascriptObject;
 import co.diji.cloud9.javascript.PrimitiveWrapFactory;
 import co.diji.cloud9.javascript.XMLHttpRequest;
-import co.diji.cloud9.services.ConfigService;
-import co.diji.cloud9.services.SearchService;
 
 @Controller
-public class AppsController {
+public class AppsController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppsController.class);
-
-    @Autowired
-    protected SearchService searchService;
-
-    @Autowired
-    protected ConfigService config;
 
     // list of static resource container/folder names
     private static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
@@ -109,16 +98,10 @@ public class AppsController {
     @ResponseBody
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
-    public ModelAndView list() {
+    public ModelAndView list(ModelMap model) {
         logger.trace("in controller=apps action=list");
 
-        ClusterHealthResponse clusterHealth = searchService.getClusterHealth();
-        long count = searchService.getTotalCollectionDocCount();
-        Map<String, IndexStatus> collectionStatus = searchService.getCollectionStatus();
         Map<String, IndexStatus> apps = searchService.getAppStatus();
-        Map<String, NodeInfo> nodeInfo = searchService.getNodeInfo();
-        Map<String, NodeStats> nodeStats = searchService.getNodeStats();
-
         JSONObject appResp = new JSONObject();
 
         for (String app : apps.keySet()) {
@@ -130,20 +113,10 @@ public class AppsController {
             appResp.put(app, stats);
         }
 
-        ModelAndView mav = new ModelAndView();
+        model.addAttribute("apps", appResp.toString());
 
-        mav.addObject("cluster", clusterHealth);
-        mav.addObject("stats", nodeStats);
-        mav.addObject("nodes", nodeInfo);
-        mav.addObject("status", collectionStatus);
-        mav.addObject("count", count);
-        mav.addObject("apps", appResp.toString());
-        mav.addObject("build", config.get("build"));
-
-        mav.setViewName("applications");
-
-        logger.trace("exit list: {}", mav);
-        return mav;
+        logger.trace("exit list: {}", model);
+        return new ModelAndView("applications", model);
     }
 
     @ResponseBody
@@ -667,7 +640,11 @@ public class AppsController {
 
             try {
                 // pre load apis
-                cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/underscore-min.js")), "underscore", 1, null);
+                cx.evaluateReader(scope,
+                        new FileReader(config.getResourceFile("/resources/js/underscore-min.js")),
+                        "underscore",
+                        1,
+                        null);
                 cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/c9/c9api.min.js")), "c9api", 1, null);
 
                 // eval the javascript code
