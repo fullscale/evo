@@ -35,7 +35,11 @@
         <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
         
         <form-login login-page='/login.html' />
-        <logout logout-success-url="/login.html" delete-cookies="JSESSIONID"/>
+        <logout
+        	logout-url="/logout"
+        	logout-success-url="/login.html" 
+        	delete-cookies="JSESSIONID" 
+        	invalidate-session="true" />
         <remember-me />
         
         <!-- Enable X509 client authentication support -->

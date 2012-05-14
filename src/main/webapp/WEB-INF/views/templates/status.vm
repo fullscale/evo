@@ -11,7 +11,7 @@
   </ul>
 </div>
 
-<div class="status-header gradient-light"><a href="/j_spring_security_logout">Log Out (<span class="c9-session-username">$SPRING_SECURITY_CONTEXT.authentication.getName()</span>)</a></div>
+<div class="status-header gradient-light"><a href="/logout">Log Out (<span class="c9-session-username">$SPRING_SECURITY_CONTEXT.authentication.getName()</span>)</a></div>
 
 <div class="status-body">
   <div class="status-body-title">
