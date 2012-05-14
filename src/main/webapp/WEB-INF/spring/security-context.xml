@@ -14,8 +14,10 @@
     <!-- enables method annotation -->
     <global-method-security pre-post-annotations="enabled" />
 
-    <http pattern="/static/**" security="none"/>
-    <http pattern="/loggedout.jsp" security="none"/>
+	<!-- no need to secure static resources -->
+    <http pattern="/css/**" security="none"/>
+    <http pattern="/js/**" security="none"/>
+    <http pattern="/images/**" security="none"/>
 
     <http use-expressions="true">
     
