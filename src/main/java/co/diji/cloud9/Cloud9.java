@@ -31,10 +31,6 @@ public final class Cloud9 {
             System.getProperty("c9.https.port", "2643")
         );
 
-		Boolean enableHttps = "true".equals(
-            System.getProperty("c9.https.enable", "false")
-        );
-
 		Boolean forceHttps = "force".equals(
             System.getProperty("c9.https.enable", "false")
         );
@@ -75,36 +71,34 @@ public final class Cloud9 {
 		tmpDir.deleteOnExit();
 		logger.debug("temp dir: {}", tmpDir);
 
-		// setup an SSL socket if user requested one
-		if (enableHttps || forceHttps) {
+		// setup an SSL socket
 
-			// get the keystore/keypass otherwise use cloud9 default
-			String keypass = System.getProperty("c9.https.keypass",
-					"3f038de0-6606-11e1-b86c-0800200c9a66");
-			String keystore = System.getProperty("c9.https.keystore", tmpDir
-					+ "/webapp/WEB-INF/security/c9.default.keystore");
+		// get the keystore/keypass otherwise use cloud9 default
+		String keypass = System.getProperty("c9.https.keypass",
+				"3f038de0-6606-11e1-b86c-0800200c9a66");
+		String keystore = System.getProperty("c9.https.keystore", tmpDir
+				+ "/webapp/WEB-INF/security/c9.default.keystore");
 
-			// create a secure channel
-			final SslContextFactory sslContextFactory = new SslContextFactory(
-					keystore);
-			sslContextFactory.setKeyStorePassword(keypass);
-			sslContextFactory.setKeyManagerPassword(keypass);
+		// create a secure channel
+		final SslContextFactory sslContextFactory = new SslContextFactory(
+				keystore);
+		sslContextFactory.setKeyStorePassword(keypass);
+		sslContextFactory.setKeyManagerPassword(keypass);
 
-			final SslSocketConnector sslConn = new SslSocketConnector(
-					sslContextFactory);
-			sslConn.setPort(httpsPort);
+		final SslSocketConnector sslConn = new SslSocketConnector(
+				sslContextFactory);
+		sslConn.setPort(httpsPort);
 
-			// we're not forcing HTTPS so start an HTTP channel as well
-			if (!forceHttps) {
-				logger.info("Enabling SSL on port {}", httpsPort);
-				SelectChannelConnector selectChannelConnector = new SelectChannelConnector();
-				selectChannelConnector.setPort(httpPort);
-				server.setConnectors(new Connector[] { sslConn,
-						selectChannelConnector });
-			} else {
-				logger.info("Enforcing SSL on port {}", httpsPort);
-				server.setConnectors(new Connector[] { sslConn });
-			}
+		// we're not forcing HTTPS so start an HTTP channel as well
+		if (!forceHttps) {
+			logger.info("Enabling SSL on port {}", httpsPort);
+			SelectChannelConnector selectChannelConnector = new SelectChannelConnector();
+			selectChannelConnector.setPort(httpPort);
+			server.setConnectors(new Connector[] { sslConn,
+					selectChannelConnector });
+		} else {
+			logger.info("Enforcing SSL on port {}", httpsPort);
+			server.setConnectors(new Connector[] { sslConn });
 		}
 
 		webapp.setContextPath("/");
