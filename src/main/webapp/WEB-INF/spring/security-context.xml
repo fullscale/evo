@@ -13,10 +13,22 @@
     <http pattern="/loggedout.jsp" security="none"/>
 
     <http use-expressions="true">
-        <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
+    
+    	<!-- Used for Spring redirects -->
+    	<port-mappings>
+     		<port-mapping http="2600" https="2643"/>
+   		</port-mappings>
+   
+    	<!-- Everyone can access the login page -->
+    	<intercept-url pattern="/login.html" access="permitAll" />
+    	
+    	<!-- Administrative Interface Security Rules -->
+    	<intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" requires-channel="https" />
+        
+        <!-- API Security Rules -->
         <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->
-        <intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" />
-        <!--intercept-url pattern="/**" access="permitAll" /-->
+        <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
+        
         <form-login login-page='/login.html' />
         <logout logout-success-url="/login.html" delete-cookies="JSESSIONID"/>
         <remember-me />
