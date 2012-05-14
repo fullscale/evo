@@ -28,7 +28,7 @@ public final class Cloud9 {
         );
 
 		int httpsPort = Integer.parseInt(
-            System.getProperty("c9.http.port", "2643")
+            System.getProperty("c9.https.port", "2643")
         );
 
 		Boolean enableHttps = "true".equals(
