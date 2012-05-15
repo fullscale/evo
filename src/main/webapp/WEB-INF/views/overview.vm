@@ -79,7 +79,7 @@
                     barChart("jvm-thread-count-$node.key")
                       .data([
                         ${stat.jvm().threads().count()},
-                        ${stat.jvm().threads().peakCount()} - ${stat.jvm().threads().count()}])
+                        100 - ${stat.jvm().threads().count()}])
                       .label("JVM Threads")
                       .unit("")
                       .draw();
