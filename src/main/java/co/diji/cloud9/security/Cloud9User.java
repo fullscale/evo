@@ -12,6 +12,7 @@ public class Cloud9User implements UserDetails {
     private static final long serialVersionUID = 1L;
     private String username;
     private String password;
+    private String uid;
     private boolean accountNonExpired = true;
     private boolean nonLocked = true;
     private boolean credentialsNonExpired = true;
@@ -53,6 +54,14 @@ public class Cloud9User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUid() {
+        return this.uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     @Override

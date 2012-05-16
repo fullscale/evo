@@ -4,7 +4,11 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
     xmlns:beans="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans 
+    	http://www.springframework.org/schema/beans/spring-beans.xsd 
+    	http://www.springframework.org/schema/security 
+    	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<!-- Bean definitions -->
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
@@ -12,6 +16,9 @@
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
     	<beans:constructor-arg value="256"/>
     </beans:bean>
+    <beans:bean class="org.springframework.security.authentication.dao.ReflectionSaltSource" id="saltSource">
+     	<beans:property name="userPropertyToUse" value="uid"/>
+	</beans:bean>
 
     <!-- enables method annotation -->
     <global-method-security pre-post-annotations="enabled" />
@@ -64,7 +71,9 @@
     
     	<!-- Cloud9 provider -->
     	<authentication-provider user-service-ref="cloud9UserDetailsService">
-    		<password-encoder ref="passwordEncoder"/>
+    		<password-encoder ref="passwordEncoder">
+    			<salt-source ref="saltSource"/>
+    		</password-encoder>
     	</authentication-provider>
     	
     	<!-- Memory based (test) provider: admin:admin

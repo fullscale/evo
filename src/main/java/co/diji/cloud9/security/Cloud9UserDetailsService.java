@@ -48,6 +48,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
             principle = new Cloud9User();
             principle.setUsername((String) source.get("username"));
             principle.setPassword((String) source.get("password"));
+            principle.setUid((String) source.get("uid"));
             principle.setAccountNonExpired((Boolean) source.get("accountNonExpired"));
             principle.setAccountNonLocked((Boolean) source.get("accountNonLocked"));
             principle.setCredentialsNonExpired((Boolean) source.get("credentialsNonExpired"));

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -184,10 +185,13 @@ public class SearchService {
                 throw new Cloud9Exception("Error creating system index", e);
             }
 
+            String uid = UUID.randomUUID().toString();
+
             Map<String, Object> source = new HashMap<String, Object>();
             source.put("username", "admin");
-            source.put("password", passwordEncoder.encodePassword("admin", null));
+            source.put("password", passwordEncoder.encodePassword("admin", uid));
             source.put("authorities", new String[]{"supervisor"});
+            source.put("uid", uid);
             source.put("accountNonExpired", true);
             source.put("accountNonLocked", true);
             source.put("credentialsNonExpired", true);
