@@ -63,6 +63,7 @@ import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
@@ -89,6 +90,9 @@ public class SearchService {
 
     @Autowired
     private ConfigService config;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Utility method to make sure a list of apps has the app suffix
@@ -180,15 +184,16 @@ public class SearchService {
                 throw new Cloud9Exception("Error creating system index", e);
             }
 
-            Map<String, Object> admin = new HashMap<String, Object>();
-            admin.put("name", "Administrator");
-            admin.put("role", "admin");
-            admin.put("uname", "admin");
-            admin.put("email", "root@localhost");
-            admin.put("password", config.get("admin.password"));
+            Map<String, Object> source = new HashMap<String, Object>();
+            source.put("username", "admin");
+            source.put("password", passwordEncoder.encodePassword("admin", null));
+            source.put("authorities", new String[]{"supervisor"});
+            source.put("accountNonExpired", true);
+            source.put("accountNonLocked", true);
+            source.put("credentialsNonExpired", true);
+            source.put("enabled", true);
 
-            logger.debug("admin user: {}", admin);
-            indexDoc(SYSTEM_INDEX, "users", "admin", admin);
+            indexDoc(SYSTEM_INDEX, "users", "admin", source);
         } else {
             logger.info("Recovering system account information");
         }
@@ -667,7 +672,8 @@ public class SearchService {
         try {
             resp = action.actionGet();
         } catch (ElasticSearchException e) {
-            logger.warn("Error indexing document: index:{}, type:{}, id:{}. source:{}: {}", new Object[]{index, type, id, source, e.getMessage()});
+            logger.warn("Error indexing document: index:{}, type:{}, id:{}. source:{}: {}",
+                    new Object[]{index, type, id, source, e.getMessage()});
             logger.debug("exception", e);
         }
 

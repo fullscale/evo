@@ -2,7 +2,6 @@ package co.diji.cloud9.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,25 +10,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Cloud9User implements UserDetails {
 
     private static final long serialVersionUID = 1L;
-    private String userName = "admin";
-    private String password = "4efe081594ce25ee4efd9f7067f7f678a347bccf2de201f3adf2a3eb544850b465b4e51cdc3fcdde";
-    private GrantedAuthority[] authorities;
+    private String username;
+    private String password;
+    private boolean accountNonExpired = true;
+    private boolean nonLocked = true;
+    private boolean credentialsNonExpired = true;
+    private boolean enabled = true;
+    private ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
-        roles.add(new SimpleGrantedAuthority("supervisor"));
-        roles.add(new SimpleGrantedAuthority("user"));
-        roles.add(new SimpleGrantedAuthority("teller"));
-        return roles;
+        return this.authorities;
     }
 
-    public void setCustomerAuthorities(List<String> roles) {
-        List<GrantedAuthority> listOfAuthorities = new ArrayList<GrantedAuthority>();
+    public void setAuthorities(ArrayList<String> roles) {
         for (String role : roles) {
-            listOfAuthorities.add(new SimpleGrantedAuthority(role));
+            addAuthority(role);
         }
-        authorities = (GrantedAuthority[]) listOfAuthorities.toArray();
+    }
+
+    public void addAuthority(String authority) {
+        authorities.add(new SimpleGrantedAuthority(authority));
+    }
+
+    public void removeAuthority(String authority) {
+        authorities.remove(authority);
     }
 
     @Override
@@ -37,29 +42,53 @@ public class Cloud9User implements UserDetails {
         return this.password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
-        return this.userName;
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.accountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.nonLocked;
+    }
+
+    public void setAccountNonLocked(boolean nonLocked) {
+        this.nonLocked = nonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

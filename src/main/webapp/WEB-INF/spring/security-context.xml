@@ -8,7 +8,7 @@
 
 	<!-- Bean definitions -->
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
-    <beans:bean id="encoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder"/>
+    <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
     <beans:bean id="cloud9UserDetailsService" class="co.diji.cloud9.security.Cloud9UserDetailsService" />
 
     <!-- enables method annotation -->
@@ -62,15 +62,14 @@
     
     	<!-- Cloud9 provider -->
     	<authentication-provider user-service-ref="cloud9UserDetailsService">
-    		<password-encoder ref="encoder"/>
+    		<password-encoder ref="passwordEncoder"/>
     	</authentication-provider>
     	
-    	<!-- Memory based (test) provider: admin:koala guest:emu
+    	<!-- Memory based (test) provider: admin:admin
         <authentication-provider>
-            <password-encoder ref="encoder"/>
+            <password-encoder ref="passwordEncoder"/>
             <user-service>
-                <user name="admin" password="4efe081594ce25ee4efd9f7067f7f678a347bccf2de201f3adf2a3eb544850b465b4e51cdc3fcdde" authorities="supervisor, user, teller" />
-                <user name="guest" password="957ea522524a41cbfb649a3e293d56268f840fd5b661b499b07858bc020d6d223f912e3ab303b00f" authorities="user,teller" />
+                <user name="admin" password="d033e22ae348aeb5660fc2140aec35850c4da997" authorities="supervisor, user, teller" />
             </user-service>
         </authentication-provider>-->
 
