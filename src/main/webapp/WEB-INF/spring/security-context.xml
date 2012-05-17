@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Security configuration -->
+<!-- namespace docs: http://static.springsource.org/spring-security/site/docs/3.1.x/reference/appendix-namespace.html -->
 <beans:beans xmlns="http://www.springframework.org/schema/security"
     xmlns:beans="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,7 +29,7 @@
     <http pattern="/js/**" security="none"/>
     <http pattern="/images/**" security="none"/>
 
-    <http use-expressions="true">
+    <http use-expressions="true" disable-url-rewriting="true">
     
     	<!-- Used for Spring redirects -->
     	<port-mappings>
