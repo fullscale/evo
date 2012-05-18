@@ -138,6 +138,18 @@
             <artifactId>spring-security-web</artifactId>
             <version>${spring.security.version}</version>
         </dependency>
+        
+        <!-- Hazelcast (distributed in-memory data grid) -->
+        <dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-wm</artifactId>
+			<version>2.1</version>
+		</dependency>
 
         <!-- JSON from Spring Controllers -->
         <dependency>
