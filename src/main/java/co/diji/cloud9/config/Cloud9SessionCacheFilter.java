@@ -18,14 +18,17 @@ public class Cloud9SessionCacheFilter implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext context) {
 
-        FilterRegistration cacheFilter = context.addFilter("hazelcast-filter", new WebFilter());
-        cacheFilter.setInitParameter("map-name", "session-cache");
-        cacheFilter.setInitParameter("sticky-session", "false");
-        cacheFilter.setInitParameter("cookie-name", "cloud9-sid");
-        cacheFilter.setInitParameter("debug", "true");
+        Boolean enableSessionCache = "enable".equals(System.getProperty("c9.session.cache", "false"));
 
-        cacheFilter.addMappingForUrlPatterns(dispatches, false, "/*");
-        context.addListener(new SessionListener());
+        if (enableSessionCache == true) {
+            FilterRegistration cacheFilter = context.addFilter("hazelcast-filter", new WebFilter());
+            cacheFilter.setInitParameter("map-name", "session-cache");
+            cacheFilter.setInitParameter("sticky-session", "false");
+            cacheFilter.setInitParameter("cookie-name", "cloud9-sid");
+            cacheFilter.setInitParameter("debug", "true");
 
+            cacheFilter.addMappingForUrlPatterns(dispatches, false, "/*");
+            context.addListener(new SessionListener());
+        }
     }
 }
