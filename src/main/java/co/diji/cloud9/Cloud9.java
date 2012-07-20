@@ -53,8 +53,6 @@ public final class Cloud9 {
 		WebAppContext webapp = new WebAppContext();
 
 		// create a temporary directory to run from
-		File tmpDir = new File(System.getProperty("java.io.tmpdir") + "cloud9-"
-				+ httpPort);
 
 		// if it already exists delete it
 		if (tmpDir.exists()) {
