@@ -455,8 +455,7 @@ public class SearchServiceTest {
         assertEquals(false, mappings.containsKey("testmapping"));
         assertEquals(1, mappings.size());
         assertEquals(false, searchService.deleteMapping("doesnotexistindex", "badmappingtype"));
-        // if you try to delete missing type on existing index, operation will succeed
-        assertTrue(searchService.deleteType("indexwithhtmlmapping", "badmappingtype"));
+        assertEquals(false, searchService.deleteType("indexwithhtmlmapping", "badmappingtype"));
     }
 
     @Test
