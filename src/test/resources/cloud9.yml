@@ -1,0 +1,3 @@
+build: "${project.version}"
+admin:
+    password: "admin"

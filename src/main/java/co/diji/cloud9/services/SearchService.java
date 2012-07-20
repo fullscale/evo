@@ -189,7 +189,9 @@ public class SearchService {
 
             Map<String, Object> source = new HashMap<String, Object>();
             source.put("username", "admin");
-            source.put("password", passwordEncoder.encodePassword(config.get("admin.password"), uid));
+            source.put("password", (passwordEncoder != null)
+                    ? passwordEncoder.encodePassword(config.get("admin.password"), uid)
+                    : config.get("admin.password"));
             source.put("authorities", new String[]{"supervisor"});
             source.put("uid", uid);
             source.put("accountNonExpired", true);
