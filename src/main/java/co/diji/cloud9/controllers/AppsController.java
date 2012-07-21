@@ -53,6 +53,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexException;
+import co.diji.cloud9.exceptions.index.IndexExistsException;
 import co.diji.cloud9.http.RequestParams;
 import co.diji.cloud9.javascript.JSGIRequest;
 import co.diji.cloud9.javascript.JavascriptObject;
@@ -714,4 +715,88 @@ public class AppsController extends BaseController {
 
         return jsResponse;
     }
+
+    // TODO: there are hacks for mars, remove once we fix authentication
+    @ResponseBody
+    @RequestMapping(value = "/v2/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    public Map<String, Object> pushAppFile(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
+            @RequestBody Map<String, Object> data) {
+        logger.trace("in controller=api action=pushAppFile app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        Map<String, Object> resp = new HashMap<String, Object>();
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("addIdx: {}", appIdx);
+
+        try {
+            searchService.createAppIndex(app);
+        } catch (IndexExistsException e1) {
+            logger.debug("Application already exists: {}");
+        } catch (IndexException e) {
+            logger.warn("Error pushing application file: {}", e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", e.getMessage());
+            return resp;
+        }
+
+        IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
+        resp.put("status", "ok");
+        resp.put("id", indexResponse.id());
+        resp.put("version", indexResponse.version());
+
+        return resp;
+    }
+
+    // TODO: there are hacks for mars, remove once we fix authentication
+    @ResponseBody
+    @RequestMapping(value = "/v2/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
+    public void pullAppFile(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
+            HttpServletResponse response) {
+        logger.trace("in controller=api action=pullAppFile app:{} dir:{} resource:{} response:{}", new Object[]{
+                app, dir, resource, response});
+        String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", appIdx);
+
+        GetResponse res = searchService.getDoc(appIdx, dir, resource, null);
+        ServletOutputStream out = null;
+        try {
+            out = response.getOutputStream();
+
+            logger.debug("res: {}", res);
+            if (res == null) {
+                throw new Cloud9Exception("Unable to get resource");
+            }
+
+            Map<String, Object> source = res.sourceAsMap();
+            logger.debug("source: {}", source);
+            if (source == null) {
+                throw new Cloud9Exception("Unable to get resource source");
+            }
+
+            String mime = (String) source.get("mime");
+            logger.debug("mime: {}", mime);
+            response.setContentType(mime);
+
+            String code = (String) source.get("code");
+            logger.debug("code: {}", code);
+            if (mime.startsWith("image")) {
+                logger.debug("decoding base64 data");
+                byte[] data = Base64.decodeBase64(code);
+                out.write(data);
+            } else {
+                out.print(code);
+            }
+        } catch (Exception e) {
+            logger.debug("Error getting resource", e);
+            response.setStatus(400);
+        } finally {
+            logger.debug("closing output stream");
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing output stream", e);
+                }
+            }
+        }
+    }
+
 }
