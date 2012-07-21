@@ -121,7 +121,8 @@ public class ApiController {
             @RequestParam(value = "force", defaultValue = "false") boolean force,
             @RequestParam(value = "mappings", defaultValue = "true") boolean mappings,
             @RequestPart(value = "app", required = false) MultipartFile data) {
-        logger.trace("in controller=api action=importApp app:{} force:{} mappings:{} data:{}", new Object[]{app, force, mappings, data});
+        logger.trace("in controller=api action=importApp app:{} force:{} mappings:{} data:{}", new Object[]{
+                app, force, mappings, data});
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
