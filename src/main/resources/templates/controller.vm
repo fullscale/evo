@@ -21,8 +21,8 @@ function examples() {
     /* example of using underscore.js template */
     var resultTmpl = _.template(
         "<span class=\"result-title\">Search Results</span>" +
-        "<% _.each(hits, function(hit) {" +
-        "<li><%= hit._source.title </li>" +
+        "<% _.each(hits, function(hit) { %>" +
+        "<li><%= hit._source.title %></li>" +
         "<% }); %>"
     );
 
