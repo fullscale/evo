@@ -167,9 +167,13 @@ public class XMLHttpRequest extends ScriptableObject {
             this.urlConnection.connect();
             sendRequest(content);
 
+            // why only limit reading responses for POST and GET???
+            /*
             if (("POST".equals(this.httpMethod)) || ("GET".equals(this.httpMethod))) {
                 readResponse();
             }
+            */
+            readResponse();
         } catch (Exception e) {
             if (this.httpStatus == 0) {
                 this.httpStatus = 500;
