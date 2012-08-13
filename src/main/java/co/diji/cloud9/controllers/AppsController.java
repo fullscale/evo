@@ -682,6 +682,9 @@ public class AppsController extends BaseController {
             scope.setPrototype(sharedScope);
             scope.setParentScope(null);
             
+            // add request values to scope
+            scope.put("REQUEST", scope, jsRequest.value());
+            
             try {
                 // eval the javascript code
                 cx.evaluateString(scope, script, controller, 1, null);
