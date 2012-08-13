@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,13 @@ public class AppsController extends BaseController {
     private static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
             "css", "images", "js", "html"}));
 
+    private ScriptableObject sharedScope;
+  
+    @PostConstruct
+    private void initialize() {
+        initializeSharedScope();
+    }
+    
     /**
      * Validates that the resource has the correct extension, if not, it adds it.
      * 
@@ -619,6 +627,46 @@ public class AppsController extends BaseController {
         }
     }
 
+    private Context getContext() {
+        Context cx = Context.enter();
+        cx.setLanguageVersion(180);
+        PrimitiveWrapFactory wrapper = new PrimitiveWrapFactory();
+        wrapper.setJavaPrimitiveWrap(false);
+        cx.setWrapFactory(wrapper);
+        cx.setOptimizationLevel(9);
+        
+        return cx;
+    }
+    
+    private void initializeSharedScope() {
+        Context cx = getContext();
+        
+        // provides access to importPackage and importClass
+        // seal standard imports
+        ScriptableObject scope = new ImporterTopLevel(cx, true);
+        
+        try {
+            // for ajax calls
+            ScriptableObject.defineClass(scope, XMLHttpRequest.class);
+            
+            // used in cloud9 javascript api to detect if we are running server side or not
+            scope.put("ServerSideC9", scope, true);
+            
+            // resources
+            cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/underscore-min.js")), "underscore", 1, null);
+            cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/c9/c9api.min.js")), "c9api", 1, null);
+            
+            // seal everything not already sealed
+            scope.sealObject();
+        } catch (Exception e) {
+            logger.warn("Unable to load server side javascript shared scope: {}", e.getMessage(), e);
+        } finally {
+            Context.exit();
+        }
+        
+        this.sharedScope = scope;
+    }
+    
     private JavascriptObject evaluateJavascript(String script, JSGIRequest jsgi) {
         JavascriptObject jsResponse = null;
         JavascriptObject jsRequest = jsgi.env();
@@ -626,31 +674,17 @@ public class AppsController extends BaseController {
         String action = jsRequest.get("action");
 
         // create Rhino context
-        Context cx = Context.enter();
-        cx.setLanguageVersion(180);
-        PrimitiveWrapFactory wrapper = new PrimitiveWrapFactory();
-        wrapper.setJavaPrimitiveWrap(false);
-        cx.setWrapFactory(wrapper);
-        cx.setOptimizationLevel(9);
+        Context cx = getContext();
 
         try {
-            // provides access to importPackage and importClass
-            Scriptable scope = new ImporterTopLevel(cx);
-            ScriptableObject.defineClass(scope, XMLHttpRequest.class);
-            scope.put("ServerSideC9", scope, jsRequest.value());
-
+            // create scope based on our shared scope
+            Scriptable scope = cx.newObject(sharedScope);
+            scope.setPrototype(sharedScope);
+            scope.setParentScope(null);
+            
             try {
-                // pre load apis
-                cx.evaluateReader(scope,
-                        new FileReader(config.getResourceFile("/resources/js/underscore-min.js")),
-                        "underscore",
-                        1,
-                        null);
-                cx.evaluateReader(scope, new FileReader(config.getResourceFile("/resources/js/c9/c9api.min.js")), "c9api", 1, null);
-
                 // eval the javascript code
                 cx.evaluateString(scope, script, controller, 1, null);
-
             } catch (EvaluatorException e) {
                 // exception will contain the source and line of the error
                 jsResponse = new JavascriptObject();
