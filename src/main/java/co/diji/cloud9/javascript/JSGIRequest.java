@@ -1,16 +1,13 @@
 package co.diji.cloud9.javascript;
 
-import co.diji.cloud9.javascript.JavascriptObject;
-import co.diji.cloud9.javascript.ByteArrayOutputStream;
-
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequest;
-
 import java.io.BufferedReader;
 import java.util.Enumeration;
 import java.util.Map;
 
-import org.mozilla.javascript.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.mozilla.javascript.NativeArray;
 
 /*
  * This object represents a JSGI compliant interface.
@@ -23,28 +20,26 @@ import org.mozilla.javascript.*;
  */
 public class JSGIRequest {
 
-	private JavascriptObject req = null;
+    private JavascriptObject req = null;
 
-	public JSGIRequest(HttpServletRequest request, 
-                       RequestInfo params, 
-                       HttpSession userSession) {
+    public JSGIRequest(HttpServletRequest request, RequestInfo params, HttpSession userSession) {
 
         req = new JavascriptObject();
 
         /* create the JSGI environment */
         req.put("method", request.getMethod());
-        req.put("controller", params.controller);
-        req.put("scriptName", "/" + params.appname);
-        req.put("pathInfo", "/" + params.controller + "/" + params.action);
-        req.put("action", params.action);
+        req.put("controller", params.getController());
+        req.put("scriptName", "/" + params.getAppname());
+        req.put("pathInfo", "/" + params.getController() + "/" + params.getAction());
+        req.put("action", params.getAction());
         req.put("headers", headers(request));
         req.put("queryString", request.getQueryString());
-        req.put("host", params.server);
-        req.put("port", params.port);
+        req.put("host", params.getServer());
+        req.put("port", params.getPort());
         req.put("params", params(params));
         req.put("jsgi", jsgi());
         req.put("input", body(request));
-        req.put("scheme", params.scheme);
+        req.put("scheme", params.getScheme());
         req.put("env", env(request));
 
         /* session aren't part of the spec but we can add them */
@@ -54,7 +49,7 @@ public class JSGIRequest {
         } else {
             req.put("session", session(userSession));
         }
-	}
+    }
 
     /*
      * creates the env specific request variables.
@@ -71,7 +66,7 @@ public class JSGIRequest {
     private JavascriptObject jsgi() {
 
         JavascriptObject jsgi = new JavascriptObject();
-        Integer[] jsgiVersion = new Integer[] {0, 3};
+        Integer[] jsgiVersion = new Integer[]{0, 3};
         ByteArrayOutputStream writer = new ByteArrayOutputStream();
 
         jsgi.put("version", new NativeArray(jsgiVersion));
@@ -88,16 +83,16 @@ public class JSGIRequest {
     /*
      * creates the header specific request variables.
      */
-	private JavascriptObject headers(HttpServletRequest request) {
+    private JavascriptObject headers(HttpServletRequest request) {
         JavascriptObject headers = new JavascriptObject();
         Enumeration<String> headerNames = request.getHeaderNames();
 
-        while(headerNames.hasMoreElements()) {
-        String headerName = (String)headerNames.nextElement();
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String) headerNames.nextElement();
             headers.put(headerName, request.getHeader(headerName));
         }
         return headers;
-	}
+    }
 
     /*
      * creates the session specific request variables.
@@ -105,13 +100,13 @@ public class JSGIRequest {
     @SuppressWarnings("unchecked")
     private JavascriptObject session(HttpSession userSession) {
         JavascriptObject session = null;
-		Map<String, String> user = (Map<String, String>) userSession.getAttribute("user");
+        Map<String, String> user = (Map<String, String>) userSession.getAttribute("user");
         if (user != null) {
             session = new JavascriptObject();
             session.put("user", (String) user.get("name"));
             session.put("role", (String) user.get("role"));
             session.put("id", (String) user.get("id"));
-        } 
+        }
         return session;
     }
 
@@ -120,7 +115,7 @@ public class JSGIRequest {
      */
     private co.diji.cloud9.javascript.BufferedReader body(HttpServletRequest request) {
         try {
-            BufferedReader reader = request.getReader(); 
+            BufferedReader reader = request.getReader();
             return new co.diji.cloud9.javascript.BufferedReader(reader);
         } catch (java.io.IOException e) {
             return new co.diji.cloud9.javascript.BufferedReader();
@@ -134,7 +129,7 @@ public class JSGIRequest {
         JavascriptObject jsParams = new JavascriptObject();
 
         /* wraps the URL parameters in Javascript Native objects */
-        for (Map.Entry<String, String[]> entry : params.params.entrySet()) {
+        for (Map.Entry<String, String[]> entry : params.getParams().entrySet()) {
             String[] paramVals = (String[]) entry.getValue();
 
             if (paramVals.length == 1) {

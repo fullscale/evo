@@ -148,23 +148,23 @@ public class ResourceController {
             logger.debug("params: {}", params);
 
             // if this isn't a static resource
-            boolean isStatic = STATIC_RESOURCES.contains(params.dir);
+            boolean isStatic = STATIC_RESOURCES.contains(params.getDir());
             logger.debug("isStatic: {}", isStatic);
             if (!isStatic) {
 
                 /* controllers can potentially handle any request method */
                 response.setHeader("Allow", "GET, POST, PUT, DELETE");
 
-                params.controller = params.dir;
-                params.action = params.resource;
-                params.resource = params.dir + ".js";
-                params.dir = "controllers";
+                params.setController(params.getDir());
+                params.setAction(params.getResource());
+                params.setResource(params.getDir() + ".js");
+                params.setDir("controllers");
 
                 // fetch the controller code from the JSON store
-                GetResponse doc = searchService.getDoc(params.app, params.dir, params.resource, null);
+                GetResponse doc = searchService.getDoc(params.getApp(), params.getDir(), params.getResource(), null);
                 logger.debug("doc: {}", doc);
                 if (doc == null) {
-                    throw new Cloud9Exception("Resource not found: " + params.resource);
+                    throw new Cloud9Exception("Resource not found: " + params.getResource());
                 }
 
                 // if the document (controller code) was found
@@ -252,7 +252,7 @@ public class ResourceController {
 
                     // document (controller code) wasn't found - return a 404
                 } else {
-                    logger.debug("Unable to find controller: {}", params.resource);
+                    logger.debug("Unable to find controller: {}", params.getResource());
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
 
@@ -270,11 +270,11 @@ public class ResourceController {
                 }
 
                 // fetch the resource from the JSON store
-                GetResponse doc = searchService.getDoc(params.app, params.dir, params.resource, new String[]{
+                GetResponse doc = searchService.getDoc(params.getApp(), params.getDir(), params.getResource(), new String[]{
                         "_timestamp", "_source"});
                 logger.debug("doc: {}", doc);
                 if (doc == null) {
-                    throw new Cloud9Exception("Resource not found: " + params.resource);
+                    throw new Cloud9Exception("Resource not found: " + params.getResource());
                 }
 
                 // if the resource was found
@@ -348,7 +348,7 @@ public class ResourceController {
 
                     // couldn't find the resource - return a 404
                 } else {
-                    logger.debug("unable to find resource: {}", params.resource);
+                    logger.debug("unable to find resource: {}", params.getResource());
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
             }
