@@ -28,7 +28,7 @@ C9.ide.layout = function () {
                     units: [ 
                         { position: 'top', height: 26, body: 'top1', gutter: '0px', scroll: null, zIndex: 2 }, 
                         { position: 'bottom', height: 0, resize: false, body: 'bottom1', gutter: '0px'}, 
-                        { position: 'left', width: 210, resize: true, body: 'left1', gutter: '0px', scroll: true }, 
+                        { position: 'left', width: 300, resize: true, body: 'left1', gutter: '0px', scroll: true }, 
                         { position: 'center', body: 'center1', gutter: '0px'} 
                     ] 
                 }); 
