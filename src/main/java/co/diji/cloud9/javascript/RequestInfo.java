@@ -4,7 +4,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
-public class RequestParams {
+public class RequestInfo {
 
     public String scheme;
     public String server;
@@ -17,7 +17,7 @@ public class RequestParams {
 	public String resource;
 	public Map<String, String[]> params;
 
-	public RequestParams(HttpServletRequest request) {
+	public RequestInfo(HttpServletRequest request) {
 		ParseServletPath(request);	
 	}
 	

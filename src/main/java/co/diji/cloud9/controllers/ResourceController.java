@@ -41,7 +41,7 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.javascript.JSGIRequest;
 import co.diji.cloud9.javascript.JavascriptObject;
 import co.diji.cloud9.javascript.PrimitiveWrapFactory;
-import co.diji.cloud9.javascript.RequestParams;
+import co.diji.cloud9.javascript.RequestInfo;
 import co.diji.cloud9.javascript.XMLHttpRequest;
 import co.diji.cloud9.services.ConfigService;
 import co.diji.cloud9.services.SearchService;
@@ -144,7 +144,7 @@ public class ResourceController {
                 app, dir, resource, request, response, userSession});
 
         try {
-            RequestParams params = new RequestParams(request);
+            RequestInfo params = new RequestInfo(request);
             logger.debug("params: {}", params);
 
             // if this isn't a static resource

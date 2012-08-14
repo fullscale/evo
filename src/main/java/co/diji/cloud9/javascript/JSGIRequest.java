@@ -26,7 +26,7 @@ public class JSGIRequest {
 	private JavascriptObject req = null;
 
 	public JSGIRequest(HttpServletRequest request, 
-                       RequestParams params, 
+                       RequestInfo params, 
                        HttpSession userSession) {
 
         req = new JavascriptObject();
@@ -130,7 +130,7 @@ public class JSGIRequest {
     /*
      * creates the parameter specific request variables.
      */
-    private JavascriptObject params(RequestParams params) {
+    private JavascriptObject params(RequestInfo params) {
         JavascriptObject jsParams = new JavascriptObject();
 
         /* wraps the URL parameters in Javascript Native objects */
