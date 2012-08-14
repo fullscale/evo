@@ -1,7 +1,6 @@
 package co.diji.cloud9.javascript;
 
 import co.diji.cloud9.javascript.JavascriptObject;
-import co.diji.cloud9.http.RequestParams;
 import co.diji.cloud9.javascript.ByteArrayOutputStream;
 
 import javax.servlet.http.HttpSession;

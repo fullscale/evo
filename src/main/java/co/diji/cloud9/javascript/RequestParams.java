@@ -1,4 +1,4 @@
-package co.diji.cloud9.http;
+package co.diji.cloud9.javascript;
 
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
