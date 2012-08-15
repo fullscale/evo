@@ -439,7 +439,7 @@ public class ResourceController {
             octets = data.getBytes("UTF-8");
         }
 
-        logger.trace("exit getResourceBytes: {}", octets);
+        logger.trace("exit getResourceBytes");
         return octets;
     }
 
