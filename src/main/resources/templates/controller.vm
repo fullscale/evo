@@ -88,7 +88,8 @@ function examples() {
              * provide your collection/type */
             var searchRequest = c9.search.Request({
                 collections:["index1"],
-                types:["type1"]
+                types:["type1"],
+                request: REQUEST // REQUEST is SSJS global variable
             });
 
             /* a function to display results */
