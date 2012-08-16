@@ -15,7 +15,7 @@
 		<level value="info" />
 	</logger>
 	
-	<logger name="co.diji.cloud9.config">
+	<logger name="co.diji.cloud9.config.Cloud9WebApplicationContext">
 		<level value="warn" />
 	</logger>
 	
