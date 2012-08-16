@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -67,12 +66,7 @@ public class ResourceController {
     private static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
             "css", "images", "js", "html"}));
 
-    private ScriptableObject sharedScope;
-
-    @PostConstruct
-    private void initialize() {
-        initializeSharedScope();
-    }
+    private ScriptableObject sharedScope = null;
 
     /**
      * Enter's Rhino execution context
@@ -479,6 +473,12 @@ public class ResourceController {
         JavascriptObject jsRequest = jsgi.env();
         String controller = jsRequest.get("controller");
         String action = jsRequest.get("action");
+
+        // make sure shared scope is initialized
+        // only happens on first SSJS request
+        if (sharedScope == null) {
+            initializeSharedScope();
+        }
 
         // create Rhino context
         Context cx = getContext();
