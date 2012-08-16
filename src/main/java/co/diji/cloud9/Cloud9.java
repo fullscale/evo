@@ -4,12 +4,21 @@ import java.io.File;
 import java.net.URL;
 import java.security.ProtectionDomain;
 
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
+import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.fuin.utils4j.Utils4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +104,15 @@ public final class Cloud9 {
         webapp.setContextPath("/");
         webapp.setTempDirectory(tmpDir);
         webapp.setWar(location.toExternalForm());
+        webapp.setConfigurations(new Configuration[] {
+                new WebInfConfiguration(),
+                new WebXmlConfiguration(),
+                new MetaInfConfiguration(),
+                new FragmentConfiguration(),
+                new EnvConfiguration(),
+                new PlusConfiguration(),
+                new AnnotationConfiguration(),
+                new JettyWebXmlConfiguration() });
 
         server.setStopAtShutdown(true);
         server.setHandler(webapp);
