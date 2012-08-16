@@ -17,6 +17,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,14 @@ public class ConfigService {
         String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
         logger.debug("sigar dir: {}", sigarDir);
         System.setProperty("org.hyperic.sigar.path", sigarDir);
-
+        
+        // java.util.logging -> slf4j
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        
+        // configure hazelcast to use slf4j
+        System.setProperty("hazelcast.logging.type", "slf4j");
+        
         cloud9Settings = getSettingsFromResource("classpath:cloud9.yml");
         nodeSettings = createNodeSettings();
     }
