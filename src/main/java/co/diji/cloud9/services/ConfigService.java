@@ -56,7 +56,7 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
      * 
      * @param key the setting to get
      * @return a string value of the setting
@@ -66,7 +66,18 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a string value of the setting
+     */
+    public String get(String key, String def) {
+        return cloud9Settings.get(key, def);
+    }
+
+    /**
+     * Get a setting
      * 
      * @param key the setting to get
      * @return an integer value of the setting
@@ -76,7 +87,18 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a integer value of the setting
+     */
+    public int getInt(String key, int def) {
+        return cloud9Settings.getAsInt(key, def);
+    }
+
+    /**
+     * Get a setting
      * 
      * @param key the setting to get
      * @return a float value of the setting
@@ -86,7 +108,18 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a float value of the setting
+     */
+    public float getFloat(String key, float def) {
+        return cloud9Settings.getAsFloat(key, def);
+    }
+
+    /**
+     * Get a setting
      * 
      * @param key the setting to get
      * @return a double value of the setting
@@ -96,7 +129,18 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a double value of the setting
+     */
+    public double getDouble(String key, double def) {
+        return cloud9Settings.getAsDouble(key, def);
+    }
+
+    /**
+     * Get a setting
      * 
      * @param key the setting to get
      * @return a long value of the setting
@@ -106,13 +150,56 @@ public class ConfigService {
     }
 
     /**
-     * Get a settings
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a long value of the setting
+     */
+    public long getLong(String key, long def) {
+        return cloud9Settings.getAsLong(key, def);
+    }
+
+    /**
+     * Get a setting
      * 
      * @param key the setting to get
      * @return a boolean value of the setting
      */
     public boolean getBool(String key) {
         return cloud9Settings.getAsBoolean(key, null);
+    }
+
+    /**
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a boolean value of the setting
+     */
+    public boolean getBool(String key, boolean def) {
+        return cloud9Settings.getAsBoolean(key, def);
+    }
+
+    /**
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @return an array value of the setting
+     */
+    public String[] getArray(String key) {
+        return cloud9Settings.getAsArray(key, null);
+    }
+
+    /**
+     * Get a setting
+     * 
+     * @param key the setting to get
+     * @param def the default value if not found
+     * @return a array value of the setting
+     */
+    public String[] getArray(String key, String[] def) {
+        return cloud9Settings.getAsArray(key, def);
     }
 
     /**
