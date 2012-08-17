@@ -43,15 +43,15 @@ public class ConfigService {
         String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
         logger.debug("sigar dir: {}", sigarDir);
         System.setProperty("org.hyperic.sigar.path", sigarDir);
-        
+
         // java.util.logging -> slf4j
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-        
+
         // configure hazelcast to use slf4j
         System.setProperty("hazelcast.logging.type", "slf4j");
-        
-        cloud9Settings = getSettingsFromResource("classpath:cloud9.yml");
+
+        cloud9Settings = createCloud9Settings();
         nodeSettings = createNodeSettings();
     }
 
@@ -330,7 +330,102 @@ public class ConfigService {
     }
 
     /**
-     * Create the node settings from default settings, user settings, and system properties.
+     * Generates the main Cloud9 settings. Settings are read from system properties or a user specified file. Some settings use
+     * defaults when not set by the user.
+     * 
+     * @return the settings file
+     */
+    public Settings createCloud9Settings() {
+        logger.trace("in createCloud9Settings");
+        ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+
+        // get the default settings
+        settings.put(getSettingsFromResource("classpath:cloud9.yml"));
+
+        // load settings from user specified settings file
+        // set by system property only
+        String userSettingsFile = System.getProperty("c9.settings", null);
+        logger.debug("userSettingsFile: {}", userSettingsFile);
+        if (userSettingsFile != null) {
+            logger.debug("Reading settings from: {}", userSettingsFile);
+            settings.put(getSettingsFromResource("file:" + userSettingsFile));
+        }
+
+        // do a build with the current settings so we can use the built-in getters not
+        // available on the builder
+        Settings defaults = settings.build();
+        
+        // user specified node settings file
+        // order is system properties, settings file
+        String userNodeSettingsFile = System.getProperty("c9.node.settings", defaults.get("node.settings"));
+        logger.debug("userNodeSettingsFile: {}", userNodeSettingsFile);
+        if (userNodeSettingsFile != null) {
+            settings.put("node.settings", userNodeSettingsFile);
+        }
+
+        // node name
+        // set node name to the current hostname if the user does not specify one
+        // order is system properties, settings file, hostname, "cloud9"
+        String nodeName = System.getProperty("c9.node.name", defaults.get("node.name"));
+        logger.debug("nodeName: {}", nodeName);
+        if (nodeName == null) {
+            logger.debug("no node name specified, using hostname");
+            try {
+                nodeName = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                logger.debug("unable to get hostname", e);
+                nodeName = "cloud9";
+            }
+        }
+
+        logger.debug("node.name: {}", nodeName);
+        settings.put("node.name", nodeName);
+
+        // cluster name
+        // set to random string if not specified
+        // order is system properties, settings file, random string
+        String clusterName = System.getProperty("c9.cluster.name", defaults.get("cluster.name"));
+        logger.debug("clusterName: {}", clusterName);
+        if (clusterName == null) {
+            logger.debug("no cluster name specified, using random string");
+            clusterName = UUID.randomUUID().toString();
+        }
+
+        logger.debug("cluster.name: {}", clusterName);
+        settings.put("cluster.name", clusterName);
+
+        // network settings
+        // default = multicast enabled, unicast disabled
+        // when the system property c9.unicast.hosts or unicast.hosts is set in the settings file
+        // multicast is disabled, unicast is enabled and we use the hostnames specified
+        String unicastHostsString = System.getProperty("c9.unicast.hosts", null); 
+        String[] unicastHosts = defaults.getAsArray("network.unicast.hosts", null);
+        
+        logger.debug("unicastHostsString: {}, unicastHosts: {}", unicastHostsString, unicastHosts);
+        if (unicastHostsString != null) {
+            logger.debug("unicast settings found in system properties");
+            logger.debug("unicast enabled, multicast disabled");
+            settings.put("network.unicast.enabled", true);
+            settings.put("network.multicast.enabled", false);
+            settings.putArray("network.unicast.hosts", unicastHostsString.split(","));
+        } else if (unicastHosts != null) {
+            logger.debug("unicast settings found in user settings");
+            logger.debug("unicast enabled, multicast disabled");
+            settings.put("network.unicast.enabled", true);
+            settings.put("network.multicast.enabled", false);
+        } else {
+            logger.debug("no unicast settings found");
+            logger.debug("multicast enabled, unicast disabled");
+            settings.put("network.unicast.enabled", false);
+            settings.put("network.multicast.enabled", true);
+        }
+        
+        logger.trace("exit createCloud9Settings");
+        return settings.build();
+    }
+
+    /**
+     * Create the node settings from default settings and the main cloud9 settings file.
      * 
      * @return the node settings.
      */
@@ -342,29 +437,26 @@ public class ConfigService {
         settings.put(getSettingsFromResource("classpath:defaultNodeSettings.yml"));
 
         // user specified node settings
-        String userNodeSettingsFile = System.getProperty("c9.node.settings", null);
+        String userNodeSettingsFile = cloud9Settings.get("node.settings", null);
         logger.debug("userNodeSettingsFile: {}", userNodeSettingsFile);
         if (userNodeSettingsFile != null) {
+            logger.debug("reading node settings from: {}", userNodeSettingsFile);
             settings.put(getSettingsFromResource("file:" + userNodeSettingsFile));
         }
 
-        // user specified node settings from system properties
-        // set node name to the current hostname if the user does not specify one
-        try {
-            settings.put("node.name", System.getProperty("c9.node.name", InetAddress.getLocalHost().getHostName()));
-        } catch (UnknownHostException e) {
-            logger.debug("unable to get hostname", e);
-        }
+        // node name
+        settings.put("node.name", cloud9Settings.get("node.name"));
 
-        // set the cluster name to a random string if the user does not specify one
-        settings.put("cluster.name", System.getProperty("c9.cluster.name", UUID.randomUUID().toString()));
+        // cluster name
+        settings.put("cluster.name", cloud9Settings.get("cluster.name"));
 
         // use unicast vs. multicast
-        String unicastHosts = System.getProperty("c9.unicast.hosts", null);
-        logger.debug("c9.unicast.hosts: {}", unicastHosts);
-        if (unicastHosts != null) {
+        boolean unicastEnabled = cloud9Settings.getAsBoolean("network.unicast.enabled", false);
+        logger.debug("unicaseEnabled: {}", unicastEnabled);
+        if (unicastEnabled) {
+            logger.debug("multicast disabled, unicast enabled");
             settings.put("discovery.zen.ping.multicast.enabled", false);
-            settings.putArray("discovery.zen.ping.unicast.hosts", unicastHosts.split(","));
+            settings.putArray("discovery.zen.ping.unicast.hosts", cloud9Settings.getAsArray("network.unicast.hosts"));
         }
 
         logger.debug("exit createNodeSettings: {}", settings.internalMap());
