@@ -169,21 +169,16 @@
         -->
         <merge-policy>hz.ADD_NEW_ENTRY</merge-policy>
     </map>
-    <!-- Add your own semaphore configurations here:
-        <semaphore name="default">
-            <initial-permits>10</initial-permits>
-            <semaphore-factory enabled="true">
-                <class-name>com.acme.MySemaphoreFactory</class-name>
-            </semaphore-factory>
-        </semaphore>
-    -->
 
-    <!-- Add your own map merge policy implementations here:
-    	<merge-policies>
-           	<map-merge-policy name="MY_MERGE_POLICY">
-            	<class-name>com.acme.MyOwnMergePolicy</class-name>
-        	</map-merge-policy>
-    	</merge-policies>
-    -->
-
+	<!--  Cloud9 Caches -->
+	<map name="resources">
+		<backup-count>1</backup-count>
+		<async-backup-count>0</async-backup-count>
+        <max-size policy="cluster_wide_map_size">0</max-size>
+        <eviction-percentage>25</eviction-percentage>
+    	<near-cache>
+    		<eviction-policy>LFU</eviction-policy>	
+    	</near-cache>
+    </map>
+    
 </hazelcast>
