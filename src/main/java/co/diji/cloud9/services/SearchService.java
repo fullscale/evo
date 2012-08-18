@@ -1350,4 +1350,20 @@ public class SearchService {
         logger.trace("exit getDoc: {}", response);
         return response;
     }
+
+    /**
+     * Gets a resource from an app
+     * 
+     * @param app the appname
+     * @param dir the resoruce type/directory
+     * @param resource the resource name/id
+     * @param fields a list of fields you want returned, null for the default _source field
+     * @return the get response, null on error
+     */
+    public GetResponse getAppResource(String app, String dir, String resource, String[] fields) {
+        logger.trace("in getAppResource app: {} dir:{} resource:{} fields:{}", new Object[]{app, dir, resource, fields});
+        String appIndex = appsWithSuffix(app)[0];
+
+        return getDoc(appIndex, dir, resource, fields);
+    }
 }

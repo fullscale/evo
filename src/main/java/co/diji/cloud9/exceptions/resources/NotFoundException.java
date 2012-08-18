@@ -1,8 +1,7 @@
-package co.diji.cloud9.exceptions.javascript;
+package co.diji.cloud9.exceptions.resources;
 
-import co.diji.cloud9.exceptions.Cloud9Exception;
 
-public class NotFoundException extends Cloud9Exception {
+public class NotFoundException extends ResourceException {
 
     private static final long serialVersionUID = 1L;
 

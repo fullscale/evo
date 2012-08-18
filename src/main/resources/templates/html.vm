@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-  <link rel="stylesheet" href="${app}/css/style.css">
+  <link rel="stylesheet" href="/${app}/css/style.css">
 
   <!-- All JavaScript at the bottom, except for Modernizr.
        Modernizr enables HTML5 elements & feature detects; -->
@@ -34,7 +34,7 @@
 
   <div class="container">
     <div class="welcome">
-        <img src="images/c9/C9Logo_mini.png" /><br>
+        <img src="/images/c9/C9Logo_mini.png" /><br>
         <div class="indent">
           <span class="project-name">Project (${app})</span>&nbsp;&nbsp;<a target="_blank" href="/cloud9/ide/${app}">edit</a>
           <p>This is the default project page. It contains links
@@ -73,10 +73,10 @@
   </div>
 
   <!-- JavaScript at the bottom for fast page loading -->
-  <script src="js/jquery-1.6.2.min.js"></script>
-  <script src="js/underscore-min.js"></script>
-  <script src="js/c9/c9api.min.js"></script>
-  <script defer src="${app}/js/${app}.js"></script>
+  <script src="/js/jquery-1.6.2.min.js"></script>
+  <script src="/js/underscore-min.js"></script>
+  <script src="/js/c9/c9api.min.js"></script>
+  <script src="/${app}/js/${app}.js"></script>
 
 
   <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
