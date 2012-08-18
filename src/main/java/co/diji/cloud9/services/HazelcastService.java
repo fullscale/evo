@@ -46,7 +46,7 @@ public class HazelcastService {
             conf.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
             logger.debug("enabling tcp/ip (unicast)");
             TcpIpConfig tcp = conf.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
-            for (String host : configService.getArray("discovery.zen.ping.unicast.hosts", new String[]{})) {
+            for (String host : configService.getArray("network.unicast.hosts", new String[]{})) {
                 logger.debug("adding member: {}", host);
                 tcp.addMember(host);
             }
