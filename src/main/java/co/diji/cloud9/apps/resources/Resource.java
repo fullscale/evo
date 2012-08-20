@@ -26,7 +26,7 @@ public abstract class Resource implements DataSerializable {
     protected static final Logger logger = LoggerFactory.getLogger(Resource.class);
 
     @Autowired
-    protected SearchService searchService;
+    protected transient SearchService searchService;
 
     protected String app;
     protected String dir;

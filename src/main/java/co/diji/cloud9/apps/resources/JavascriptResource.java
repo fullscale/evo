@@ -24,7 +24,6 @@ import org.mozilla.javascript.serialize.ScriptableInputStream;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,11 +47,20 @@ public class JavascriptResource extends Resource {
     private static final long serialVersionUID = -5627919602999703186L;
     protected static final Logger logger = LoggerFactory.getLogger(JavascriptResource.class);
 
-    @Autowired
-    protected ConfigService config;
+    protected transient JavascriptHelper jsHelper = null;
 
-    @Autowired
-    protected JavascriptHelper jsHelper;
+    /**
+     * Kind of a hack to get the spring managed bean because the resource is not managed by spring after serialization
+     * 
+     * @return the javascript helper object managed by spring
+     */
+    private JavascriptHelper getJsHelper() {
+        if (jsHelper == null) {
+            jsHelper = ConfigService.getBean(JavascriptHelper.class);
+        }
+
+        return jsHelper;
+    }
 
     // serializable data
     protected Script script;
@@ -77,7 +85,7 @@ public class JavascriptResource extends Resource {
 
     protected Script compileScript(String code) {
         logger.trace("in compileScript");
-        Context cx = jsHelper.getContext();
+        Context cx = getJsHelper().getContext();
         Script script = null;
 
         try {
@@ -187,12 +195,12 @@ public class JavascriptResource extends Resource {
         String action = jsRequest.get("action");
 
         // create Rhino context
-        Context cx = jsHelper.getContext();
+        Context cx = getJsHelper().getContext();
 
         try {
             // create scope based on our shared scope
-            Scriptable scope = cx.newObject(jsHelper.getSharedScope());
-            scope.setPrototype(jsHelper.getSharedScope());
+            Scriptable scope = cx.newObject(getJsHelper().getSharedScope());
+            scope.setPrototype(getJsHelper().getSharedScope());
             scope.setParentScope(null);
 
             // add request values to scope
@@ -255,19 +263,26 @@ public class JavascriptResource extends Resource {
     @Override
     public void readData(DataInput in) throws IOException {
         super.readData(in);
+        logger.trace("in readData");
 
         int length = in.readInt();
+        logger.debug("length: {}", length);
+
         byte[] data = new byte[length];
         in.readFully(data, 0, length);
+        logger.debug("data: {}", data);
 
-        ScriptableInputStream scriptIn = new ScriptableInputStream(new ByteArrayInputStream(data), jsHelper.getSharedScope());
+        ScriptableInputStream scriptIn = new ScriptableInputStream(new ByteArrayInputStream(data), getJsHelper().getSharedScope());
         try {
             script = (Script) scriptIn.readObject();
+            logger.debug("script: {}", script);
         } catch (ClassNotFoundException e) {
             logger.debug("Unable to unserialize script", e);
         } finally {
             scriptIn.close();
         }
+
+        logger.trace("exit readData");
     }
 
     /*
@@ -277,19 +292,23 @@ public class JavascriptResource extends Resource {
     @Override
     public void writeData(DataOutput out) throws IOException {
         super.writeData(out);
+        logger.trace("in writeData");
 
         // write script to byte array
+        logger.debug("serializing compiled script");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        ScriptableOutputStream scriptOut = new ScriptableOutputStream(bytes, jsHelper.getSharedScope());
-        scriptOut.addExcludedName("ServerSideC9");
-        scriptOut.addExcludedName("c9api");
-        scriptOut.addExcludedName("underscore");
+        ScriptableOutputStream scriptOut = new ScriptableOutputStream(bytes, getJsHelper().getSharedScope());
         scriptOut.writeObject(script);
         scriptOut.close();
+        logger.debug("done serializing");
 
         byte[] data = bytes.toByteArray();
+        logger.debug("data: {}", data);
+        logger.debug("writing length: {}", data.length);
         out.writeInt(data.length);
+        logger.debug("writing data");
         out.write(data);
+        logger.trace("exit writeData");
     }
 
 }

@@ -31,9 +31,25 @@ public class ConfigService {
     private Settings cloud9Settings;
     private Settings nodeSettings;
 
-    @Autowired
-    private WebApplicationContext applicationContext;
+    private static WebApplicationContext applicationContext = null;
 
+    /**
+     * This is a hack to initialize the static application context
+     * We use this in beans that are serialized to get set the objects
+     * that are serialized and not initialized via Spring
+     * 
+     * Remove once we figure out how to get spring to initialize
+     * serialized objects from cache
+     * 
+     * @param appContext the application context
+     */
+    @Autowired
+    public void setWebApplicationContext(WebApplicationContext appContext) {
+        if (applicationContext == null) {
+            applicationContext = appContext;
+        }
+    }
+    
     /**
      * Initialize all settings and mappings
      */
@@ -535,5 +551,27 @@ public class ConfigService {
 
         logger.trace("exit getResourceFile: {}", outFile);
         return outFile;
+    }
+    
+    /**
+     * Hack to get spring managed beans into non-managed objects.
+     * Used mainly for hazelcast caching.
+     * 
+     * @param clazz The class of the bean to get
+     * @return the bean
+     */
+    public static <T> T getBean(Class clazz) {
+        return (T) applicationContext.getBean(clazz);
+    }
+    
+    /**
+     * Hack to get spring managed beans into non-managed objects.
+     * Used mainly for hazelcast caching.
+     * 
+     * @param name The name of the bean to get
+     * @return the bean
+     */
+    public static <T> T getBean(String name) {
+        return (T) applicationContext.getBean(name);
     }
 }

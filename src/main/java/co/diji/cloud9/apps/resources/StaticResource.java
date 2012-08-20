@@ -40,7 +40,7 @@ public class StaticResource extends Resource {
     private static final long serialVersionUID = 6329914850918878864L;
     protected static final Logger logger = LoggerFactory.getLogger(StaticResource.class);
 
-    protected DateFormat dateFormatter = null;
+    protected transient DateFormat dateFormatter = null;
 
     // serializable data
     protected String mime;
