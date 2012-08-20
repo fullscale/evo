@@ -2,7 +2,9 @@ package co.diji.cloud9.apps.resources;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +22,22 @@ public class ResourceHelper {
     private static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
             "css", "images", "js", "html"}));
 
+    private Map<String, Resource> cache;
+    
     @Autowired
     private ApplicationContext appContext;
 
+    public Map<String, Resource> getCache() {
+        if (cache == null) {
+            cache = new ConcurrentHashMap<String, Resource>();
+        }
+        
+        return cache;
+    }
+    
     public Resource getResource(String app, String dir, String resource) throws ResourceException {
         logger.trace("in getResource app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+    
         Resource r;
 
         if (dir == null && resource == null) {
@@ -43,18 +56,25 @@ public class ResourceHelper {
         // if this is a static resource
         boolean isStatic = STATIC_RESOURCES.contains(dir);
         logger.debug("isStatic: {}", isStatic);
-        if (isStatic) {
-            r = appContext.getBean(StaticResource.class);
-        } else {
+        if (!isStatic) {
             // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js
             logger.debug("found javascript controller, using controllers/{}.js", dir);
             resource = dir + ".js";
             dir = "controllers";
-            r = appContext.getBean(JavascriptResource.class);
         }
-
-        // run resource setup code.
-        r.setup(app, dir, resource);
+        
+        r = getCache().get(app + dir + resource);
+        
+        if (r == null) {
+            r = appContext.getBean(isStatic ? StaticResource.class : JavascriptResource.class);
+            // run resource setup code.
+            r.setup(app, dir, resource);
+            // add to cache
+            logger.debug("adding resoruce to cache");
+            getCache().put(app + dir + resource, r);
+        } else {
+            logger.debug("using cached resource");
+        }
 
         logger.trace("exit getResource");
         return r;
