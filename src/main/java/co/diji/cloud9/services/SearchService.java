@@ -52,12 +52,16 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.cluster.ClusterService;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.node.internal.InternalNode;
 import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -1365,5 +1369,44 @@ public class SearchService {
         String appIndex = appsWithSuffix(app)[0];
 
         return getDoc(appIndex, dir, resource, fields);
+    }
+
+    /**
+     * Get's the local node id. Not sure we will need this, in most cases you can use the "_local" alias.
+     * 
+     * @return the nodeId
+     */
+    public String getNodeId() {
+        logger.trace("in getNodeId");
+        String nodeId = ((InternalNode) node).injector().getInstance(ClusterService.class).state().nodes().localNodeId();
+        logger.trace("exit getNodeId: {}", nodeId);
+        return nodeId;
+    }
+
+    /**
+     * Get's the network address we want nodes to publish/communicate on.
+     * 
+     * @return the ip address, returns localhost (127.0.0.1) when unable to retreive the publish address
+     */
+    public String getPublishAddress() {
+        logger.trace("in getPublishAddress");
+        String publishAddress = "127.0.0.1";
+        ActionFuture<NodesInfoResponse> action = client.admin().cluster().nodesInfo(new NodesInfoRequest("_local").transport(true));
+
+        try {
+            NodesInfoResponse resp = action.actionGet();
+
+            // there should only be 1 node returned, so grab first item
+            TransportAddress address = (InetSocketTransportAddress) resp.getAt(0).getTransport().address().publishAddress();
+            if (address instanceof InetSocketTransportAddress) {
+                logger.debug("found publish address: {}", address);
+                publishAddress = ((InetSocketTransportAddress) address).address().getAddress().getHostAddress();
+            }
+        } catch (ElasticSearchException e) {
+            logger.debug("Error getting publish address", e);
+        }
+
+        logger.trace("exit getPublishAddress: {}", publishAddress);
+        return publishAddress;
     }
 }

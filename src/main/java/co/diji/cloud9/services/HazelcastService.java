@@ -23,6 +23,9 @@ public class HazelcastService {
     @Autowired
     private ConfigService configService;
 
+    @Autowired
+    private SearchService searchService;
+
     private HazelcastInstance hazelcast;
 
     @PostConstruct
@@ -53,6 +56,9 @@ public class HazelcastService {
             }
         }
 
+        // make sure hazelcast starts on the "publish" address that elasticsearch nodes communicate on
+        conf.getNetworkConfig().getInterfaces().setEnabled(true).addInterface(searchService.getPublishAddress());
+
         // start hazelcast
         logger.debug("starting hazelcast");
         hazelcast = Hazelcast.newHazelcastInstance(conf);
@@ -65,7 +71,7 @@ public class HazelcastService {
     public String getNodeId() {
         return hazelcast.getCluster().getLocalMember().getUuid();
     }
-    
+
     @PreDestroy
     public void shutdown() {
         Hazelcast.shutdownAll();
