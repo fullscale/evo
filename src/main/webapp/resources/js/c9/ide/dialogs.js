@@ -53,7 +53,27 @@ C9.ide.dialog.resource = function () {
         var resource = validateResource(this.getData().filename, this.getData().filetype[0]);
 
         if (self.isController) {
-          c9.createResource(C9.app.name, "controllers", resource);
+          var controllerName = resource.split('.')[0];
+          var code = "/*\n" +
+          " * File: " + resource + "\n" +
+          " *\n" +
+          " * Access public action at /" + C9.app.name + "/" + controllerName + "\n" +
+          " *\n" +
+          " */\n" +
+          "function " + controllerName + "() {\n\n" +
+          "    /* private functions go here */ \n\n" +
+          "    return {\n\n" +
+          "        /* public action that maps to /" + C9.app.name + "/" + controllerName + "/hello */\n" +
+          "        hello: function(request) {\n" +
+          "            return {\n" +
+          "                status: 200,\n" +
+          "                headers: { \"Content-Type\": \"text/plain\" },\n" +
+          "                body: [\"Hello World!\"]\n" +
+          "            };\n" +
+          "        }\n\n    " +
+          "};\n" +
+          "}";
+          c9.createResource(C9.app.name, "controllers", resource, code);
         } else {
           // create the new resource on the server
           c9.createResource(C9.app.name, this.getData().filetype[0], resource);

@@ -56,15 +56,15 @@ cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
     });
 }
 
-cloud9.prototype.createResource = function(app, dir, name, conf) {
-	url = '/cloud9/apps/' + app + '/' + dir + '/' + name
+cloud9.prototype.createResource = function(app, dir, name, code) {
+	url = '/cloud9/apps/' + app + '/' + dir + '/' + name;
   
     $.ajax({
         type: 'POST',
         url: url,
         processData: false,
         contentType: "text/plain",
-        data: conf, 
+        data: code, 
         success: function(data) {
             if (data.status == "error") {
                 c9.showError($('#applications'), data.response);
@@ -85,12 +85,12 @@ cloud9.prototype.createResource = function(app, dir, name, conf) {
                 node.expand()*/
           
                 /* temp hack -- need to create a "tabview" object (replicated from navigator.js )*/
-                var id = app + '-' + dir + '-' + name
+                var id = app + '-' + dir + '-' + name;
           
                 if (dir !== "images") {
                     var thisTab = new YAHOO.widget.Tab({
                         label: name + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-                        content: '<div style="min-height:96%;width:99.8%;" id=\"' + id  + '\"></div>',
+                        content: '<div style="min-height:96%;width:99.8%;" id=\"' + id  + '\">' + code + '</div>',
                         active: true,
                         postData: id
                     });
