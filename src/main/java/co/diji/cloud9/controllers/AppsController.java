@@ -21,6 +21,7 @@ import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.diji.cloud9.apps.resources.ResourceHelper;
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
@@ -39,6 +41,9 @@ public class AppsController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppsController.class);
 
+    @Autowired
+    private ResourceHelper resourceHelper;
+    
     /**
      * Validates that the resource has the correct extension, if not, it adds it.
      * 
@@ -133,7 +138,11 @@ public class AppsController extends BaseController {
     public Map<String, Object> deleteApp(@PathVariable String app) {
         logger.trace("in controller=apps action=deleteApp app:{}", app);
         Map<String, Object> resp = new HashMap<String, Object>();
-
+        
+        // evict cached resources
+        resourceHelper.evict(app);
+        
+        // delete the app
         searchService.deleteApp(app);
         resp.put("status", "ok");
 
@@ -249,6 +258,10 @@ public class AppsController extends BaseController {
                 mime = "application/javascript";
             }
 
+            // nothing should be cached since this is new, but just to be safe, evict from cache
+            resourceHelper.evict(app, dir, resource);
+            
+            // index the doc
             IndexResponse indexResponse = searchService.indexAppDoc(app, dir, resource, data, mime);
             resp.put("status", "ok");
             resp.put("id", indexResponse.id());
@@ -271,6 +284,9 @@ public class AppsController extends BaseController {
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("addIdx: {}", appIdx);
 
+        // evict cached resource
+        resourceHelper.evict(app, dir, resource);
+        
         IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());
@@ -287,6 +303,9 @@ public class AppsController extends BaseController {
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
 
+        // evict cached resource
+        resourceHelper.evict(app, dir, resource);
+        
         DeleteResponse deleteResponse = searchService.deleteDoc(appIdx, dir, resource);
         resp.put("status", "ok");
         resp.put("id", deleteResponse.id());
@@ -316,8 +335,14 @@ public class AppsController extends BaseController {
                 throw new Cloud9Exception("Resource does not exist");
             }
 
+            // evict from caches, even the new name just to be safe
+            resourceHelper.evict(app, dir, newId);
+            resourceHelper.evict(app, dir, oldId);
+            
+            // index the new doc
             IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, newId, oldDoc.sourceAsMap());
             if (indexResponse.id().equals(newId)) {
+                // delete the old doc
                 searchService.deleteDoc(appIdx, dir, oldId);
                 resp.put("status", "ok");
                 resp.put("id", indexResponse.id());
@@ -357,6 +382,10 @@ public class AppsController extends BaseController {
             return resp;
         }
 
+        // evict old cached resource
+        resourceHelper.evict(app, dir, resource);
+        
+        // index the new resource
         IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());

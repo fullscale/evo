@@ -1,7 +1,5 @@
 package co.diji.cloud9.apps.resources;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -20,8 +18,6 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.serialize.ScriptableInputStream;
-import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -62,8 +58,11 @@ public class JavascriptResource extends Resource {
         return jsHelper;
     }
 
-    // serializable data
-    protected Script script;
+    // script are not serializable we will compile on each node
+    protected transient Script script;
+
+    // serializable
+    protected String code;
 
     @Override
     public void setup(String app, String dir, String resource) throws ResourceException {
@@ -77,12 +76,18 @@ public class JavascriptResource extends Resource {
         Map<String, Object> source = doc.sourceAsMap();
 
         // get the code and compile it
-        String code = (String) source.get("code");
+        code = (String) source.get("code");
         script = compileScript(code);
 
         logger.trace("exit setup");
     }
 
+    /**
+     * Compiles the code into a script object
+     * 
+     * @param code the code to compile
+     * @return the compiled script
+     */
     protected Script compileScript(String code) {
         logger.trace("in compileScript");
         Context cx = getJsHelper().getContext();
@@ -96,6 +101,24 @@ public class JavascriptResource extends Resource {
 
         logger.trace("exit compileScript");
         return script;
+    }
+
+    /**
+     * @return the compiled script
+     */
+    public Script getScript() {
+        if (script == null) {
+            script = compileScript(code);
+        }
+
+        return script;
+    }
+
+    /**
+     * @param script the compile script to set
+     */
+    public void setScript(Script script) {
+        this.script = script;
     }
 
     /*
@@ -207,7 +230,7 @@ public class JavascriptResource extends Resource {
             scope.put("REQUEST", scope, jsRequest.value());
 
             // run the compiled javascript code
-            script.exec(cx, scope);
+            getScript().exec(cx, scope);
 
             // pull out the controller function
             Object controllerObj = scope.get(controller, scope);
@@ -263,26 +286,7 @@ public class JavascriptResource extends Resource {
     @Override
     public void readData(DataInput in) throws IOException {
         super.readData(in);
-        logger.trace("in readData");
-
-        int length = in.readInt();
-        logger.debug("length: {}", length);
-
-        byte[] data = new byte[length];
-        in.readFully(data, 0, length);
-        logger.debug("data: {}", data);
-
-        ScriptableInputStream scriptIn = new ScriptableInputStream(new ByteArrayInputStream(data), getJsHelper().getSharedScope());
-        try {
-            script = (Script) scriptIn.readObject();
-            logger.debug("script: {}", script);
-        } catch (ClassNotFoundException e) {
-            logger.debug("Unable to unserialize script", e);
-        } finally {
-            scriptIn.close();
-        }
-
-        logger.trace("exit readData");
+        code = in.readUTF();
     }
 
     /*
@@ -292,23 +296,7 @@ public class JavascriptResource extends Resource {
     @Override
     public void writeData(DataOutput out) throws IOException {
         super.writeData(out);
-        logger.trace("in writeData");
-
-        // write script to byte array
-        logger.debug("serializing compiled script");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        ScriptableOutputStream scriptOut = new ScriptableOutputStream(bytes, getJsHelper().getSharedScope());
-        scriptOut.writeObject(script);
-        scriptOut.close();
-        logger.debug("done serializing");
-
-        byte[] data = bytes.toByteArray();
-        logger.debug("data: {}", data);
-        logger.debug("writing length: {}", data.length);
-        out.writeInt(data.length);
-        logger.debug("writing data");
-        out.write(data);
-        logger.trace("exit writeData");
+        out.writeUTF(code);
     }
 
 }

@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import co.diji.cloud9.apps.resources.ResourceHelper;
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.rest.ServletRestRequest;
 import co.diji.cloud9.services.SearchService;
@@ -44,6 +45,9 @@ public class ApiController {
     @Autowired
     protected SearchService searchService;
 
+    @Autowired
+    protected ResourceHelper resourceHelper;
+    
     protected RestController restController;
 
     @PostConstruct
@@ -130,6 +134,10 @@ public class ApiController {
                 throw new Cloud9Exception("No application file found");
             }
 
+            // expire any cached items that might exist for the app
+            resourceHelper.evict(app);
+            
+            // import the app
             searchService.importApp(app, data.getInputStream(), force, mappings);
 
             resp.put("status", "ok");

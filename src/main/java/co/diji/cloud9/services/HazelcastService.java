@@ -8,6 +8,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class HazelcastService {
     private HazelcastInstance hazelcast;
 
     @PostConstruct
-    public void booststrap() {
+    public void bootstrap() {
         logger.trace("in bootstrap");
 
         // read default cloud9 hazelcast settings
@@ -57,6 +58,14 @@ public class HazelcastService {
         hazelcast = Hazelcast.newHazelcastInstance(conf);
     }
 
+    public IMap getMap(String name) {
+        return hazelcast.getMap(name);
+    }
+
+    public String getNodeId() {
+        return hazelcast.getCluster().getLocalMember().getUuid();
+    }
+    
     @PreDestroy
     public void shutdown() {
         Hazelcast.shutdownAll();
