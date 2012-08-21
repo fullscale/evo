@@ -29,10 +29,11 @@
 		<beans:property name="suffix" value=".vm" />
 		<beans:property name="exposeSessionAttributes" value="true"/>
 	</beans:bean>
-	
-	<context:component-scan base-package="co.diji.cloud9">
-        <context:exclude-filter type="annotation" 
-            expression="org.springframework.stereotype.Service" />  
+
+    <!-- Scan for controllers only, beans, services, and components are in root context -->	
+	<context:component-scan base-package="co.diji.cloud9" use-default-filters="false">
+        <context:include-filter type="annotation" 
+            expression="org.springframework.stereotype.Controller" />  
     </context:component-scan>
 	
 	<!-- Handles HTTP GET requests for /** by efficiently serving up static resources in the ${webappRoot}/resources directory -->

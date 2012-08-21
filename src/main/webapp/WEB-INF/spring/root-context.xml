@@ -9,9 +9,10 @@
 
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
+    <!-- We really want everything but controllers here -->
     <context:component-scan base-package="co.diji.cloud9">
-        <context:include-filter type="annotation" 
-            expression="org.springframework.stereotype.Service" />
+        <context:exclude-filter type="annotation" 
+            expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 		
 </beans>
