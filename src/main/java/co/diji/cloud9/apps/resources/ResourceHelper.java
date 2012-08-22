@@ -123,7 +123,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             // only app name and resource name which spring thinks is actually the dir
             // set the resource name and dir to html
             logger.debug("no resource, using html/{}", dir);
-            resource = dir;
+            resource = dir + ".html";
             dir = "html";
         }
 
