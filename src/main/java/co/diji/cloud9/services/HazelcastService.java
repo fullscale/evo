@@ -1,5 +1,7 @@
 package co.diji.cloud9.services;
 
+import java.util.Properties;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -9,10 +11,12 @@ import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import com.hazelcast.web.WebFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,9 +39,8 @@ public class HazelcastService {
         // read default cloud9 hazelcast settings
         Config conf = new ClasspathXmlConfig("hazelcast-cloud9.xml");
 
-        // set our hazelcast instance name to cloud9 so we can configure the
-        // session caching to use the same instance
-        conf.setInstanceName("cloud9");
+        // set our hazelcast instance name to cloud9 node name
+        conf.setInstanceName(configService.get("node.name"));
 
         // hazelcast group name should be the same as our elasticsearch cluster name
         conf.getGroupConfig().setName(configService.get("cluster.name"));
@@ -74,6 +77,21 @@ public class HazelcastService {
 
     @PreDestroy
     public void shutdown() {
-        Hazelcast.shutdownAll();
+        hazelcast.getLifecycleService().shutdown();
+    }
+
+    @Bean
+    public WebFilter hazelcastWebFilter() {
+        logger.trace("in hazelcastWebFilter");
+        Properties sessionCacheConfig = new Properties();
+        sessionCacheConfig.put("instance-name", hazelcast.getName()); // the name of our hazelcast instance
+        sessionCacheConfig.put("map-name", "session-cache");
+        sessionCacheConfig.put("sticky-session", "false");
+        sessionCacheConfig.put("cookie-name", "cloud9-sid");
+        sessionCacheConfig.put("shutdown-on-destroy", "false");
+        logger.debug("sessionCacheConfig: {}", sessionCacheConfig);
+
+        logger.trace("exit hazelcastWebFilter");
+        return new WebFilter(sessionCacheConfig);
     }
 }
