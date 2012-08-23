@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.hazelcast.spring.context.SpringAware;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.tika.io.IOUtils;
@@ -34,6 +36,7 @@ import co.diji.cloud9.exceptions.resources.ResourceException;
  * 
  */
 @Component
+@SpringAware
 @Scope("prototype")
 public class StaticResource extends Resource {
 

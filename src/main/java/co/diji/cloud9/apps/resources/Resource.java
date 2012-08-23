@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.hazelcast.nio.DataSerializable;
+import com.hazelcast.spring.context.SpringAware;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import co.diji.cloud9.exceptions.resources.NotFoundException;
 import co.diji.cloud9.exceptions.resources.ResourceException;
 import co.diji.cloud9.services.SearchService;
 
+@SpringAware
 public abstract class Resource implements DataSerializable {
 
     private static final long serialVersionUID = -316985492511753285L;
