@@ -11,11 +11,13 @@ import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import com.hazelcast.spring.context.SpringManagedContext;
 import com.hazelcast.web.WebFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,9 @@ public class HazelcastService {
 
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private HazelcastInstance hazelcast;
 
@@ -61,6 +66,11 @@ public class HazelcastService {
 
         // make sure hazelcast starts on the "publish" address that elasticsearch nodes communicate on
         conf.getNetworkConfig().getInterfaces().setEnabled(true).addInterface(searchService.getPublishAddress());
+
+        // configure hazelcast to be "spring aware"
+        SpringManagedContext springContext = new SpringManagedContext();
+        springContext.setApplicationContext(applicationContext);
+        conf.setManagedContext(springContext);
 
         // start hazelcast
         logger.debug("starting hazelcast");

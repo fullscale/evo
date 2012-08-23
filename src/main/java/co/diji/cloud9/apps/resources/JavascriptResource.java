@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.hazelcast.spring.context.SpringAware;
+
 import org.elasticsearch.action.get.GetResponse;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -20,6 +22,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -30,33 +33,21 @@ import co.diji.cloud9.javascript.JSGIRequest;
 import co.diji.cloud9.javascript.JavascriptHelper;
 import co.diji.cloud9.javascript.JavascriptObject;
 import co.diji.cloud9.javascript.RequestInfo;
-import co.diji.cloud9.services.ConfigService;
 
 /**
  * Represents a dynamic javascript resource
  * 
  */
 @Component
+@SpringAware
 @Scope("prototype")
 public class JavascriptResource extends Resource {
 
     private static final long serialVersionUID = -5627919602999703186L;
     protected static final Logger logger = LoggerFactory.getLogger(JavascriptResource.class);
 
-    protected transient JavascriptHelper jsHelper = null;
-
-    /**
-     * Kind of a hack to get the spring managed bean because the resource is not managed by spring after serialization
-     * 
-     * @return the javascript helper object managed by spring
-     */
-    private JavascriptHelper getJsHelper() {
-        if (jsHelper == null) {
-            jsHelper = ConfigService.getBean(JavascriptHelper.class);
-        }
-
-        return jsHelper;
-    }
+    @Autowired
+    protected transient JavascriptHelper jsHelper;
 
     // script are not serializable we will compile on each node
     protected transient Script script;
@@ -90,7 +81,7 @@ public class JavascriptResource extends Resource {
      */
     protected Script compileScript(String code) {
         logger.trace("in compileScript");
-        Context cx = getJsHelper().getContext();
+        Context cx = jsHelper.getContext();
         Script script = null;
 
         try {
@@ -218,12 +209,12 @@ public class JavascriptResource extends Resource {
         String action = jsRequest.get("action");
 
         // create Rhino context
-        Context cx = getJsHelper().getContext();
+        Context cx = jsHelper.getContext();
 
         try {
             // create scope based on our shared scope
-            Scriptable scope = cx.newObject(getJsHelper().getSharedScope());
-            scope.setPrototype(getJsHelper().getSharedScope());
+            Scriptable scope = cx.newObject(jsHelper.getSharedScope());
+            scope.setPrototype(jsHelper.getSharedScope());
             scope.setParentScope(null);
 
             // add request values to scope

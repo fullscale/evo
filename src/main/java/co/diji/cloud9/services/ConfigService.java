@@ -31,25 +31,9 @@ public class ConfigService {
     private Settings cloud9Settings;
     private Settings nodeSettings;
 
-    private static WebApplicationContext applicationContext = null;
-
-    /**
-     * This is a hack to initialize the static application context
-     * We use this in beans that are serialized to get set the objects
-     * that are serialized and not initialized via Spring
-     * 
-     * Remove once we figure out how to get spring to initialize
-     * serialized objects from cache
-     * 
-     * @param appContext the application context
-     */
     @Autowired
-    public void setWebApplicationContext(WebApplicationContext appContext) {
-        if (applicationContext == null) {
-            applicationContext = appContext;
-        }
-    }
-    
+    private WebApplicationContext applicationContext;
+
     /**
      * Initialize all settings and mappings
      */
@@ -370,7 +354,7 @@ public class ConfigService {
         // do a build with the current settings so we can use the built-in getters not
         // available on the builder
         Settings defaults = settings.build();
-        
+
         // user specified node settings file
         // order is system properties, settings file
         String userNodeSettingsFile = System.getProperty("c9.node.settings", defaults.get("node.settings"));
@@ -414,9 +398,9 @@ public class ConfigService {
         // default = multicast enabled, unicast disabled
         // when the system property c9.unicast.hosts or unicast.hosts is set in the settings file
         // multicast is disabled, unicast is enabled and we use the hostnames specified
-        String unicastHostsString = System.getProperty("c9.unicast.hosts", null); 
+        String unicastHostsString = System.getProperty("c9.unicast.hosts", null);
         String[] unicastHosts = defaults.getAsArray("network.unicast.hosts", null);
-        
+
         logger.debug("unicastHostsString: {}, unicastHosts: {}", unicastHostsString, unicastHosts);
         if (unicastHostsString != null) {
             logger.debug("unicast settings found in system properties");
@@ -435,7 +419,7 @@ public class ConfigService {
             settings.put("network.unicast.enabled", false);
             settings.put("network.multicast.enabled", true);
         }
-        
+
         logger.trace("exit createCloud9Settings");
         return settings.build();
     }
@@ -551,27 +535,5 @@ public class ConfigService {
 
         logger.trace("exit getResourceFile: {}", outFile);
         return outFile;
-    }
-    
-    /**
-     * Hack to get spring managed beans into non-managed objects.
-     * Used mainly for hazelcast caching.
-     * 
-     * @param clazz The class of the bean to get
-     * @return the bean
-     */
-    public static <T> T getBean(Class clazz) {
-        return (T) applicationContext.getBean(clazz);
-    }
-    
-    /**
-     * Hack to get spring managed beans into non-managed objects.
-     * Used mainly for hazelcast caching.
-     * 
-     * @param name The name of the bean to get
-     * @return the bean
-     */
-    public static <T> T getBean(String name) {
-        return (T) applicationContext.getBean(name);
     }
 }
