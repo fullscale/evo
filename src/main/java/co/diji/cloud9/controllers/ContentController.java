@@ -8,8 +8,8 @@ import java.util.UUID;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/cloud9/content")
 public class ContentController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ContentController.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(ContentController.class);
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET, produces = "application/json")

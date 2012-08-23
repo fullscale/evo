@@ -13,8 +13,8 @@ import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.IMap;
 
 import org.mozilla.javascript.Script;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import co.diji.cloud9.services.HazelcastService;
 @Component
 public class ResourceHelper implements EntryListener<String, Resource> {
 
-    protected static final Logger logger = LoggerFactory.getLogger(ResourceHelper.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(ResourceHelper.class);
 
     protected static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
             "css", "images", "js", "html"}));

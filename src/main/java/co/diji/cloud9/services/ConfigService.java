@@ -15,8 +15,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -26,7 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Service
 public class ConfigService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(ConfigService.class);
 
     private Settings cloud9Settings;
     private Settings nodeSettings;

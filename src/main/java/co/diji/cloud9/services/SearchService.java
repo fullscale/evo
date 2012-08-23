@@ -65,8 +65,8 @@ import org.elasticsearch.node.internal.InternalNode;
 import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,7 +89,7 @@ public class SearchService {
     private static final String[] RESERVED_APPS = {"css.app", "js.app", "images.app"};
     private static final String[] VALID_TYPES = {"conf", "html", "css", "images", "js", "controllers"};
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
     private Node node;
     private Client client;
 

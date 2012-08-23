@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +22,7 @@ import co.diji.cloud9.services.SearchService;
 @RequestMapping("/cloud9/content")
 public class DocumentController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentController.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(DocumentController.class);
 
     @Autowired
     protected SearchService searchService;

@@ -1,13 +1,13 @@
 package co.diji.cloud9.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 public class Cloud9WebApplicationContext extends XmlWebApplicationContext {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cloud9WebApplicationContext.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9WebApplicationContext.class);
     private static final String securityResourceVar = "#security.context#";
     private static final String defaultSecurityContext = "/WEB-INF/spring/security-context.xml";
 

@@ -20,8 +20,8 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,7 +44,7 @@ import co.diji.cloud9.javascript.RequestInfo;
 public class JavascriptResource extends Resource {
 
     private static final long serialVersionUID = -5627919602999703186L;
-    protected static final Logger logger = LoggerFactory.getLogger(JavascriptResource.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptResource.class);
 
     @Autowired
     protected transient JavascriptHelper jsHelper;

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.action.get.GetResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +26,7 @@ import co.diji.cloud9.services.SearchService;
 
 public class Cloud9UserDetailsService implements UserDetailsService, UserDetailsManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cloud9UserDetailsService.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9UserDetailsService.class);
     private AuthenticationManager authenticationManager;
     private UserCache userCache = new NullUserCache();
 

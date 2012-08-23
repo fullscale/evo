@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,7 @@ import co.diji.cloud9.services.SearchService;
 @Controller
 public class ResourceController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(ResourceController.class);
 
     @Autowired
     protected SearchService searchService;

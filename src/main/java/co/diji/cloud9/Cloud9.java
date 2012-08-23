@@ -20,12 +20,12 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.fuin.utils4j.Utils4J;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 public final class Cloud9 {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cloud9.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9.class);
 
     public static void main(String[] args) throws Exception {
 

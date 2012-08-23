@@ -11,12 +11,12 @@ import org.elasticsearch.common.io.Streams;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.support.AbstractRestRequest;
 import org.elasticsearch.rest.support.RestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 public class ServletRestRequest extends AbstractRestRequest implements RestRequest {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServletRestRequest.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(ServletRestRequest.class);
 
     private final HttpServletRequest servletRequest;
     private final Method method;

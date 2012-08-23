@@ -1,7 +1,7 @@
 package co.diji.cloud9.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/cloud9/user")
 public class UserController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(UserController.class);
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)

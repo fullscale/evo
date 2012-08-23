@@ -7,8 +7,8 @@ import org.apache.tika.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.ScriptableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import co.diji.cloud9.services.ConfigService;
 @Component
 public class JavascriptHelper {
 
-    protected static final Logger logger = LoggerFactory.getLogger(JavascriptHelper.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptHelper.class);
 
     @Autowired
     private ConfigService config;

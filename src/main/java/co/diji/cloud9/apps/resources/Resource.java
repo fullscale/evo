@@ -12,8 +12,8 @@ import com.hazelcast.nio.DataSerializable;
 import com.hazelcast.spring.context.SpringAware;
 
 import org.elasticsearch.action.get.GetResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
@@ -25,7 +25,7 @@ import co.diji.cloud9.services.SearchService;
 public abstract class Resource implements DataSerializable {
 
     private static final long serialVersionUID = -316985492511753285L;
-    protected static final Logger logger = LoggerFactory.getLogger(Resource.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(Resource.class);
 
     @Autowired
     protected transient SearchService searchService;

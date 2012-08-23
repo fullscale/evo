@@ -14,8 +14,8 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.spring.context.SpringManagedContext;
 import com.hazelcast.web.WebFilter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HazelcastService {
 
-    private static final Logger logger = LoggerFactory.getLogger(HazelcastService.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(HazelcastService.class);
 
     @Autowired
     private ConfigService configService;

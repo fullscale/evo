@@ -19,8 +19,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,7 +39,7 @@ import co.diji.cloud9.exceptions.index.IndexExistsException;
 @Controller
 public class AppsController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppsController.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(AppsController.class);
 
     @Autowired
     private ResourceHelper resourceHelper;

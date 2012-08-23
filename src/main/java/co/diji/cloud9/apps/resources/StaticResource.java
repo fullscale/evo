@@ -22,8 +22,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.tika.io.IOUtils;
 import org.elasticsearch.action.get.GetResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +41,7 @@ import co.diji.cloud9.exceptions.resources.ResourceException;
 public class StaticResource extends Resource {
 
     private static final long serialVersionUID = 6329914850918878864L;
-    protected static final Logger logger = LoggerFactory.getLogger(StaticResource.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(StaticResource.class);
 
     protected transient DateFormat dateFormatter = null;
 
