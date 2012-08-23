@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!--  Appenders -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread][%logger{36}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Application Loggers -->
+	<logger name="co.diji.cloud9" level="INFO" />
+	<logger name="co.diji.cloud9.config.Cloud9WebApplicationContext" level="WARN" />
+	
+	<!-- 3rd party Loggers -->
+	<logger name="org.springgramework" level="WARN" />
+	<logger name="org.springgramework.core" level="INHERIT" />
+	<logger name="org.springgramework.aop" level="INHERIT" />
+	<logger name="org.springgramework.beans" level="INHERIT" />
+	<logger name="org.springgramework.context" level="INHERIT" />
+	<logger name="org.springgramework.web" level="INHERIT" />
+	<logger name="org.springgramework.security" level="INHERIT" />
+
+	<logger name="org.apache.velocity" level="WARN" />
+	<logger name="org.eclipse.jetty" level="WARN" />
+	<logger name="org.elasticsearch" level="WARN" />
+	
+	<logger name="com.hazelcast" level="WARN" />
+	<logger name="com.hazelcast.config" level="ERROR" />
+	
+	<root level="WARN">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

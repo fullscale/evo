@@ -14,12 +14,13 @@
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
         <org.aspectj-version>1.6.9</org.aspectj-version>
         <org.slf4j-version>1.6.6</org.slf4j-version>
+        <logback.version>1.0.6</logback.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
         <elasticsearch.version>0.19.8</elasticsearch.version>
         <tika.version>1.1</tika.version>
         <hazelcast.version>2.2</hazelcast.version>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <repositories>
@@ -78,7 +79,7 @@
                                     <artifactSet>
                                         <includes>
                                             <include>org.fuin:*</include>
-                                            <include>log4j:*</include>
+                                            <include>ch.qos.logback:*</include>
                                             <include>org.slf4j:*</include>
                                             <include>org.eclipse.jetty:*</include>
                                             <include>org.eclipse.jetty.orbit:*</include>
@@ -152,20 +153,20 @@
         
         <!-- Hazelcast (distributed in-memory data grid) -->
         <dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-			<version>${hazelcast.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-wm</artifactId>
-			<version>${hazelcast.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-spring</artifactId>
-			<version>${hazelcast.version}</version>
-		</dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-wm</artifactId>
+            <version>${hazelcast.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-spring</artifactId>
+            <version>${hazelcast.version}</version>
+        </dependency>
 
         <!-- JSON from Spring Controllers -->
         <dependency>
@@ -203,11 +204,11 @@
         </dependency>
         
         <!-- simple JSON -->
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
         <!-- AspectJ -->
         <dependency>
@@ -224,43 +225,37 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${org.slf4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${org.slf4j-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>${org.slf4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <artifactId>log4j-over-slf4j</artifactId>
             <version>${org.slf4j-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jdmk</groupId>
-                    <artifactId>jmxtools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jmx</groupId>
-                    <artifactId>jmxri</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -322,6 +317,13 @@
             <groupId>org.fusesource</groupId>
             <artifactId>sigar</artifactId>
             <version>1.6.4</version>
+            <exclusions>
+                <!-- Exclude log4j in favor of SLF4j -->
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                 </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- ElasticSearch Plugins -->
@@ -340,6 +342,11 @@
                 <exclusion>
                     <groupId>org.apache.tika</groupId>
                     <artifactId>tika-app</artifactId>
+                </exclusion>
+                <!-- Exclude log4j in favor of SLF4j -->
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -402,7 +409,7 @@
                                 <resource>
                                     <directory>${basedir}/src/main/resources/</directory>
                                     <includes>
-                                        <include>log4j.xml</include>
+                                        <include>logback.xml</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -459,9 +466,11 @@
                         WEB-INF/lib/jetty-*.jar,
                         WEB-INF/lib/slf4j-*.jar,
                         WEB-INF/lib/jcl-over-slf4j-*.jar,
-                        WEB-INF/lib/log4j-*.jar,
+                        WEB-INF/lib/logback-*.jar,
                         WEB-INF/lib/org.objectweb.asm-*.jar,
                         %regex[WEB-INF/lib/(javax\.(?!inject)).*\.jar]
+                        <!-- prevent our development logging configuration from being included -->
+                        WEB-INF/classes/logback-test.xml
                     </packagingExcludes>
                 </configuration>
             </plugin>
@@ -473,19 +482,19 @@
                     <webApp>
                         <contextPath>/</contextPath>
                     </webApp>
-        			<connectors>
-            			<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                			<port>2600</port>
-                			<maxIdleTime>60000</maxIdleTime>
-            			</connector>
-            			<connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
-                			<port>2643</port>
-                			<maxIdleTime>60000</maxIdleTime>
-                			<keystore>${basedir}/src/main/webapp/WEB-INF/security/c9.default.keystore</keystore>
-                			<password>3f038de0-6606-11e1-b86c-0800200c9a66</password>
-                			<keyPassword>3f038de0-6606-11e1-b86c-0800200c9a66</keyPassword>
-            			</connector>
-        			</connectors>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>2600</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                        <connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
+                            <port>2643</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                            <keystore>${basedir}/src/main/webapp/WEB-INF/security/c9.default.keystore</keystore>
+                            <password>3f038de0-6606-11e1-b86c-0800200c9a66</password>
+                            <keyPassword>3f038de0-6606-11e1-b86c-0800200c9a66</keyPassword>
+                        </connector>
+                    </connectors>
                     <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
                 </configuration>
             </plugin>
