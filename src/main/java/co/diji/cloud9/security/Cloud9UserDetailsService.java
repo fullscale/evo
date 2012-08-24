@@ -41,6 +41,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
     @SuppressWarnings("unchecked")
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        logger.entry(userName);
         Map<String, Object> source = getUser(userName);
         Cloud9User principle = null;
 
@@ -58,10 +59,12 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
             throw new UsernameNotFoundException("Unknown user: " + userName);
         }
 
+        logger.exit();
         return principle;
     }
 
     private void addUser(UserDetails user) {
+        logger.entry();
         Map<String, Object> source = new HashMap<String, Object>();
         source.put("username", user.getUsername());
         source.put("password", user.getPassword());
@@ -70,6 +73,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
         source.put("credentialsNonExpired", user.isCredentialsNonExpired());
         source.put("enabled", user.isEnabled());
         searchService.indexDoc("sys", "users", user.getUsername(), source);
+        logger.exit();
     }
 
     public void createUser(UserDetails user) {
@@ -83,7 +87,9 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
     }
 
     public void deleteUser(String username) {
+        logger.entry(username);
         searchService.deleteDoc("sys", "users", username);
+        logger.exit();
     }
 
     public boolean userExists(String userName) {
@@ -92,6 +98,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
     }
 
     public void changePassword(String oldPassword, String newPassword) throws AuthenticationException {
+        logger.entry();
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
 
         if (currentUser == null) {
@@ -117,6 +124,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
 
         SecurityContextHolder.getContext().setAuthentication(createNewAuthentication(currentUser, newUser, newPassword));
         userCache.removeUserFromCache(username);
+        logger.exit();
     }
 
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
@@ -124,11 +132,12 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
     }
 
     protected Authentication createNewAuthentication(Authentication currentUser, UserDetails newUser, String newPassword) {
-
+        logger.entry();
         UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(newUser,
                 newUser.getPassword(), newUser.getAuthorities());
         newAuthentication.setDetails(currentUser.getDetails());
 
+        logger.exit();
         return newAuthentication;
     }
 

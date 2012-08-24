@@ -58,7 +58,7 @@ public class JavascriptResource extends Resource {
     @Override
     public void setup(String app, String dir, String resource) throws ResourceException {
         super.setup(app, dir, resource);
-        logger.trace("in setup");
+        logger.entry();
 
         // get the resource doc from the app index
         GetResponse doc = getDoc(null); // null means return default field
@@ -70,7 +70,7 @@ public class JavascriptResource extends Resource {
         code = (String) source.get("code");
         script = compileScript(code);
 
-        logger.trace("exit setup");
+        logger.exit();
     }
 
     /**
@@ -80,17 +80,18 @@ public class JavascriptResource extends Resource {
      * @return the compiled script
      */
     protected Script compileScript(String code) {
-        logger.trace("in compileScript");
+        logger.entry();
         Context cx = jsHelper.getContext();
         Script script = null;
 
         try {
+            logger.debug("compiling script");
             script = cx.compileString(code, resource, 1, null);
         } finally {
             Context.exit();
         }
 
-        logger.trace("exit compileScript");
+        logger.exit();
         return script;
     }
 
@@ -119,14 +120,17 @@ public class JavascriptResource extends Resource {
      */
     @Override
     public void process(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ResourceException {
-        logger.trace("in process");
+        logger.entry();
 
         // controllers can potentially handle any request method
+        logger.debug("send allow headers");
         response.setHeader("Allow", "GET, POST, PUT, DELETE");
 
+        logger.debug("creating jsgi request");
         JSGIRequest jsgi = new JSGIRequest(request, getRequestInfo(request), session);
 
         // run the javascript controller/action code
+        logger.debug("evaluating javascript");
         JavascriptObject jsResponse = evaluateJavascript(jsgi);
 
         // controller's action was successful
@@ -173,11 +177,11 @@ public class JavascriptResource extends Resource {
             logger.debug("null content body");
         }
 
-        logger.trace("exit process");
+        logger.exit();
     }
 
     public RequestInfo getRequestInfo(HttpServletRequest request) {
-        logger.trace("in getRequestInfo");
+        logger.entry();
 
         RequestInfo params = new RequestInfo(request);
 
@@ -187,7 +191,7 @@ public class JavascriptResource extends Resource {
         params.setResource(resource);
         params.setDir(dir);
 
-        logger.trace("exit getRequestInfo");
+        logger.exit();
         return params;
     }
 
@@ -201,18 +205,21 @@ public class JavascriptResource extends Resource {
      * @throws NotFoundException when the expected object is not found
      */
     private JavascriptObject evaluateJavascript(JSGIRequest jsgi) throws ResourceException {
-        logger.trace("in evaluateJavascript");
+        logger.entry();
 
         JavascriptObject jsResponse = null;
         JavascriptObject jsRequest = jsgi.env();
         String controller = jsRequest.get("controller");
         String action = jsRequest.get("action");
-
+        logger.debug("controller: {}", controller);
+        logger.debug("action: {}", action);
+        
         // create Rhino context
         Context cx = jsHelper.getContext();
 
         try {
             // create scope based on our shared scope
+            logger.debug("creating local scope based on shared scope");
             Scriptable scope = cx.newObject(jsHelper.getSharedScope());
             scope.setPrototype(jsHelper.getSharedScope());
             scope.setParentScope(null);
@@ -221,6 +228,7 @@ public class JavascriptResource extends Resource {
             scope.put("REQUEST", scope, jsRequest.value());
 
             // run the compiled javascript code
+            logger.debug("executing script");
             getScript().exec(cx, scope);
 
             // pull out the controller function
@@ -266,7 +274,7 @@ public class JavascriptResource extends Resource {
             Context.exit();
         }
 
-        logger.trace("exit evaluateJavascript");
+        logger.exit();
         return jsResponse;
     }
 

@@ -30,7 +30,7 @@ public class CollectionController {
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> get(@PathVariable String collection) {
-        logger.trace("in controller=collection action=get collection: ", collection);
+        logger.entry(collection);
         Map<String, Object> resp = new HashMap<String, Object>();
         resp.put("collection", collection);
 
@@ -50,13 +50,14 @@ public class CollectionController {
             resp.put("types", typesResp);
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> create(@PathVariable String collection) {
-        logger.trace("in controller=collection action=create collection: {}", collection);
+        logger.entry(collection);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -69,22 +70,25 @@ public class CollectionController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.PUT)
     public void update(@PathVariable String collection) {
-        logger.trace("in controller=collection action=update collection: {}", collection);
+        logger.entry(collection);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> delete(@PathVariable String collection) {
-        logger.trace("in controller=collection action=delete collection: {}", collection);
+        logger.entry(collection);
         Map<String, Object> resp = new HashMap<String, Object>();
         searchService.deleteIndex(collection);
         resp.put("status", "ok");
+        
+        logger.exit();
         return resp;
     }
 

@@ -42,8 +42,7 @@ public class ResourceController {
     @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|images|js|\\.))}")
     public void getResource(@PathVariable String app, HttpServletRequest request, HttpServletResponse response,
             HttpSession userSession) {
-        logger.trace("in controller=resource action=getResource app:{} request:{} response:{} userSession:{}", new Object[]{
-                app, request, response, userSession});
+        logger.entry();
         processResource(app, null, null, request, response, userSession);
     }
 
@@ -51,8 +50,7 @@ public class ResourceController {
     @RequestMapping(value = "/{app:(?!(?:css|images|js))[a-z0-9]+}/{dir}")
     public void getResource(@PathVariable String app, @PathVariable String dir, HttpServletRequest request,
             HttpServletResponse response, HttpSession userSession) {
-        logger.trace("in controller=resource action=getResource app:{} dir:{} request:{} response:{} userSession:{}", new Object[]{
-                app, dir, request, response, userSession});
+        logger.entry();
         processResource(app, dir, null, request, response, userSession);
     }
 
@@ -60,8 +58,7 @@ public class ResourceController {
     @RequestMapping(value = "/{app:(?!(?:css|images|js))[a-z0-9]+}/{dir}/{resource:.*}")
     public void getResource(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
-        logger.trace("in controller=resource action=getResource app:{} dir:{} resource:{} request:{} response:{} userSession:{}",
-                new Object[]{app, dir, resource, request, response, userSession});
+        logger.entry();
         processResource(app, dir, resource, request, response, userSession);
     }
 
@@ -77,12 +74,14 @@ public class ResourceController {
      */
     private void processResource(String app, String dir, String resource, HttpServletRequest request, HttpServletResponse response,
             HttpSession session) {
-        logger.trace("in controller=resource action-processResource app:{} dir:{} resource:{} request:{} response:{} session:{}",
-                new Object[]{app, dir, resource, request, response, session});
+        logger.entry(app, dir, resource);
 
         try {
+            logger.debug("getting resource");
             Resource r = resourceHelper.getResource(app, dir, resource);
+            logger.debug("processing resource request");
             r.process(request, response, session);
+            logger.debug("done processing resource request");
         } catch (NotFoundException e) {
             sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (InternalErrorException e) {
@@ -93,6 +92,7 @@ public class ResourceController {
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
 
+        logger.exit();
     }
 
     /**
@@ -103,8 +103,9 @@ public class ResourceController {
      * @param error the error
      */
     private void sendErrorResponse(HttpServletResponse response, int code, Exception error) {
-        logger.debug("processing error: {}", error.getMessage(), error);
+        logger.entry(code, error);
         try {
+            logger.debug("exception", error);
             if (code == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
                 response.sendError(code, ExceptionUtils.getStackTrace(error));
             } else {

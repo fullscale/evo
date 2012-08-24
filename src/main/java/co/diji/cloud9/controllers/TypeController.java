@@ -32,7 +32,7 @@ public class TypeController {
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> get(@PathVariable String collection, @PathVariable String type) {
-        logger.trace("in controller=type action=get collection: {} type:{}", collection, type);
+        logger.entry(collection, type);
         Map<String, Object> resp = new HashMap<String, Object>();
         resp.put("collection", collection);
         resp.put("type", type);
@@ -46,13 +46,14 @@ public class TypeController {
             }
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> create(@PathVariable String collection, @PathVariable String type) {
-        logger.trace("in controller=type action=create collection:{} type:{}", collection, type);
+        logger.entry(collection, type);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -65,6 +66,7 @@ public class TypeController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
@@ -73,7 +75,7 @@ public class TypeController {
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> update(@PathVariable String collection, @PathVariable String type,
             @RequestBody Map<String, Object> mappings) {
-        logger.trace("in controller=type action=update collection:{} type:{} mappings:{}", new Object[]{collection, type, mappings});
+        logger.entry(collection, type);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -109,16 +111,18 @@ public class TypeController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> delete(@PathVariable String collection, @PathVariable String type) {
-        logger.trace("in controller=type action=delete collection:{} type:{}", collection, type);
+        logger.entry(collection, type);
         Map<String, Object> resp = new HashMap<String, Object>();
         searchService.deleteType(collection, type);
         resp.put("status", "ok");
+        logger.exit();
         return resp;
     }
 

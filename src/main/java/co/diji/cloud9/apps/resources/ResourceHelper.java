@@ -44,10 +44,10 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     @PostConstruct
     protected void bootstrap() {
-        logger.trace("in bootstrap");
+        logger.entry();
         logger.debug("registering event listener");
         ((IMap<String, Resource>) getResourceCache()).addEntryListener(this, false);
-        logger.trace("exit bootstrap");
+        logger.exit();
     }
 
     /**
@@ -86,7 +86,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @return the generated cache key
      */
     protected String getCacheKey(String app, String dir, String resource) {
-        logger.trace("in getCacheKey app:{}, dir:{}, resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
         StringBuilder keyBuilder = new StringBuilder();
         keyBuilder.append(app);
         if (dir != null) {
@@ -96,7 +96,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             }
         }
 
-        logger.trace("exit getCacheKey");
+        logger.exit(keyBuilder);
         return keyBuilder.toString();
     }
 
@@ -110,7 +110,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @throws ResourceException on error retrieving/creating the resource
      */
     public Resource getResource(String app, String dir, String resource) throws ResourceException {
-        logger.trace("in getResource app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
 
         Resource r;
 
@@ -158,6 +158,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
 
             // if this is javascript resource, we add the compiled script to a local cache
             if (!isStatic) {
+                logger.debug("caching script of javascript resource");
                 getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
             }
         } else {
@@ -181,7 +182,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             }
         }
 
-        logger.trace("exit getResource");
+        logger.exit();
         return r;
     }
 
@@ -193,7 +194,6 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @param resource the resource name/id
      */
     public void evict(String app, String dir, String resource) {
-        logger.debug("in evict app:{}, dir:{}, resource:{}", new Object[]{app, dir, resource});
         evictByKey(getCacheKey(app, dir, resource));
     }
 
@@ -222,11 +222,11 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @param cacheKey the key of the item to evict
      */
     protected void evictByKey(String cacheKey) {
-        logger.debug("in evict cacheKey:{}", cacheKey);
+        logger.entry(cacheKey);
         // just remove the entry from resoruce cache
         // this will trigger remove event, which in turn deletes from script cache if necessary
         getResourceCache().remove(cacheKey);
-        logger.debug("exit evict");
+        logger.exit();
     }
 
     /**
@@ -235,7 +235,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @param keyPrefix the prefix of items to evict
      */
     protected void evictByPrefix(String keyPrefix) {
-        logger.debug("in evictByPrefix keyPrefix:{}", keyPrefix);
+        logger.entry(keyPrefix);
         // loop though cache keys and evict if they match prefix
         for (String cacheKey : getResourceCache().keySet()) {
             if (cacheKey.startsWith(keyPrefix)) {
@@ -243,7 +243,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
                 evictByKey(cacheKey);
             }
         }
-        logger.debug("exit evictByPrefix");
+        logger.exit();
     }
 
     /*
@@ -252,9 +252,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     @Override
     public void entryAdded(EntryEvent<String, Resource> event) {
-        logger.trace("in entryAdded");
         // do nothing, script will be cached locally on first use
-        logger.trace("exit entryAdded");
     }
 
     /*
@@ -263,11 +261,11 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     @Override
     public void entryEvicted(EntryEvent<String, Resource> event) {
-        logger.trace("in entryEvicted");
+        logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
         getScriptCache().remove(event.getKey());
-        logger.trace("exit entryEvicted");
+        logger.exit();
     }
 
     /*
@@ -276,11 +274,11 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     @Override
     public void entryRemoved(EntryEvent<String, Resource> event) {
-        logger.trace("in entryRemoved");
+        logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
         getScriptCache().remove(event.getKey());
-        logger.trace("exit entryRemoved");
+        logger.exit();
     }
 
     /*
@@ -289,14 +287,14 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     @Override
     public void entryUpdated(EntryEvent<String, Resource> event) {
-        logger.trace("in entryUpdated");
+        logger.entry();
         String eventNodeId = event.getMember().getUuid();
         logger.debug("Update happend on node: {}", eventNodeId);
         if (!eventNodeId.equals(hazelcast.getNodeId())) {
             logger.debug("expiring cached script if exists: {}", event.getKey());
             getScriptCache().remove(event.getKey());
         }
-        logger.trace("exit entryUpdated");
+        logger.exit();
     }
 
 }

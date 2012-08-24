@@ -30,8 +30,10 @@ public class DocumentController {
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> get(@PathVariable String collection, @PathVariable String type, @PathVariable String id) {
-        logger.trace("in controller=document action=get collection:{} type:{} id:{}", new Object[]{collection, type, id});
+        logger.entry(collection, type, id);
         Map<String, Object> resp = new HashMap<String, Object>();
+        
+        logger.exit();
         return resp;
     }
 
@@ -39,8 +41,7 @@ public class DocumentController {
     @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public Map<String, Object> create(@PathVariable String collection, @PathVariable String type, @PathVariable String id,
             @RequestBody Map<String, Object> source) {
-        logger.trace("in controller=document action=create collection:{} type:{} id:{} source:{}", new Object[]{
-                collection, type, id, source});
+        logger.entry(collection, type, id);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -59,27 +60,31 @@ public class DocumentController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.PUT, produces = "application/json")
     public Map<String, Object> update(@PathVariable String collection, @PathVariable String type, @PathVariable String id) {
-        logger.trace("in controller=document action=update collection:{} type:{} id:{}", new Object[]{collection, type, id});
+        logger.entry(collection, type, id);
         Map<String, Object> resp = new HashMap<String, Object>();
+        
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/{id}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> delete(@PathVariable String collection, @PathVariable String type, @PathVariable String id) {
-        logger.trace("in controller=document action=delete collection:{} type:{} id:{}", new Object[]{collection, type, id});
+        logger.entry(collection, type, id);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
             DeleteResponse delResp = searchService.deleteDoc(collection, type, id);
             logger.debug("delResp: {}", delResp);
             if (delResp == null) {
+                logger.debug("delResp is null");
                 throw new Cloud9Exception("Error deleteing document: " + id);
             }
 
@@ -92,6 +97,7 @@ public class DocumentController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 

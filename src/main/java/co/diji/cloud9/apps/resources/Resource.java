@@ -35,10 +35,11 @@ public abstract class Resource implements DataSerializable {
     protected String resource;
 
     public void setup(String app, String dir, String resource) throws ResourceException {
-        logger.trace("in setup app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
         this.app = app;
         this.dir = dir;
         this.resource = resource;
+        logger.exit();
     }
 
     /**
@@ -105,7 +106,7 @@ public abstract class Resource implements DataSerializable {
      * @throws Cloud9Exception if resource document is not found
      */
     protected GetResponse getDoc(String[] fields) throws NotFoundException {
-        logger.trace("in getDoc fields:{}", fields);
+        logger.entry((Object) fields);
         logger.debug("searchService: {}", searchService);
         logger.debug("app:{}, dir:{}, resource:{}", new Object[]{app, dir, resource});
         GetResponse doc = searchService.getAppResource(app, dir, resource, fields);
@@ -114,7 +115,7 @@ public abstract class Resource implements DataSerializable {
             throw new NotFoundException("Resource not found: " + resource);
         }
 
-        logger.trace("exit getDoc: {}", doc);
+        logger.exit();
         return doc;
     }
 

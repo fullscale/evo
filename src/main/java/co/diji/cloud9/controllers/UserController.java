@@ -19,31 +19,36 @@ public class UserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
     public void get(@PathVariable String userId) {
-        logger.info("user get userId:" + userId);
+        logger.entry(userId);
+        logger.exit();
     }
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.POST)
     public void create(@PathVariable String userId) {
-        logger.info("user create userId:" + userId);
+        logger.entry(userId);
+        logger.exit();
     }
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public void update(@PathVariable String userId) {
-        logger.info("user update userId:" + userId);
+        logger.entry(userId);
+        logger.exit();
     }
 
     @ResponseBody
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
     public void delete(@PathVariable String userId) {
-        logger.info("user delete userId:" + userId);
+        logger.entry(userId);
+        logger.exit();
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView list(ModelMap model) {
-        logger.trace("enter controller=user action=list");
+        logger.entry();
+        logger.exit();
         return new ModelAndView("users", model);
     }
 

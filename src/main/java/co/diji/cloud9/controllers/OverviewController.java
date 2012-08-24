@@ -18,15 +18,18 @@ public class OverviewController extends BaseController {
     @ResponseBody
     @RequestMapping(value = {"/", "/cloud9"}, method = RequestMethod.GET)
     public ModelAndView getIndex(ModelMap model) {
+        logger.entry();
         RedirectView redirect = new RedirectView("/cloud9/overview");
         redirect.setExposeModelAttributes(false);
+        logger.exit();
         return new ModelAndView(redirect);
     }
 
     @ResponseBody
     @RequestMapping(value = {"/cloud9/overview"}, method = RequestMethod.GET)
     public ModelAndView get(ModelMap model) {
-        logger.trace("enter controller=overview action=get");
+        logger.entry();
+        logger.exit();
         return new ModelAndView("overview", model);
     }
 

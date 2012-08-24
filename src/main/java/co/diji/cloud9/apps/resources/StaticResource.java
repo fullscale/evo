@@ -58,7 +58,7 @@ public class StaticResource extends Resource {
     @Override
     public void setup(String app, String dir, String resource) throws ResourceException {
         super.setup(app, dir, resource);
-        logger.trace("in StaticResource.setup");
+        logger.entry();
 
         // get the resource doc from the app index
         GetResponse doc = getDoc(new String[]{"_timestamp", "_source"});
@@ -89,7 +89,7 @@ public class StaticResource extends Resource {
             throw new InternalErrorException("Error processing static resource", e);
         }
 
-        logger.trace("exit StaticResource.setup");
+        logger.exit();
     }
 
     protected DateFormat getDateFormatter() {
@@ -103,22 +103,22 @@ public class StaticResource extends Resource {
     }
 
     protected void sendCacheHeaders(HttpServletResponse response) {
-        logger.trace("in StaticResource.sendCacheHeaders");
+        logger.entry();
         // Build an expiration date 1 year from now. This is the max duration according to RFC guidelines
         Calendar expiration = Calendar.getInstance();
         expiration.add(Calendar.YEAR, 1);
-        logger.debug("expiration: {}", expiration);
+        logger.debug("expiration: {}", expiration.getTime());
 
         // set cache headers
         logger.debug("setting cache control headers");
         response.addHeader("Cache-Control", "max-age=31556926, public"); // 1 year
         response.addHeader("Expires", getDateFormatter().format(expiration.getTime())); // 1 year
         response.addHeader("Last-Modified", getDateFormatter().format(lastModified));
-        logger.trace("exit StaticResource.sendCacheHeaders");
+        logger.exit();
     }
 
     protected boolean checkIfModified(HttpServletRequest request) {
-        logger.trace("in StaticResource.checkIfModified");
+        logger.entry();
         boolean modified = true;
         try {
             // does the client have a cached copy
@@ -139,7 +139,7 @@ public class StaticResource extends Resource {
             logger.debug("Error checking if static resoruce modified", e);
         }
 
-        logger.trace("exit StaticResource.checkIfModified");
+        logger.exit();
         return modified;
     }
 
@@ -150,7 +150,7 @@ public class StaticResource extends Resource {
      */
     @Override
     public void process(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ResourceException {
-        logger.trace("in StaticResource.process");
+        logger.entry();
 
         // static resources only support HTTP GET
         response.setHeader("Allow", "GET");
@@ -190,7 +190,7 @@ public class StaticResource extends Resource {
             response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
         }
 
-        logger.trace("exit StaticResource.process");
+        logger.exit();
     }
 
     /*

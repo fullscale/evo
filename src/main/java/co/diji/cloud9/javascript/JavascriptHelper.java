@@ -28,7 +28,7 @@ public class JavascriptHelper {
      * Loads javascript resources into shared scope
      */
     public ScriptableObject initializeSharedScope() {
-        logger.trace("initializing shared scope");
+        logger.entry();
         Context cx = getContext();
 
         // provides access to importPackage and importClass
@@ -54,6 +54,7 @@ public class JavascriptHelper {
             Context.exit();
         }
 
+        logger.exit();
         return scope;
     }
 
@@ -82,7 +83,7 @@ public class JavascriptHelper {
      * @param path the path to the lib
      */
     public void loadLib(Context cx, ScriptableObject scope, String name, String path) {
-        logger.trace("in loadLib name:{} path:{}", name, path);
+        logger.entry(name, path);
         Reader reader = null;
         try {
             reader = new FileReader(config.getResourceFile(path));
@@ -94,7 +95,7 @@ public class JavascriptHelper {
                 IOUtils.closeQuietly(reader);
             }
         }
-        logger.trace("exit loadLib");
+        logger.exit();
     }
 
     /**

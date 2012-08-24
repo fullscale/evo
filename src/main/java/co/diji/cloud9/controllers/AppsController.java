@@ -52,22 +52,24 @@ public class AppsController extends BaseController {
      * @return the resource name with the correct extension
      */
     private String validateResource(String resource, String type) {
-        logger.trace("in validateResource resource:{} type:{}", resource, type);
+        logger.entry(resource, type);
         if (!resource.endsWith(type)) {
             resource = resource + "." + type;
             logger.debug("resource with extension: {}", resource);
         }
 
-        logger.trace("exit validateResource: {}", resource);
+        logger.exit(resource);
         return resource;
     }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/ide/{app}", method = RequestMethod.GET)
     public ModelAndView showIde(@PathVariable String app) {
+        logger.entry(app);
         ModelAndView mav = new ModelAndView();
         mav.setViewName("editor");
         mav.addObject("app", app);
+        logger.exit();
         return mav;
     }
 
@@ -75,7 +77,7 @@ public class AppsController extends BaseController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
     public ModelAndView list(ModelMap model) {
-        logger.trace("in controller=apps action=list");
+        logger.entry();
 
         Map<String, IndexStatus> apps = searchService.getAppStatus();
         JSONObject appResp = new JSONObject();
@@ -91,14 +93,14 @@ public class AppsController extends BaseController {
 
         model.addAttribute("apps", appResp.toString());
 
-        logger.trace("exit list: {}", model);
+        logger.exit();
         return new ModelAndView("applications", model);
     }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.GET, produces = "application/json")
     public List<String> listContentTypes(@PathVariable String app) {
-        logger.trace("in controller=apps action=listContentTypes app:{}", app);
+        logger.entry(app);
         List<String> resp = new ArrayList<String>();
 
         Map<String, MappingMetaData> appTypes = searchService.getAppTypes(app);
@@ -111,13 +113,14 @@ public class AppsController extends BaseController {
         }
 
         Collections.sort(resp);
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> createApp(@PathVariable String app) {
-        logger.trace("in controller=apps action=createApp app:{}", app);
+        logger.entry(app);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
@@ -125,18 +128,19 @@ public class AppsController extends BaseController {
             resp.put("status", "ok");
         } catch (IndexException e) {
             logger.warn(e.getMessage());
-            logger.trace("exception: ", e);
+            logger.debug("exception: ", e);
             resp.put("status", "error");
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> deleteApp(@PathVariable String app) {
-        logger.trace("in controller=apps action=deleteApp app:{}", app);
+        logger.entry(app);
         Map<String, Object> resp = new HashMap<String, Object>();
         
         // evict cached resources
@@ -146,13 +150,14 @@ public class AppsController extends BaseController {
         searchService.deleteApp(app);
         resp.put("status", "ok");
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}", method = RequestMethod.GET, produces = "application/json")
     public List<String> listResources(@PathVariable String app, @PathVariable String dir) {
-        logger.trace("in controller=apps action=listResources app:{} dir:{}", app, dir);
+        logger.entry(app, dir);
         List<String> resp = new ArrayList<String>();
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
@@ -171,8 +176,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
     public void getResourceFromDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletResponse response) {
-        logger.trace("in controller=apps action=getResourceFromDir app:{} dir:{} resource:{} response:{}", new Object[]{
-                app, dir, resource, response});
+        logger.entry(app, dir, resource);
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
 
@@ -224,8 +228,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> createResourceInDir(@PathVariable String app, @PathVariable String dir,
             @PathVariable String resource, @RequestBody String data) {
-        logger.trace("in controller=apps action=createResourceInDir app:{} dir:{} resource:{} data:{}", new Object[]{
-                app, dir, resource, data});
+        logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
         String mime = "text/plain";
 
@@ -279,7 +282,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> updateResourceInDir(@PathVariable String app, @PathVariable String dir,
             @PathVariable String resource, @RequestBody Map<String, Object> data) {
-        logger.trace("in controller=apps action=updateResourceInDir app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("addIdx: {}", appIdx);
@@ -298,7 +301,7 @@ public class AppsController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> deleteResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
-        logger.trace("in controller=apps action=deleteResourceInDir app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
@@ -318,7 +321,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/cloud9/apps/{app}/{dir}/_rename", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> renameResource(@PathVariable String app, @PathVariable String dir,
             @RequestBody Map<String, Object> data) {
-        logger.trace("in controller=apps action=renameResource app:{} dir:{} data:{}", new Object[]{app, dir, data});
+        logger.entry(app, dir);
         Map<String, Object> resp = new HashMap<String, Object>();
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
@@ -358,6 +361,7 @@ public class AppsController extends BaseController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
@@ -366,7 +370,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/v2/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> pushAppFile(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             @RequestBody Map<String, Object> data) {
-        logger.trace("in controller=api action=pushAppFile app:{} dir:{} resource:{}", new Object[]{app, dir, resource});
+        logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("addIdx: {}", appIdx);
@@ -391,6 +395,7 @@ public class AppsController extends BaseController {
         resp.put("id", indexResponse.id());
         resp.put("version", indexResponse.version());
 
+        logger.exit();
         return resp;
     }
 
@@ -399,8 +404,7 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/v2/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
     public void pullAppFile(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletResponse response) {
-        logger.trace("in controller=api action=pullAppFile app:{} dir:{} resource:{} response:{}", new Object[]{
-                app, dir, resource, response});
+        logger.entry(app, dir, resource);
         String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", appIdx);
 
@@ -446,6 +450,8 @@ public class AppsController extends BaseController {
                 }
             }
         }
+        
+        logger.exit();
     }
 
 }

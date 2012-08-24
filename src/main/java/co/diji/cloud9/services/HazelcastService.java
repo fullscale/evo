@@ -39,7 +39,7 @@ public class HazelcastService {
 
     @PostConstruct
     public void bootstrap() {
-        logger.trace("in bootstrap");
+        logger.entry();
 
         // read default cloud9 hazelcast settings
         Config conf = new ClasspathXmlConfig("hazelcast-cloud9.xml");
@@ -65,9 +65,11 @@ public class HazelcastService {
         }
 
         // make sure hazelcast starts on the "publish" address that elasticsearch nodes communicate on
+        logger.debug("setting interface");
         conf.getNetworkConfig().getInterfaces().setEnabled(true).addInterface(searchService.getPublishAddress());
 
         // configure hazelcast to be "spring aware"
+        logger.debug("enabling spring managed context");
         SpringManagedContext springContext = new SpringManagedContext();
         springContext.setApplicationContext(applicationContext);
         conf.setManagedContext(springContext);
@@ -75,6 +77,8 @@ public class HazelcastService {
         // start hazelcast
         logger.debug("starting hazelcast");
         hazelcast = Hazelcast.newHazelcastInstance(conf);
+        
+        logger.exit();
     }
 
     public IMap getMap(String name) {
@@ -87,12 +91,14 @@ public class HazelcastService {
 
     @PreDestroy
     public void shutdown() {
+        logger.entry();
         hazelcast.getLifecycleService().shutdown();
+        logger.exit();
     }
 
     @Bean
     public WebFilter hazelcastWebFilter() {
-        logger.trace("in hazelcastWebFilter");
+        logger.entry();
         Properties sessionCacheConfig = new Properties();
         sessionCacheConfig.put("instance-name", hazelcast.getName()); // the name of our hazelcast instance
         sessionCacheConfig.put("map-name", "session-cache");
@@ -101,7 +107,7 @@ public class HazelcastService {
         sessionCacheConfig.put("shutdown-on-destroy", "false");
         logger.debug("sessionCacheConfig: {}", sessionCacheConfig);
 
-        logger.trace("exit hazelcastWebFilter");
+        logger.exit();
         return new WebFilter(sessionCacheConfig);
     }
 }

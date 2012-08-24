@@ -27,7 +27,7 @@ public class ContentController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/{collection}/{type}/publish", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> add(@PathVariable String collection, @PathVariable String type) {
-        logger.trace("in controller=content action=add collection:{} type:{}", collection, type);
+        logger.entry(collection, type);
         Map<String, Object> resp = new HashMap<String, Object>();
         resp.put("collection", collection);
         resp.put("type", type);
@@ -43,6 +43,7 @@ public class ContentController extends BaseController {
             }
         }
 
+        logger.exit();
         return resp;
     }
 
@@ -50,12 +51,13 @@ public class ContentController extends BaseController {
     @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView get(ModelMap model) {
-        logger.trace("in controller=content action=get");
+        logger.entry();
 
         JSONObject indices = new JSONObject();
         Map<String, IndexStatus> collectionStatus = (Map<String, IndexStatus>) model.get("status");
 
         for (String indexItem : collectionStatus.keySet()) {
+            logger.debug("processing collection: {}", indexItem);
             IndexStatus indexStatus = collectionStatus.get(indexItem);
 
             JSONObject stats = new JSONObject();
@@ -66,7 +68,7 @@ public class ContentController extends BaseController {
 
         model.addAttribute("indices", indices.toString());
 
-        logger.trace("exit get: {}", model);
+        logger.exit();
         return new ModelAndView("collections", model);
     }
 

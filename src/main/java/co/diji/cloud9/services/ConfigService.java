@@ -39,6 +39,7 @@ public class ConfigService {
      */
     @PostConstruct
     public void init() {
+        logger.entry();
         // setup sigar
         String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
         logger.debug("sigar dir: {}", sigarDir);
@@ -53,6 +54,7 @@ public class ConfigService {
 
         cloud9Settings = createCloud9Settings();
         nodeSettings = createNodeSettings();
+        logger.exit();
     }
 
     /**
@@ -235,6 +237,7 @@ public class ConfigService {
      * @return the velocity template
      */
     public String getHtmlTemplate(String app) {
+        logger.entry(app);
         VelocityContext context = new VelocityContext();
         context.put("app", app);
 
@@ -242,6 +245,7 @@ public class ConfigService {
         String tmpl = getResourceContent("classpath:templates/html.vm");
 
         Velocity.evaluate(context, rendered, "html", tmpl);
+        logger.exit();
         return rendered.toString();
     }
 
@@ -260,6 +264,7 @@ public class ConfigService {
      * @return the velocity template
      */
     public String getCssTemplate(String app) {
+        logger.entry(app);
         VelocityContext context = new VelocityContext();
         context.put("app", app);
 
@@ -267,6 +272,7 @@ public class ConfigService {
         String tmpl = getResourceContent("classpath:templates/css.vm");
 
         Velocity.evaluate(context, rendered, "css", tmpl);
+        logger.exit();
         return rendered.toString();
     }
 
@@ -285,6 +291,7 @@ public class ConfigService {
      * @return the velocity template
      */
     public String getJsTemplate(String app) {
+        logger.entry(app);
         VelocityContext context = new VelocityContext();
         context.put("app", app);
 
@@ -292,6 +299,7 @@ public class ConfigService {
         String tmpl = getResourceContent("classpath:templates/js.vm");
 
         Velocity.evaluate(context, rendered, "js", tmpl);
+        logger.exit();
         return rendered.toString();
     }
 
@@ -319,6 +327,7 @@ public class ConfigService {
      * @return the velocity template
      */
     public String getControllerTemplate(String app) {
+        logger.entry(app);
         VelocityContext context = new VelocityContext();
         context.put("app", app);
 
@@ -326,6 +335,7 @@ public class ConfigService {
         String tmpl = getResourceContent("classpath:templates/controller.vm");
 
         Velocity.evaluate(context, rendered, "controller", tmpl);
+        logger.exit();
         return rendered.toString();
     }
 
@@ -336,7 +346,7 @@ public class ConfigService {
      * @return the settings file
      */
     public Settings createCloud9Settings() {
-        logger.trace("in createCloud9Settings");
+        logger.entry();
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
 
         // get the default settings
@@ -345,7 +355,6 @@ public class ConfigService {
         // load settings from user specified settings file
         // set by system property only
         String userSettingsFile = System.getProperty("c9.settings", null);
-        logger.debug("userSettingsFile: {}", userSettingsFile);
         if (userSettingsFile != null) {
             logger.debug("Reading settings from: {}", userSettingsFile);
             settings.put(getSettingsFromResource("file:" + userSettingsFile));
@@ -358,8 +367,8 @@ public class ConfigService {
         // user specified node settings file
         // order is system properties, settings file
         String userNodeSettingsFile = System.getProperty("c9.node.settings", defaults.get("node.settings"));
-        logger.debug("userNodeSettingsFile: {}", userNodeSettingsFile);
         if (userNodeSettingsFile != null) {
+            logger.debug("reading node settings from: {}", userNodeSettingsFile);
             settings.put("node.settings", userNodeSettingsFile);
         }
 
@@ -420,8 +429,9 @@ public class ConfigService {
             settings.put("network.multicast.enabled", true);
         }
 
-        logger.trace("exit createCloud9Settings");
-        return settings.build();
+        Settings finalSettings = settings.build();
+        logger.exit(finalSettings);
+        return finalSettings;
     }
 
     /**
@@ -430,7 +440,7 @@ public class ConfigService {
      * @return the node settings.
      */
     public Settings createNodeSettings() {
-        logger.trace("in createNodeSettings");
+        logger.entry();
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
 
         // get the default node settings
@@ -438,7 +448,6 @@ public class ConfigService {
 
         // user specified node settings
         String userNodeSettingsFile = cloud9Settings.get("node.settings", null);
-        logger.debug("userNodeSettingsFile: {}", userNodeSettingsFile);
         if (userNodeSettingsFile != null) {
             logger.debug("reading node settings from: {}", userNodeSettingsFile);
             settings.put(getSettingsFromResource("file:" + userNodeSettingsFile));
@@ -459,8 +468,9 @@ public class ConfigService {
             settings.putArray("discovery.zen.ping.unicast.hosts", cloud9Settings.getAsArray("network.unicast.hosts"));
         }
 
-        logger.debug("exit createNodeSettings: {}", settings.internalMap());
-        return settings.build();
+        Settings finalNodeSettings = settings.build();
+        logger.exit(finalNodeSettings);
+        return finalNodeSettings;
     }
 
     /**
@@ -470,7 +480,7 @@ public class ConfigService {
      * @return the settings
      */
     public Settings getSettingsFromResource(String resource) {
-        logger.trace("in getSettingsForResource resource:{}", resource);
+        logger.entry(resource);
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
         Resource settingsResource = applicationContext.getResource(resource);
         logger.debug("{} exists: {}", resource, settingsResource.exists());
@@ -478,14 +488,13 @@ public class ConfigService {
             try {
                 InputStream is = settingsResource.getInputStream();
                 settings.loadFromStream(settingsResource.getFilename(), is);
-                logger.debug("settings read from {}: {}", resource, settings.internalMap());
                 is.close();
             } catch (IOException e) {
                 logger.debug("error reading settings from {}", resource, e);
             }
         }
 
-        logger.trace("exit getSettingsFromResource: {}", settings.internalMap());
+        logger.exit();
         return settings.build();
     }
 
@@ -496,7 +505,7 @@ public class ConfigService {
      * @return the content of the resource as a string
      */
     public String getResourceContent(String resource) {
-        logger.trace("in getResourceContent resource:{}", resource);
+        logger.entry(resource);
         String content = null;
         Resource res = applicationContext.getResource(resource);
         logger.debug("{} exists: {}", resource, res.exists());
@@ -510,7 +519,7 @@ public class ConfigService {
             }
         }
 
-        logger.trace("exit getResourceContent: {}", content);
+        logger.exit();
         return content;
     }
 
@@ -522,7 +531,7 @@ public class ConfigService {
      * @throws IOException
      */
     public File getResourceFile(String resource) throws IOException {
-        logger.trace("in getResourceFile resource:{}", resource);
+        logger.entry(resource);
         Resource res = applicationContext.getResource(resource);
         File outFile = null;
         logger.debug("exists: {}", res.exists());
@@ -533,7 +542,7 @@ public class ConfigService {
             throw new IOException("Resource does not exist: " + resource);
         }
 
-        logger.trace("exit getResourceFile: {}", outFile);
+        logger.exit();
         return outFile;
     }
 }

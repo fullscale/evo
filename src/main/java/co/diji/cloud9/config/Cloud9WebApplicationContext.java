@@ -13,7 +13,7 @@ public class Cloud9WebApplicationContext extends XmlWebApplicationContext {
 
     @Override
     public Resource getResource(String location) {
-        logger.trace("in getResource location:{}", location);
+        logger.entry();
         Resource resource = null;
         if (location.equals(securityResourceVar)) {
             String userSecurityFile = System.getProperty("c9.security.context", null);
@@ -27,7 +27,7 @@ public class Cloud9WebApplicationContext extends XmlWebApplicationContext {
             resource = super.getResource(location);
         }
 
-        logger.trace("exit getResource: {}", resource);
+        logger.exit();
         return resource;
     }
 }

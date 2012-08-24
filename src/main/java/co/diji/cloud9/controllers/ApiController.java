@@ -59,7 +59,7 @@ public class ApiController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/apps/{app}", method = RequestMethod.GET)
     public void exportApp(@PathVariable String app, HttpServletRequest request, HttpServletResponse response) {
-        logger.trace("in controller=api action=exportApp app:{} request:{}", app, request);
+        logger.entry(app);
         Map<String, String[]> exportMappings = null;
         String[] mappings = request.getParameterValues("mapping");
 
@@ -117,6 +117,8 @@ public class ApiController {
                 }
             }
         }
+        
+        logger.exit();
     }
 
     @ResponseBody
@@ -125,12 +127,12 @@ public class ApiController {
             @RequestParam(value = "force", defaultValue = "false") boolean force,
             @RequestParam(value = "mappings", defaultValue = "true") boolean mappings,
             @RequestPart(value = "app", required = false) MultipartFile data) {
-        logger.trace("in controller=api action=importApp app:{} force:{} mappings:{} data:{}", new Object[]{
-                app, force, mappings, data});
+        logger.entry(app, force, mappings);
         Map<String, Object> resp = new HashMap<String, Object>();
 
         try {
             if (data == null) {
+                logger.debug("no input data found");
                 throw new Cloud9Exception("No application file found");
             }
 
@@ -148,14 +150,14 @@ public class ApiController {
             resp.put("response", e.getMessage());
         }
 
+        logger.exit();
         return resp;
     }
 
     @ResponseBody
     @RequestMapping(value = "/**")
     public void passthough(HttpServletRequest request, HttpServletResponse response) {
-        logger.trace("passthrough - method: {}, path: {}, params: {}", new Object[]{
-                request.getMethod(), request.getServletPath(), request.getQueryString()});
+        logger.entry();
         final AsyncContext asyncContext = request.startAsync(request, response);
         try {
             ServletRestRequest restRequest = new ServletRestRequest(request);
@@ -166,6 +168,7 @@ public class ApiController {
             response.setStatus(500);
             asyncContext.complete();
         }
+        logger.exit();
     }
 
     static class AsyncServletRestChannel implements RestChannel {

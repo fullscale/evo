@@ -28,16 +28,19 @@ public final class Cloud9 {
     private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9.class);
 
     public static void main(String[] args) throws Exception {
-
+        logger.entry();
+        
         // read user specified properties
         int httpPort = Integer.parseInt(System.getProperty("c9.http.port", "2600"));
-
         int httpsPort = Integer.parseInt(System.getProperty("c9.https.port", "2643"));
-
         Boolean forceHttps = "force".equals(System.getProperty("c9.https.enable", "false"));
-
         String libdir = System.getProperty("c9.libdir", null);
 
+        logger.debug("httpPort: {}", httpPort);
+        logger.debug("httpsPort:{}", httpsPort);
+        logger.debug("forceHttps: {}", forceHttps);
+        logger.debug("libdir: {}", libdir);
+        
         Server server = new Server(httpPort);
 
         ProtectionDomain domain = Cloud9.class.getProtectionDomain();
@@ -48,7 +51,9 @@ public final class Cloud9 {
             // checks default location
             File base = new File(location.getPath());
             libdir = base.getParent() + "/lib";
+            logger.debug("setting libdir: {}", libdir);
         }
+        
         loadExternalLibs(libdir);
 
         WebAppContext webapp = new WebAppContext();
@@ -116,35 +121,42 @@ public final class Cloud9 {
 
         server.setStopAtShutdown(true);
         server.setHandler(webapp);
+        
+        logger.debug("starting jetty");
         server.start();
         server.join();
-
+        logger.exit();
     }
 
     /*
      * Loads any external dependencies.
      */
     private static void loadExternalLibs(String directory) {
+        logger.entry(directory);
         try {
             File dir = new File(directory);
             String[] files = dir.list();
 
             if (files != null) {
-                logger.info("Loading external dependencies: {}", directory);
                 for (int i = 0; i < files.length; i++) {
                     String fileName = "file:" + directory + "/" + files[i];
+                    logger.info("Loading {}", fileName);
                     Utils4J.addToClasspath(fileName);
                 }
             }
         } catch (Exception e) {
             logger.warn("Error loading external JAR files");
+            logger.debug("Exception", e);
         }
+        
+        logger.exit();
     }
 
     /*
      * Really? Java has no way of deleting non-empty directories.
      */
     public static boolean deleteDirectory(File path) {
+        logger.entry(path);
         if (path.exists()) {
             File[] files = path.listFiles();
             for (int i = 0; i < files.length; i++) {
@@ -155,6 +167,8 @@ public final class Cloud9 {
                 }
             }
         }
+        
+        logger.exit();
         return (path.delete());
     }
 
