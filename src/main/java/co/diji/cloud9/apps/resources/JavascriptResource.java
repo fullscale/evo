@@ -180,6 +180,13 @@ public class JavascriptResource extends Resource {
         logger.exit();
     }
 
+    /**
+     * Gets the RequestInfo object with parameters set correctly
+     * for javascript controllers.
+     * 
+     * @param request the http request object
+     * @return the request info object
+     */
     public RequestInfo getRequestInfo(HttpServletRequest request) {
         logger.entry();
 

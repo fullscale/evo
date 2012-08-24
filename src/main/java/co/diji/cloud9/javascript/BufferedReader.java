@@ -3,7 +3,7 @@ package co.diji.cloud9.javascript;
 import java.lang.StringBuffer;
 
 /**
- * A buffered reader that wraps the servlet inpuy stream.
+ * A buffered reader that wraps the servlet input stream.
  * We expose this to the SSJS controllers as part of the
  * JSGI specification v0.3 but it's nothing more than a 
  * more Javascript friendly Java BufferReader.
