@@ -1,35 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Properties -->
+    <property name="LOGDIR" value="${CLOUD9_HOME:-.}/logs" />
+    <property name="LOGFILE" value="cloud9.log" />
+    <property name="SLOWLOG" value="slowlog.log" />
 
-	<!--  Appenders -->
+	<!-- Appenders -->
+    <!-- Console logger, INFO+ only -->
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread][%logger{36}] %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<!-- Application Loggers -->
-	<logger name="co.diji.cloud9" level="INFO" />
-	<logger name="co.diji.cloud9.config.Cloud9WebApplicationContext" level="WARN" />
-	
-	<!-- 3rd party Loggers -->
-	<logger name="org.springgramework" level="WARN" />
-	<logger name="org.springgramework.core" level="INHERIT" />
-	<logger name="org.springgramework.aop" level="INHERIT" />
-	<logger name="org.springgramework.beans" level="INHERIT" />
-	<logger name="org.springgramework.context" level="INHERIT" />
-	<logger name="org.springgramework.web" level="INHERIT" />
-	<logger name="org.springgramework.security" level="INHERIT" />
+    <!-- Daily Log File -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGDIR}/${LOGFILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily, gzipped -->
+            <fileNamePattern>${LOGDIR}/${LOGFILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+        </rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread][%logger{36}.%M @ %L] %msg%n</pattern>
+		</encoder>
+    </appender>
 
-	<logger name="org.apache.velocity" level="WARN" />
-	<logger name="org.eclipse.jetty" level="WARN" />
-	<logger name="org.elasticsearch" level="WARN" />
-	
-	<logger name="com.hazelcast" level="WARN" />
-	<logger name="com.hazelcast.config" level="ERROR" />
-	
-	<root level="WARN">
+    <!-- Query Slow Log (not enabled by default) -->
+    <appender name="SLOWFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGDIR}/${SLOWLOG}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily, gzipped -->
+            <fileNamePattern>${LOGDIR}/${SLOWLOG}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+        </rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level [%logger{25}] %msg%n</pattern>
+		</encoder>
+    </appender>
+
+	<!-- Application Loggers -->
+    <!-- DEBUG+ goes it file, INFO+ to console -->
+	<logger name="co.diji.cloud9" level="DEBUG">
 		<appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- For when the slowlog is enabled -->
+    <!-- Only send to slow log file -->
+    <logger name="org.elasticsearch.index.search.slowlog" level="TRACE" additivity="false">
+		<appender-ref ref="SLOWFILE" />
+    </logger>
+
+    <!-- loggers that are too noisy to run at INFO -->
+	<logger name="co.diji.cloud9.config.Cloud9WebApplicationContext" level="WARN" />
+	<logger name="org.springframework.beans.factory" level="WARN" />
+	<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
+	<logger name="org.springframework.security.config" level="WARN" />
+
+    <!-- default logging level -->
+	<root level="INFO">
+		<appender-ref ref="FILE" />
 	</root>
 
 </configuration>
