@@ -1,27 +1,27 @@
 package co.diji.cloud9;
 
-import java.io.File;
-import java.net.URL;
-import java.security.ProtectionDomain;
+import java.util.EnumSet;
 
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
+import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.webapp.MetaInfConfiguration;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebInfConfiguration;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.fuin.utils4j.Utils4J;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.DispatcherServlet;
+
+import co.diji.cloud9.config.AppContext;
+import co.diji.cloud9.config.RootContext;
+import co.diji.cloud9.http.ErrorSuppressingSessionListener;
 
 public final class Cloud9 {
 
@@ -29,63 +29,25 @@ public final class Cloud9 {
 
     public static void main(String[] args) throws Exception {
         logger.entry();
-        
+
         // read user specified properties
         int httpPort = Integer.parseInt(System.getProperty("c9.http.port", "2600"));
         int httpsPort = Integer.parseInt(System.getProperty("c9.https.port", "2643"));
         Boolean forceHttps = "force".equals(System.getProperty("c9.https.enable", "false"));
-        String libdir = System.getProperty("c9.libdir", null);
 
         logger.debug("httpPort: {}", httpPort);
         logger.debug("httpsPort:{}", httpsPort);
         logger.debug("forceHttps: {}", forceHttps);
-        logger.debug("libdir: {}", libdir);
-        
+
         Server server = new Server(httpPort);
 
-        ProtectionDomain domain = Cloud9.class.getProtectionDomain();
-        URL location = domain.getCodeSource().getLocation();
-
-        // load external jars
-        if (libdir == null) {
-            // checks default location
-            File base = new File(location.getPath());
-            libdir = base.getParent() + "/lib";
-            logger.debug("setting libdir: {}", libdir);
-        }
-        
-        loadExternalLibs(libdir);
-
-        WebAppContext webapp = new WebAppContext();
-
-        // create a temporary directory to run from
-        String tmpDirPath = System.getProperty("java.io.tmpdir");
-        String fileSeparator = System.getProperty("file.separator");
-        if (!tmpDirPath.endsWith(fileSeparator)) {
-            tmpDirPath = tmpDirPath + fileSeparator;
-        }
-
-        File tmpDir = new File(tmpDirPath + "cloud9-" + httpPort);
-
-        // if it already exists delete it
-        if (tmpDir.exists()) {
-            deleteDirectory(tmpDir);
-        }
-
-        // create a new empty directory
-        if (!(tmpDir.mkdir())) {
-            throw new RuntimeException("Unable to create temporary dir: " + tmpDir);
-        }
-
-        // this depends on how the JVM was shutdown
-        tmpDir.deleteOnExit();
-        logger.debug("temp dir: {}", tmpDir);
+        // TODO fix once running war-less
+        String tmpDir = ".";
 
         // setup an SSL socket
-
         // get the keystore/keypass otherwise use cloud9 default
         String keypass = System.getProperty("c9.https.keypass", "3f038de0-6606-11e1-b86c-0800200c9a66");
-        String keystore = System.getProperty("c9.https.keystore", tmpDir + "/webapp/WEB-INF/security/c9.default.keystore");
+        String keystore = System.getProperty("c9.https.keystore", tmpDir + "/etc/security/c9.default.keystore");
 
         // create a secure channel
         final SslContextFactory sslContextFactory = new SslContextFactory(keystore);
@@ -106,70 +68,49 @@ public final class Cloud9 {
             server.setConnectors(new Connector[]{sslConn});
         }
 
-        webapp.setContextPath("/");
-        webapp.setTempDirectory(tmpDir);
-        webapp.setWar(location.toExternalForm());
-        webapp.setConfigurations(new Configuration[] {
-                new WebInfConfiguration(),
-                new WebXmlConfiguration(),
-                new MetaInfConfiguration(),
-                new FragmentConfiguration(),
-                new EnvConfiguration(),
-                new PlusConfiguration(),
-                new AnnotationConfiguration(),
-                new JettyWebXmlConfiguration() });
+        // main servlet context
+        final ServletContextHandler context = new ServletContextHandler(server, "/", true, false);
 
+        // setup spring contexts
+        AnnotationConfigWebApplicationContext root = new AnnotationConfigWebApplicationContext();
+        root.register(RootContext.class);
+        context.addEventListener(new ContextLoaderListener(root));
+
+        AnnotationConfigWebApplicationContext dispatch = new AnnotationConfigWebApplicationContext();
+        dispatch.register(AppContext.class);
+
+        // setup hazelcast filter
+        // spring delegating filter proxy which delegates to our hazelcastWebFilter bean
+        DelegatingFilterProxy hazelcastFilter = new DelegatingFilterProxy("hazelcastWebFilter");
+        hazelcastFilter.setTargetFilterLifecycle(true);
+        context.addFilter(new FilterHolder(hazelcastFilter), "/*", // send all requests though the filter
+                EnumSet.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST));
+
+        // our custom hazelcast event listener that swallows shutdown exceptions
+        context.addEventListener(new ErrorSuppressingSessionListener());
+
+        // setup spring security filters
+        DelegatingFilterProxy springSecurityFilter = new DelegatingFilterProxy("springSecurityFilterChain");
+        context.addFilter(new FilterHolder(springSecurityFilter), "/*", EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD));
+
+        // setup dispatcher servlet
+        DispatcherServlet dispatcher = new DispatcherServlet(dispatch);
+        dispatcher.setDispatchOptionsRequest(true);
+
+        // servlet holder, initOrder is same as load-on-startup in web.xml
+        final ServletHolder servletHolder = new ServletHolder(dispatcher);
+        servletHolder.setInitOrder(1);
+
+        // session timeout configuration
+        context.getSessionHandler().getSessionManager().setMaxInactiveInterval(43200); // 12 hours
+        context.addServlet(servletHolder, "/");
         server.setStopAtShutdown(true);
-        server.setHandler(webapp);
-        
+        server.setHandler(context);
+
         logger.debug("starting jetty");
         server.start();
         server.join();
         logger.exit();
-    }
-
-    /*
-     * Loads any external dependencies.
-     */
-    private static void loadExternalLibs(String directory) {
-        logger.entry(directory);
-        try {
-            File dir = new File(directory);
-            String[] files = dir.list();
-
-            if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    String fileName = "file:" + directory + "/" + files[i];
-                    logger.info("Loading {}", fileName);
-                    Utils4J.addToClasspath(fileName);
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("Error loading external JAR files");
-            logger.debug("Exception", e);
-        }
-        
-        logger.exit();
-    }
-
-    /*
-     * Really? Java has no way of deleting non-empty directories.
-     */
-    public static boolean deleteDirectory(File path) {
-        logger.entry(path);
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-        }
-        
-        logger.exit();
-        return (path.delete());
     }
 
 }
