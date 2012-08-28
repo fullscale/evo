@@ -46,7 +46,7 @@ public class AppContext extends WebMvcConfigurerAdapter {
     // for static resources
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:resources");
+        registry.addResourceHandler("/**").addResourceLocations("/resources");
     }
 
 }

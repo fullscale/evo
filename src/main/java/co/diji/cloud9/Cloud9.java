@@ -121,6 +121,9 @@ public final class Cloud9 {
         logger.debug("registering dispatcher servlet");
         context.addServlet(servletHolder, "/");
         
+        logger.debug("for resources");
+        context.setResourceBase("resources");
+        
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
         
@@ -133,6 +136,7 @@ public final class Cloud9 {
         logger.debug("joining jetty threads");
         server.join();
         
+        logger.debug("jetty started");
         logger.exit();
     }
 
