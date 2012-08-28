@@ -1,4 +1,4 @@
-package co.diji.cloud9.javascript;
+package co.diji.cloud9.services;
 
 import java.io.FileReader;
 import java.io.Reader;
@@ -12,12 +12,13 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import co.diji.cloud9.services.ConfigService;
+import co.diji.cloud9.javascript.PrimitiveWrapFactory;
+import co.diji.cloud9.javascript.XMLHttpRequest;
 
 @Component
-public class JavascriptHelper {
+public class JavascriptService {
 
-    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptHelper.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptService.class);
 
     @Autowired
     private ConfigService config;

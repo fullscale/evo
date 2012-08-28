@@ -30,9 +30,9 @@ import co.diji.cloud9.exceptions.resources.InternalErrorException;
 import co.diji.cloud9.exceptions.resources.NotFoundException;
 import co.diji.cloud9.exceptions.resources.ResourceException;
 import co.diji.cloud9.javascript.JSGIRequest;
-import co.diji.cloud9.javascript.JavascriptHelper;
 import co.diji.cloud9.javascript.JavascriptObject;
 import co.diji.cloud9.javascript.RequestInfo;
+import co.diji.cloud9.services.JavascriptService;
 
 /**
  * Represents a dynamic javascript resource
@@ -47,7 +47,7 @@ public class JavascriptResource extends Resource {
     private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptResource.class);
 
     @Autowired
-    protected transient JavascriptHelper jsHelper;
+    protected transient JavascriptService jsHelper;
 
     // script are not serializable we will compile on each node
     protected transient Script script;

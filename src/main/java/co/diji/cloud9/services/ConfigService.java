@@ -41,7 +41,7 @@ public class ConfigService {
     public void init() {
         logger.entry();
         // setup sigar
-        String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
+        String sigarDir = "lib/sigar";
         logger.debug("sigar dir: {}", sigarDir);
         System.setProperty("org.hyperic.sigar.path", sigarDir);
 

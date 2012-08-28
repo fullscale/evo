@@ -69,47 +69,70 @@ public final class Cloud9 {
         }
 
         // main servlet context
+        logger.debug("creating context");
         final ServletContextHandler context = new ServletContextHandler(server, "/", true, false);
 
         // setup spring contexts
+        logger.debug("create root app context");
         AnnotationConfigWebApplicationContext root = new AnnotationConfigWebApplicationContext();
+        logger.debug("registering root context");
         root.register(RootContext.class);
+        logger.debug("adding root context listener");
         context.addEventListener(new ContextLoaderListener(root));
 
+        logger.debug("create app context");
         AnnotationConfigWebApplicationContext dispatch = new AnnotationConfigWebApplicationContext();
+        logger.debug("registering app context");
         dispatch.register(AppContext.class);
 
         // setup hazelcast filter
         // spring delegating filter proxy which delegates to our hazelcastWebFilter bean
+        logger.debug("creating hazelcast filter");
         DelegatingFilterProxy hazelcastFilter = new DelegatingFilterProxy("hazelcastWebFilter");
         hazelcastFilter.setTargetFilterLifecycle(true);
+        logger.debug("adding hazelcast filter to servlet context");
         context.addFilter(new FilterHolder(hazelcastFilter), "/*", // send all requests though the filter
                 EnumSet.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST));
 
         // our custom hazelcast event listener that swallows shutdown exceptions
+        logger.debug("adding hazelcast event listener");
         context.addEventListener(new ErrorSuppressingSessionListener());
 
         // setup spring security filters
+        logger.debug("creating spring security filter");
         DelegatingFilterProxy springSecurityFilter = new DelegatingFilterProxy("springSecurityFilterChain");
+        logger.debug("adding spring security filter to servlet context");
         context.addFilter(new FilterHolder(springSecurityFilter), "/*", EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD));
 
         // setup dispatcher servlet
+        logger.debug("creating dispatcher");
         DispatcherServlet dispatcher = new DispatcherServlet(dispatch);
         dispatcher.setDispatchOptionsRequest(true);
 
         // servlet holder, initOrder is same as load-on-startup in web.xml
+        logger.debug("creating servlet holder for dispatcher");
         final ServletHolder servletHolder = new ServletHolder(dispatcher);
         servletHolder.setInitOrder(1);
 
         // session timeout configuration
+        logger.debug("setting session timeout");
         context.getSessionHandler().getSessionManager().setMaxInactiveInterval(43200); // 12 hours
+        
+        logger.debug("registering dispatcher servlet");
         context.addServlet(servletHolder, "/");
+        
+        logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
+        
+        logger.debug("setting jetty handler to the servlet context");
         server.setHandler(context);
 
         logger.debug("starting jetty");
         server.start();
+        
+        logger.debug("joining jetty threads");
         server.join();
+        
         logger.exit();
     }
 

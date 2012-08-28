@@ -3,7 +3,6 @@ package co.diji.cloud9.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -15,7 +14,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "co.diji.cloud9", useDefaultFilters = false, includeFilters = {@ComponentScan.Filter(Controller.class)})
+@ComponentScan(basePackages = "co.diji.cloud9.controllers")
 public class AppContext extends WebMvcConfigurerAdapter {
 
     // for multi-part files
@@ -28,7 +27,8 @@ public class AppContext extends WebMvcConfigurerAdapter {
     @Bean
     public VelocityConfig velocityConfig() {
         VelocityConfigurer conf = new VelocityConfigurer();
-        conf.setResourceLoaderPath("resources/views");
+        conf.setResourceLoaderPath("classpath:views");
+        conf.setOverrideLogging(true);
         return conf;
     }
 
@@ -46,7 +46,7 @@ public class AppContext extends WebMvcConfigurerAdapter {
     // for static resources
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("resources");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:resources");
     }
 
 }
