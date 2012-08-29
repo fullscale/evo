@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- Properties -->
-    <property name="LOGDIR" value="${CLOUD9_HOME:-.}/logs" />
+    <property name="LOGDIR" value="${C9_HOME:-.}/logs" />
     <property name="LOGFILE" value="cloud9.log" />
     <property name="SLOWLOG" value="slowlog.log" />
 

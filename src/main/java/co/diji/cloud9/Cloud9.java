@@ -12,6 +12,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
@@ -118,11 +119,20 @@ public final class Cloud9 {
         logger.debug("setting session timeout");
         context.getSessionHandler().getSessionManager().setMaxInactiveInterval(43200); // 12 hours
         
+        // register our spring dispatcher servlet
         logger.debug("registering dispatcher servlet");
         context.addServlet(servletHolder, "/");
         
+        // set the directory where our resources are located
         logger.debug("for resources");
         context.setResourceBase("resources");
+        
+        // configure our connection thread pool
+        logger.debug("create jetty thread pool");
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMaxThreads(500);
+        server.setThreadPool(threadPool);
+        logger.debug("threads: {}", server.getThreadPool().getThreads());
         
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
@@ -133,10 +143,10 @@ public final class Cloud9 {
         logger.debug("starting jetty");
         server.start();
         
-        logger.debug("joining jetty threads");
+        logger.debug("jetty started");
         server.join();
         
-        logger.debug("jetty started");
+        logger.debug("jetty stopped");
         logger.exit();
     }
 

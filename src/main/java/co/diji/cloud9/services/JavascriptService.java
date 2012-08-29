@@ -44,8 +44,8 @@ public class JavascriptService {
             scope.put("ServerSideC9", scope, true);
 
             // load shared libs
-            loadLib(cx, scope, "underscore", "/resources/js/underscore-min.js");
-            loadLib(cx, scope, "c9api", "/resources/js/c9/c9api.min.js");
+            loadLib(cx, scope, "underscore", "file:resources/js/underscore-min.js");
+            loadLib(cx, scope, "c9api", "file:resources/js/c9/c9api.min.js");
 
             // seal everything not already sealed
             scope.sealObject();
