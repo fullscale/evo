@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<assembly>
+
+    <id>cloud9</id>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>${basedir}/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <lineEnding>dos</lineEnding>
+            <includes>
+                <include>cloud9.bat</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>${basedir}/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <lineEnding>unix</lineEnding>
+            <includes>
+                <include>cloud9</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>${basedir}/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+            <includes>
+                <include>**/*.yml</include>
+                <include>**/*.xml</include>
+            </includes>
+            <excludes>
+                <exclude>logback-test.xml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+            <excludes>
+                <exclude>**/*.yml</exclude>
+                <exclude>**/*.xml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/resources</directory>
+            <outputDirectory>resources</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>lib/sigar</directory>
+            <outputDirectory>lib/sigar</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</assembly>

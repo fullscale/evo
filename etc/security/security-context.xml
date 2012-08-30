@@ -40,7 +40,12 @@
     	<intercept-url pattern="/login.html" access="permitAll" />
     	
     	<!-- Administrative Interface Security Rules -->
+    	<intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" />
+    	
+    	<!-- Comment out the above intercept and uncomment the following to force login over https -->
+    	<!--
     	<intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" requires-channel="https" />
+        -->
         
         <!-- API Security Rules -->
         <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->

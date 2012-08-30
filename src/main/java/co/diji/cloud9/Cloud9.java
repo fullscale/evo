@@ -1,27 +1,35 @@
 package co.diji.cloud9;
 
 import java.io.File;
-import java.net.URL;
-import java.security.ProtectionDomain;
+import java.util.EnumSet;
 
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
+import javax.servlet.DispatcherType;
+
+import ch.qos.logback.access.jetty.RequestLogImpl;
+
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.webapp.MetaInfConfiguration;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebInfConfiguration;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.fuin.utils4j.Utils4J;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.DispatcherServlet;
+
+import co.diji.cloud9.config.AppContext;
+import co.diji.cloud9.config.RootContext;
+import co.diji.cloud9.http.ErrorSuppressingSessionListener;
+import co.diji.cloud9.services.ConfigService;
 
 public final class Cloud9 {
 
@@ -29,147 +37,129 @@ public final class Cloud9 {
 
     public static void main(String[] args) throws Exception {
         logger.entry();
-        
-        // read user specified properties
-        int httpPort = Integer.parseInt(System.getProperty("c9.http.port", "2600"));
-        int httpsPort = Integer.parseInt(System.getProperty("c9.https.port", "2643"));
-        Boolean forceHttps = "force".equals(System.getProperty("c9.https.enable", "false"));
-        String libdir = System.getProperty("c9.libdir", null);
 
-        logger.debug("httpPort: {}", httpPort);
-        logger.debug("httpsPort:{}", httpsPort);
-        logger.debug("forceHttps: {}", forceHttps);
-        logger.debug("libdir: {}", libdir);
-        
-        Server server = new Server(httpPort);
+        // get the config service bean from root context
+        ConfigService config = ConfigService.getConfigService();
 
-        ProtectionDomain domain = Cloud9.class.getProtectionDomain();
-        URL location = domain.getCodeSource().getLocation();
+        // create jetty server
+        Server server = new Server();
 
-        // load external jars
-        if (libdir == null) {
-            // checks default location
-            File base = new File(location.getPath());
-            libdir = base.getParent() + "/lib";
-            logger.debug("setting libdir: {}", libdir);
-        }
-        
-        loadExternalLibs(libdir);
+        // Setup http connector
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setPort(config.getHttpPort());
+        connector.setMaxIdleTime(30000);
+        connector.setStatsOn(false);
+        server.setConnectors(new Connector[]{connector});
 
-        WebAppContext webapp = new WebAppContext();
+        // see if we need to enabled https
+        if (config.getHttpsEnabled()) {
+            final SslContextFactory sslContextFactory = new SslContextFactory(config.getHttpsKeystore());
+            sslContextFactory.setKeyStorePassword(config.getHttpsKeypass());
+            sslContextFactory.setKeyManagerPassword(config.getHttpsKeypass());
 
-        // create a temporary directory to run from
-        String tmpDirPath = System.getProperty("java.io.tmpdir");
-        String fileSeparator = System.getProperty("file.separator");
-        if (!tmpDirPath.endsWith(fileSeparator)) {
-            tmpDirPath = tmpDirPath + fileSeparator;
+            final SslSocketConnector sslConn = new SslSocketConnector(sslContextFactory);
+            sslConn.setPort(config.getHttpsPort());
+            sslConn.setStatsOn(false);
+            server.addConnector(sslConn);
+            sslConn.open();
         }
 
-        File tmpDir = new File(tmpDirPath + "cloud9-" + httpPort);
+        // main servlet context
+        logger.debug("creating context");
+        final ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", true, false);
 
-        // if it already exists delete it
-        if (tmpDir.exists()) {
-            deleteDirectory(tmpDir);
-        }
+        // setup root spring context
+        logger.debug("create root app context");
+        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+        logger.debug("registering root context");
+        rootContext.register(RootContext.class);
 
-        // create a new empty directory
-        if (!(tmpDir.mkdir())) {
-            throw new RuntimeException("Unable to create temporary dir: " + tmpDir);
-        }
+        // add spring root context listener
+        logger.debug("adding root context listener");
+        servletContextHandler.addEventListener(new ContextLoaderListener(rootContext));
 
-        // this depends on how the JVM was shutdown
-        tmpDir.deleteOnExit();
-        logger.debug("temp dir: {}", tmpDir);
+        // setup spring app context
+        logger.debug("create app context");
+        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
+        logger.debug("registering app context");
+        appContext.register(AppContext.class);
 
-        // setup an SSL socket
+        // setup hazelcast filter
+        // spring delegating filter proxy which delegates to our hazelcastWebFilter bean
+        logger.debug("creating hazelcast filter");
+        DelegatingFilterProxy hazelcastFilter = new DelegatingFilterProxy("hazelcastWebFilter");
+        hazelcastFilter.setTargetFilterLifecycle(true);
+        logger.debug("adding hazelcast filter to servlet context");
+        servletContextHandler.addFilter(new FilterHolder(hazelcastFilter), "/*", // send all requests though the filter
+                EnumSet.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST));
 
-        // get the keystore/keypass otherwise use cloud9 default
-        String keypass = System.getProperty("c9.https.keypass", "3f038de0-6606-11e1-b86c-0800200c9a66");
-        String keystore = System.getProperty("c9.https.keystore", tmpDir + "/webapp/WEB-INF/security/c9.default.keystore");
+        // our custom hazelcast event listener that swallows shutdown exceptions
+        logger.debug("adding hazelcast event listener");
+        servletContextHandler.addEventListener(new ErrorSuppressingSessionListener());
 
-        // create a secure channel
-        final SslContextFactory sslContextFactory = new SslContextFactory(keystore);
-        sslContextFactory.setKeyStorePassword(keypass);
-        sslContextFactory.setKeyManagerPassword(keypass);
+        // setup spring security filters
+        logger.debug("creating spring security filter");
+        DelegatingFilterProxy springSecurityFilter = new DelegatingFilterProxy("springSecurityFilterChain");
+        logger.debug("adding spring security filter to servlet context");
+        servletContextHandler.addFilter(new FilterHolder(springSecurityFilter),
+                "/*",
+                EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD));
 
-        final SslSocketConnector sslConn = new SslSocketConnector(sslContextFactory);
-        sslConn.setPort(httpsPort);
+        // setup dispatcher servlet
+        logger.debug("creating dispatcher");
+        DispatcherServlet dispatcher = new DispatcherServlet(appContext);
+        dispatcher.setDispatchOptionsRequest(true);
 
-        // we're not forcing HTTPS so start an HTTP channel as well
-        if (!forceHttps) {
-            logger.info("Enabling SSL on port {}", httpsPort);
-            SelectChannelConnector selectChannelConnector = new SelectChannelConnector();
-            selectChannelConnector.setPort(httpPort);
-            server.setConnectors(new Connector[]{sslConn, selectChannelConnector});
-        } else {
-            logger.info("Enforcing SSL on port {}", httpsPort);
-            server.setConnectors(new Connector[]{sslConn});
-        }
+        // servlet holder, initOrder is same as load-on-startup in web.xml
+        logger.debug("creating servlet holder for dispatcher");
+        final ServletHolder servletHolder = new ServletHolder(dispatcher);
+        servletHolder.setInitOrder(1);
 
-        webapp.setContextPath("/");
-        webapp.setTempDirectory(tmpDir);
-        webapp.setWar(location.toExternalForm());
-        webapp.setConfigurations(new Configuration[] {
-                new WebInfConfiguration(),
-                new WebXmlConfiguration(),
-                new MetaInfConfiguration(),
-                new FragmentConfiguration(),
-                new EnvConfiguration(),
-                new PlusConfiguration(),
-                new AnnotationConfiguration(),
-                new JettyWebXmlConfiguration() });
+        // session timeout configuration
+        logger.debug("setting session timeout");
+        servletContextHandler.getSessionHandler().getSessionManager().setMaxInactiveInterval(43200); // 12 hours
 
+        // register our spring dispatcher servlet
+        logger.debug("registering dispatcher servlet");
+        servletContextHandler.addServlet(servletHolder, "/");
+
+        // set the directory where our resources are located
+        logger.debug("for resources");
+        servletContextHandler.setResourceBase("resources");
+
+        // configure our connection thread pool
+        logger.debug("create jetty thread pool");
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMaxThreads(500);
+        server.setThreadPool(threadPool);
+        logger.debug("threads: {}", server.getThreadPool().getThreads());
+
+        logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
-        server.setHandler(webapp);
-        
+
+        // create request log handler
+        logger.debug("Enabling request log handler");
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        RequestLogImpl requestLog = new RequestLogImpl();
+        requestLog.setFileName(config.getHome() + File.separator + "etc" + File.separator + "logback-access.xml");
+        requestLogHandler.setRequestLog(requestLog);
+
+        // register out handlers with jetty
+        logger.debug("Creating handler collection with servlet and request log handlers");
+        HandlerCollection handlers = new HandlerCollection();
+        handlers.setHandlers(new Handler[]{servletContextHandler, requestLogHandler});
+
+        logger.debug("setting jetty handler to the handler collection");
+        server.setHandler(handlers);
+
         logger.debug("starting jetty");
         server.start();
+
+        logger.debug("jetty started");
         server.join();
-        logger.exit();
-    }
 
-    /*
-     * Loads any external dependencies.
-     */
-    private static void loadExternalLibs(String directory) {
-        logger.entry(directory);
-        try {
-            File dir = new File(directory);
-            String[] files = dir.list();
-
-            if (files != null) {
-                for (int i = 0; i < files.length; i++) {
-                    String fileName = "file:" + directory + "/" + files[i];
-                    logger.info("Loading {}", fileName);
-                    Utils4J.addToClasspath(fileName);
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("Error loading external JAR files");
-            logger.debug("Exception", e);
-        }
-        
+        logger.debug("jetty stopped");
         logger.exit();
-    }
-
-    /*
-     * Really? Java has no way of deleting non-empty directories.
-     */
-    public static boolean deleteDirectory(File path) {
-        logger.entry(path);
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-        }
-        
-        logger.exit();
-        return (path.delete());
     }
 
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Properties -->
+    <property name="LOGDIR" value="${C9_HOME:-.}/logs" />
+    <property name="LOGFILE" value="access.log" />
+
+    <!-- Daily Log File -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGDIR}/${LOGFILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily, gzipped -->
+            <fileNamePattern>${LOGDIR}/${LOGFILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+        </rollingPolicy>
+		<encoder>
+			<pattern>combined</pattern>
+		</encoder>
+    </appender>
+
+    <appender-ref ref="FILE" />
+
+</configuration>

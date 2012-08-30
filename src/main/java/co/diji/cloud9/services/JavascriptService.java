@@ -1,6 +1,6 @@
-package co.diji.cloud9.javascript;
+package co.diji.cloud9.services;
 
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.apache.tika.io.IOUtils;
@@ -12,12 +12,13 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import co.diji.cloud9.services.ConfigService;
+import co.diji.cloud9.javascript.PrimitiveWrapFactory;
+import co.diji.cloud9.javascript.XMLHttpRequest;
 
 @Component
-public class JavascriptHelper {
+public class JavascriptService {
 
-    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptHelper.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptService.class);
 
     @Autowired
     private ConfigService config;
@@ -43,8 +44,8 @@ public class JavascriptHelper {
             scope.put("ServerSideC9", scope, true);
 
             // load shared libs
-            loadLib(cx, scope, "underscore", "/resources/js/underscore-min.js");
-            loadLib(cx, scope, "c9api", "/resources/js/c9/c9api.min.js");
+            loadLib(cx, scope, "underscore", "file:resources/js/underscore-min.js");
+            loadLib(cx, scope, "c9api", "file:resources/js/c9/c9api.min.js");
 
             // seal everything not already sealed
             scope.sealObject();
@@ -86,7 +87,7 @@ public class JavascriptHelper {
         logger.entry(name, path);
         Reader reader = null;
         try {
-            reader = new FileReader(config.getResourceFile(path));
+            reader = new InputStreamReader(config.getResourceInputStream(path));
             cx.evaluateReader(scope, reader, name, 1, null);
         } catch (Exception e) {
             logger.warn("Error loading lib: {}", name, e);

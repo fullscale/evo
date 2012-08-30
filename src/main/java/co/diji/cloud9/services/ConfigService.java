@@ -1,6 +1,6 @@
 package co.diji.cloud9.services;
 
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -8,40 +8,76 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.core.io.ResourceLoader;
 
-@Service
 public class ConfigService {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(ConfigService.class);
 
+    // system property keys
+    public static final String PROPERTY_C9_HOME = "c9.home";
+    public static final String PROPERTY_HTTP_PORT = "c9.http.port";
+    public static final String PROPERTY_HTTPS_PORT = "c9.https.port";
+    public static final String PROPERTY_HTTPS_ENABLED = "c9.https.enabled";
+    public static final String PROPERTY_HTTPS_KEYPASS = "c9.https.keypass";
+    public static final String PROPERTY_HTTPS_KEYSTORE = "c9.https.keystore";
+    public static final String PROPERTY_NODE_NAME = "c9.node.name";
+    public static final String PROPERTY_CLUSTER_NAME = "c9.cluster.name";
+
+    // settings keys
+    public static final String SETTING_HOME_DIR = "home";
+    public static final String SETTING_NODE_NAME = "node.name";
+    public static final String SETTING_CLUSTER_NAME = "cluster.name";
+    public static final String SETTING_HTTP_PORT = "network.http.port";
+    public static final String SETTING_HTTPS_PORT = "network.https.port";
+    public static final String SETTING_HTTPS_ENABLED = "network.https.enabled";
+    public static final String SETTING_HTTPS_KEYPASS = "network.https.keypass";
+    public static final String SETTING_HTTPS_KEYSTORE = "network.https.keystore";
+    public static final String SETTING_UNICAST_HOSTS = "network.unicast.hosts";
+    public static final String SETTING_UNICAST_ENABLED = "network.unicast.enabled";
+    public static final String SETTING_MULTICAST_ENABLED = "network.multicast.enabled";
+
+    // resource prefix strings
+    public static final String RESOURCE_PREFIX_CLASSPATH = "classpath:";
+    public static final String RESOURCE_PREFIX_FILE = "file:";
+
+    // our settings
     private Settings cloud9Settings;
     private Settings nodeSettings;
 
-    @Autowired
-    private WebApplicationContext applicationContext;
+    private static ConfigService configService;
 
     /**
-     * Initialize all settings and mappings
+     * Get's an instance of the ConfigService. Using this method ensure's that only one ConfigService is created.
+     * 
+     * @return the config service.
      */
-    @PostConstruct
-    public void init() {
+    public static ConfigService getConfigService() {
+        if (configService == null) {
+            configService = new ConfigService();
+        }
+
+        return configService;
+    }
+
+    /**
+     * Constructor Initialize all settings and mappings
+     */
+    public ConfigService() {
         logger.entry();
         // setup sigar
-        String sigarDir = applicationContext.getServletContext().getRealPath("/") + "/WEB-INF/lib/sigar";
+        String sigarDir = "lib/sigar";
         logger.debug("sigar dir: {}", sigarDir);
         System.setProperty("org.hyperic.sigar.path", sigarDir);
 
@@ -352,31 +388,42 @@ public class ConfigService {
         // get the default settings
         settings.put(getSettingsFromResource("classpath:cloud9.yml"));
 
-        // load settings from user specified settings file
-        // set by system property only
-        String userSettingsFile = System.getProperty("c9.settings", null);
-        if (userSettingsFile != null) {
-            logger.debug("Reading settings from: {}", userSettingsFile);
-            settings.put(getSettingsFromResource("file:" + userSettingsFile));
-        }
-
         // do a build with the current settings so we can use the built-in getters not
         // available on the builder
         Settings defaults = settings.build();
 
-        // user specified node settings file
-        // order is system properties, settings file
-        String userNodeSettingsFile = System.getProperty("c9.node.settings", defaults.get("node.settings"));
-        if (userNodeSettingsFile != null) {
-            logger.debug("reading node settings from: {}", userNodeSettingsFile);
-            settings.put("node.settings", userNodeSettingsFile);
-        }
+        // http port
+        int httpPort = Integer.parseInt(System.getProperty(PROPERTY_HTTP_PORT, defaults.get(SETTING_HTTP_PORT, "2600")));
+        logger.debug("http port: {}", httpPort);
+        settings.put(SETTING_HTTP_PORT, httpPort);
+
+        // https port
+        int httpsPort = Integer.parseInt(System.getProperty(PROPERTY_HTTPS_PORT, defaults.get(SETTING_HTTPS_PORT, "2643")));
+        logger.debug("https port: {}", httpsPort);
+        settings.put(SETTING_HTTPS_PORT, httpsPort);
+
+        // https enabled
+        boolean httpsEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_HTTPS_ENABLED,
+                defaults.get(SETTING_HTTPS_ENABLED, "false")));
+        logger.debug("https enabled: {}", httpsEnabled);
+        settings.put(SETTING_HTTPS_ENABLED, httpsEnabled);
+
+        // https keypass
+        String httpsKeypass = System.getProperty(PROPERTY_HTTPS_KEYPASS,
+                defaults.get(SETTING_HTTPS_KEYPASS, "3f038de0-6606-11e1-b86c-0800200c9a66"));
+        logger.debug("https keypass: {}", httpsKeypass);
+        settings.put(SETTING_HTTPS_KEYPASS, httpsKeypass);
+
+        // https keystore
+        String httpsKeystore = System.getProperty(PROPERTY_HTTPS_KEYSTORE,
+                defaults.get(SETTING_HTTPS_KEYSTORE, getHome() + "/etc/security/c9.default.keystore"));
+        logger.debug("https keystore: {}", httpsKeystore);
+        settings.put(SETTING_HTTPS_KEYSTORE, httpsKeystore);
 
         // node name
         // set node name to the current hostname if the user does not specify one
         // order is system properties, settings file, hostname, "cloud9"
-        String nodeName = System.getProperty("c9.node.name", defaults.get("node.name"));
-        logger.debug("nodeName: {}", nodeName);
+        String nodeName = System.getProperty(PROPERTY_NODE_NAME, defaults.get(SETTING_NODE_NAME));
         if (nodeName == null) {
             logger.debug("no node name specified, using hostname");
             try {
@@ -387,50 +434,42 @@ public class ConfigService {
             }
         }
 
-        logger.debug("node.name: {}", nodeName);
-        settings.put("node.name", nodeName);
+        logger.debug("node name: {}", nodeName);
+        settings.put(SETTING_NODE_NAME, nodeName);
 
         // cluster name
         // set to random string if not specified
         // order is system properties, settings file, random string
-        String clusterName = System.getProperty("c9.cluster.name", defaults.get("cluster.name"));
-        logger.debug("clusterName: {}", clusterName);
+        String clusterName = System.getProperty(PROPERTY_CLUSTER_NAME, defaults.get(SETTING_CLUSTER_NAME));
         if (clusterName == null) {
             logger.debug("no cluster name specified, using random string");
             clusterName = UUID.randomUUID().toString();
         }
 
-        logger.debug("cluster.name: {}", clusterName);
-        settings.put("cluster.name", clusterName);
+        logger.debug("cluster name: {}", clusterName);
+        settings.put(SETTING_CLUSTER_NAME, clusterName);
 
         // network settings
         // default = multicast enabled, unicast disabled
-        // when the system property c9.unicast.hosts or unicast.hosts is set in the settings file
+        // when unicast.hosts is set in the settings file
         // multicast is disabled, unicast is enabled and we use the hostnames specified
-        String unicastHostsString = System.getProperty("c9.unicast.hosts", null);
-        String[] unicastHosts = defaults.getAsArray("network.unicast.hosts", null);
+        String[] unicastHosts = defaults.getAsArray(SETTING_UNICAST_HOSTS, null);
 
-        logger.debug("unicastHostsString: {}, unicastHosts: {}", unicastHostsString, unicastHosts);
-        if (unicastHostsString != null) {
-            logger.debug("unicast settings found in system properties");
+        logger.debug("unicastHosts: {}", unicastHosts);
+        if (unicastHosts != null) {
+            logger.debug("unicast settings found");
             logger.debug("unicast enabled, multicast disabled");
-            settings.put("network.unicast.enabled", true);
-            settings.put("network.multicast.enabled", false);
-            settings.putArray("network.unicast.hosts", unicastHostsString.split(","));
-        } else if (unicastHosts != null) {
-            logger.debug("unicast settings found in user settings");
-            logger.debug("unicast enabled, multicast disabled");
-            settings.put("network.unicast.enabled", true);
-            settings.put("network.multicast.enabled", false);
+            settings.put(SETTING_UNICAST_ENABLED, true);
+            settings.put(SETTING_MULTICAST_ENABLED, false);
         } else {
             logger.debug("no unicast settings found");
             logger.debug("multicast enabled, unicast disabled");
-            settings.put("network.unicast.enabled", false);
-            settings.put("network.multicast.enabled", true);
+            settings.put(SETTING_UNICAST_ENABLED, false);
+            settings.put(SETTING_MULTICAST_ENABLED, true);
         }
 
         Settings finalSettings = settings.build();
-        logger.exit(finalSettings);
+        logger.exit(finalSettings.getAsMap());
         return finalSettings;
     }
 
@@ -446,30 +485,23 @@ public class ConfigService {
         // get the default node settings
         settings.put(getSettingsFromResource("classpath:defaultNodeSettings.yml"));
 
-        // user specified node settings
-        String userNodeSettingsFile = cloud9Settings.get("node.settings", null);
-        if (userNodeSettingsFile != null) {
-            logger.debug("reading node settings from: {}", userNodeSettingsFile);
-            settings.put(getSettingsFromResource("file:" + userNodeSettingsFile));
-        }
-
         // node name
-        settings.put("node.name", cloud9Settings.get("node.name"));
+        settings.put(SETTING_NODE_NAME, getNodeName());
 
         // cluster name
-        settings.put("cluster.name", cloud9Settings.get("cluster.name"));
+        settings.put(SETTING_CLUSTER_NAME, getClusterName());
 
         // use unicast vs. multicast
-        boolean unicastEnabled = cloud9Settings.getAsBoolean("network.unicast.enabled", false);
-        logger.debug("unicaseEnabled: {}", unicastEnabled);
+        boolean unicastEnabled = getUnicastEnabled();
+        logger.debug("unicastEnabled: {}", unicastEnabled);
         if (unicastEnabled) {
             logger.debug("multicast disabled, unicast enabled");
             settings.put("discovery.zen.ping.multicast.enabled", false);
-            settings.putArray("discovery.zen.ping.unicast.hosts", cloud9Settings.getAsArray("network.unicast.hosts"));
+            settings.putArray("discovery.zen.ping.unicast.hosts", getUnicastHosts());
         }
 
         Settings finalNodeSettings = settings.build();
-        logger.exit(finalNodeSettings);
+        logger.exit(finalNodeSettings.getAsMap());
         return finalNodeSettings;
     }
 
@@ -482,15 +514,16 @@ public class ConfigService {
     public Settings getSettingsFromResource(String resource) {
         logger.entry(resource);
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
-        Resource settingsResource = applicationContext.getResource(resource);
-        logger.debug("{} exists: {}", resource, settingsResource.exists());
-        if (settingsResource.exists()) {
-            try {
-                InputStream is = settingsResource.getInputStream();
-                settings.loadFromStream(settingsResource.getFilename(), is);
-                is.close();
-            } catch (IOException e) {
-                logger.debug("error reading settings from {}", resource, e);
+        InputStream in = null;
+
+        try {
+            in = getResourceInputStream(resource);
+            settings.loadFromStream(resource, in);
+        } catch (Exception e) {
+            logger.debug("Error loading settings", e);
+        } finally {
+            if (in != null) {
+                IOUtils.closeQuietly(in);
             }
         }
 
@@ -507,15 +540,17 @@ public class ConfigService {
     public String getResourceContent(String resource) {
         logger.entry(resource);
         String content = null;
-        Resource res = applicationContext.getResource(resource);
-        logger.debug("{} exists: {}", resource, res.exists());
-        if (res.exists()) {
-            try {
-                InputStream is = res.getInputStream();
-                content = IOUtils.toString(is, "UTF-8");
-                is.close();
-            } catch (IOException e) {
-                logger.debug("error reading content of resource {}", resource);
+        InputStream in = null;
+
+        try {
+            in = getResourceInputStream(resource);
+            content = IOUtils.toString(in, "UTF-8");
+        } catch (Exception e) {
+            logger.warn("Unable to load resource: {}", resource);
+            logger.debug("exception", e);
+        } finally {
+            if (in != null) {
+                IOUtils.closeQuietly(in);
             }
         }
 
@@ -524,25 +559,73 @@ public class ConfigService {
     }
 
     /**
-     * Gets a resource File object
+     * Gets a resource InputStream object
      * 
      * @param resource the resource to get
-     * @return the resource File
+     * @return the resource input stream
      * @throws IOException
      */
-    public File getResourceFile(String resource) throws IOException {
+    public InputStream getResourceInputStream(String resource) throws IOException {
         logger.entry(resource);
-        Resource res = applicationContext.getResource(resource);
-        File outFile = null;
-        logger.debug("exists: {}", res.exists());
-        if (res.exists()) {
-            outFile = res.getFile();
+
+        ResourceLoader resourceLoader = null;
+
+        if (resource.startsWith(RESOURCE_PREFIX_CLASSPATH)) {
+            logger.debug("class path resource found");
+            resourceLoader = new DefaultResourceLoader();
         } else {
-            logger.debug("Resource does not exist: {}", resource);
-            throw new IOException("Resource does not exist: " + resource);
+            logger.debug("file system resource");
+            resourceLoader = new FileSystemResourceLoader();
         }
 
+        Resource r = resourceLoader.getResource(resource);
+        logger.debug("{} exists: {}", resource, r.exists());
+
         logger.exit();
-        return outFile;
+        return new BufferedInputStream(r.getInputStream());
+    }
+
+    public String getHome() {
+        return System.getProperty(PROPERTY_C9_HOME, System.getProperty("user.dir", "."));
+    }
+
+    public int getHttpPort() {
+        return cloud9Settings.getAsInt(SETTING_HTTP_PORT, 2600);
+    }
+
+    public int getHttpsPort() {
+        return cloud9Settings.getAsInt(SETTING_HTTPS_PORT, 2643);
+    }
+
+    public boolean getHttpsEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_HTTPS_ENABLED, false);
+    }
+
+    public String getHttpsKeypass() {
+        return cloud9Settings.get(SETTING_HTTPS_KEYPASS);
+    }
+
+    public String getHttpsKeystore() {
+        return cloud9Settings.get(SETTING_HTTPS_KEYSTORE);
+    }
+
+    public String getNodeName() {
+        return cloud9Settings.get(SETTING_NODE_NAME);
+    }
+
+    public String getClusterName() {
+        return cloud9Settings.get(SETTING_CLUSTER_NAME);
+    }
+
+    public boolean getMulticastEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_MULTICAST_ENABLED, true);
+    }
+
+    public boolean getUnicastEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_UNICAST_ENABLED, false);
+    }
+
+    public String[] getUnicastHosts() {
+        return cloud9Settings.getAsArray(SETTING_UNICAST_HOSTS);
     }
 }

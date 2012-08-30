@@ -23,10 +23,7 @@ import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
@@ -42,17 +39,12 @@ public class SearchServiceTest {
 
     @BeforeClass
     public static void setup() throws Cloud9Exception {
-        searchService = new SearchService();
-        config = new ConfigService();
-
-        // mock appplication context and inject into search service
-        MockServletContext servletContext = new MockServletContext();
-        WebApplicationContext webappContext = new GenericWebApplicationContext(servletContext);
-        ReflectionTestUtils.setField(config, "applicationContext", webappContext, WebApplicationContext.class);
-        ReflectionTestUtils.setField(searchService, "config", config, ConfigService.class);
         System.setProperty("c9.cluster.name", "c9.test.cluster");
         System.setProperty("c9.node.name", "c9.test.node");
-        config.init();
+
+        searchService = new SearchService();
+        config = ConfigService.getConfigService();
+        ReflectionTestUtils.setField(searchService, "config", config, ConfigService.class);
         searchService.booststrap();
     }
 
