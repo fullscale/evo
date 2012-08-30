@@ -1,6 +1,6 @@
 package co.diji.cloud9.services;
 
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.apache.tika.io.IOUtils;
@@ -87,7 +87,7 @@ public class JavascriptService {
         logger.entry(name, path);
         Reader reader = null;
         try {
-            reader = new FileReader(config.getResourceFile(path));
+            reader = new InputStreamReader(config.getResourceInputStream(path));
             cx.evaluateReader(scope, reader, name, 1, null);
         } catch (Exception e) {
             logger.warn("Error loading lib: {}", name, e);

@@ -4,6 +4,7 @@
 .settings
 .externalToolBuilders
 data
+logs
 target
 velocity.log
 logback-test.xml
