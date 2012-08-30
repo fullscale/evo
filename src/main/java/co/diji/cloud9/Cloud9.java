@@ -1,11 +1,17 @@
 package co.diji.cloud9;
 
+import java.io.File;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
+import ch.qos.logback.access.jetty.RequestLogImpl;
+
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -131,8 +137,20 @@ public final class Cloud9 {
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
 
-        logger.debug("setting jetty handler to the servlet context");
-        server.setHandler(servletContextHandler);
+        // create request log handler
+        logger.debug("Enabling request log handler");
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        RequestLogImpl requestLog = new RequestLogImpl();
+        requestLog.setFileName(config.getHome() + File.separator + "etc" + File.separator + "logback-access.xml");
+        requestLogHandler.setRequestLog(requestLog);
+
+        // register out handlers with jetty
+        logger.debug("Creating handler collection with servlet and request log handlers");
+        HandlerCollection handlers = new HandlerCollection();
+        handlers.setHandlers(new Handler[]{servletContextHandler, requestLogHandler});
+
+        logger.debug("setting jetty handler to the handler collection");
+        server.setHandler(handlers);
 
         logger.debug("starting jetty");
         server.start();
