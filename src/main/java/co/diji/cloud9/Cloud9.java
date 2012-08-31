@@ -143,21 +143,26 @@ public final class Cloud9 {
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
 
-        // create request log handler
-        logger.debug("Enabling request log handler");
-        RequestLogHandler requestLogHandler = new RequestLogHandler();
-        RequestLogImpl requestLog = new RequestLogImpl();
-        requestLog.setQuiet(true);
-        requestLog.setFileName(config.getHome() + File.separator + "etc" + File.separator + "logback-access.xml");
-        requestLogHandler.setRequestLog(requestLog);
+        // create request log handler if enabled
+        if (config.getHttpRequestLogEnabled()) {
+            logger.info("Enabling request log");
+            RequestLogHandler requestLogHandler = new RequestLogHandler();
+            RequestLogImpl requestLog = new RequestLogImpl();
+            requestLog.setQuiet(true);
+            requestLog.setFileName(config.getHome() + File.separator + "etc" + File.separator + "logback-access.xml");
+            requestLogHandler.setRequestLog(requestLog);
 
-        // register out handlers with jetty
-        logger.debug("Creating handler collection with servlet and request log handlers");
-        HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[]{servletContextHandler, requestLogHandler});
+            // register out handlers with jetty
+            logger.debug("Creating handler collection with servlet and request log handlers");
+            HandlerCollection handlers = new HandlerCollection();
+            handlers.setHandlers(new Handler[]{servletContextHandler, requestLogHandler});
 
-        logger.debug("setting jetty handler to the handler collection");
-        server.setHandler(handlers);
+            logger.debug("setting jetty handler to the handler collection");
+            server.setHandler(handlers);
+        } else {
+            logger.debug("setting jetty handler to servlet handler");
+            server.setHandler(servletContextHandler);
+        }
 
         logger.debug("starting jetty");
         server.start();
