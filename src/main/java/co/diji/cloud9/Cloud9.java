@@ -38,7 +38,7 @@ public final class Cloud9 {
     public static void main(String[] args) throws Exception {
         logger.entry();
         logger.info("Starting Cloud9");
-        
+
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
 
@@ -124,7 +124,7 @@ public final class Cloud9 {
 
         // session timeout configuration
         logger.debug("setting session timeout");
-        servletContextHandler.getSessionHandler().getSessionManager().setMaxInactiveInterval(43200); // 12 hours
+        servletContextHandler.getSessionHandler().getSessionManager().setMaxInactiveInterval(config.getHttpSessionTimeout());
 
         // register our spring dispatcher servlet
         logger.debug("registering dispatcher servlet");

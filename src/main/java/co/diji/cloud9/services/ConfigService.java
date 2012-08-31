@@ -44,6 +44,7 @@ public class ConfigService {
     public static final String SETTING_CLUSTER_NAME = "cluster.name";
     public static final String SETTING_HTTP_PORT = "network.http.port";
     public static final String SETTING_HTTP_MAXTHREADS = "network.http.maxthreads";
+    public static final String SETTING_HTTP_SESSION_TIMEOUT = "network.http.session.timeout";
     public static final String SETTING_HTTPS_PORT = "network.https.port";
     public static final String SETTING_HTTPS_ENABLED = "network.https.enabled";
     public static final String SETTING_HTTPS_KEYPASS = "network.https.keypass";
@@ -408,7 +409,12 @@ public class ConfigService {
         int maxThreads = defaults.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
         logger.debug("max threads: {}", maxThreads);
         settings.put(SETTING_HTTP_MAXTHREADS, maxThreads);
-        
+
+        // session timeout (in seconds)
+        int sessionTimeout = defaults.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, 43200); // 12-hours
+        logger.debug("session timeout in seconds: {}", sessionTimeout);
+        settings.put(SETTING_HTTP_SESSION_TIMEOUT, sessionTimeout);
+
         // https port
         int httpsPort = Integer.parseInt(System.getProperty(PROPERTY_HTTPS_PORT, defaults.get(SETTING_HTTPS_PORT, "2643")));
         logger.debug("https port: {}", httpsPort);
@@ -626,7 +632,11 @@ public class ConfigService {
     public int getHttpMaxThreads() {
         return cloud9Settings.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
     }
-    
+
+    public int getHttpSessionTimeout() {
+        return cloud9Settings.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, 43200);
+    }
+
     public int getHttpsPort() {
         return cloud9Settings.getAsInt(SETTING_HTTPS_PORT, 2643);
     }
