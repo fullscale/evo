@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
-import com.hazelcast.core.IMap;
 
 import org.mozilla.javascript.Script;
 import org.slf4j.ext.XLogger;
@@ -31,7 +30,6 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             "css", "images", "js", "html"}));
 
     protected Map<String, Script> scriptCache;
-    protected IMap<String, Resource> resourceCache;
 
     @Autowired
     protected HazelcastService hazelcast;
@@ -45,23 +43,8 @@ public class ResourceHelper implements EntryListener<String, Resource> {
     @PostConstruct
     protected void bootstrap() {
         logger.entry();
-        logger.debug("registering event listener");
-        ((IMap<String, Resource>) getResourceCache()).addEntryListener(this, false);
+        hazelcast.registerResourceListener(this);
         logger.exit();
-    }
-
-    /**
-     * Gets the resource cache
-     * 
-     * @return the cache
-     */
-    @SuppressWarnings("unchecked")
-    protected Map<String, Resource> getResourceCache() {
-        if (resourceCache == null) {
-            resourceCache = (IMap<String, Resource>) hazelcast.getMap("resources");
-        }
-
-        return resourceCache;
     }
 
     /**
@@ -140,7 +123,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
         // see if the resource is cached
         String cacheKey = getCacheKey(app, dir, resource);
         logger.debug("cacheKey: {}", cacheKey);
-        r = getResourceCache().get(cacheKey);
+        r = hazelcast.getResource(cacheKey);
 
         if (r == null) {
             // resource is not cached
@@ -153,11 +136,10 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             r.setup(app, dir, resource);
 
             // add to cache
-            logger.debug("adding resoruce to cache");
-            getResourceCache().put(cacheKey, r);
+            hazelcast.putResource(cacheKey, r);
 
             // if this is javascript resource, we add the compiled script to a local cache
-            if (!isStatic) {
+            if (!isStatic && hazelcast.resourceCacheEnabled()) {
                 logger.debug("caching script of javascript resource");
                 getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
             }
@@ -166,12 +148,11 @@ public class ResourceHelper implements EntryListener<String, Resource> {
 
             // if this is javascript resource, see if we have script cached.
             if (!isStatic) {
-                logger.debug("found javascript resource, checking for cached script");
                 JavascriptResource jr = (JavascriptResource) r;
                 Script cachedScript = getScriptCache().get(cacheKey);
                 if (cachedScript != null) {
                     // found cached script
-                    logger.debug("found cached script");
+                    logger.debug("using cached script");
                     jr.setScript(cachedScript);
                 } else {
                     // script was not cached due to being added/updated on remote node
@@ -223,9 +204,9 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      */
     protected void evictByKey(String cacheKey) {
         logger.entry(cacheKey);
-        // just remove the entry from resoruce cache
+        // just remove the entry from resource cache
         // this will trigger remove event, which in turn deletes from script cache if necessary
-        getResourceCache().remove(cacheKey);
+        hazelcast.evictResource(cacheKey);
         logger.exit();
     }
 
@@ -237,7 +218,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
     protected void evictByPrefix(String keyPrefix) {
         logger.entry(keyPrefix);
         // loop though cache keys and evict if they match prefix
-        for (String cacheKey : getResourceCache().keySet()) {
+        for (String cacheKey : hazelcast.getResourceKeys()) {
             if (cacheKey.startsWith(keyPrefix)) {
                 logger.debug("key {} matches", cacheKey);
                 evictByKey(cacheKey);

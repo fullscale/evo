@@ -34,6 +34,9 @@ public class ConfigService {
     public static final String PROPERTY_HTTPS_KEYSTORE = "c9.https.keystore";
     public static final String PROPERTY_NODE_NAME = "c9.node.name";
     public static final String PROPERTY_CLUSTER_NAME = "c9.cluster.name";
+    public static final String PROPERTY_HAZELCAST_ENABLED = "c9.hazelcast.enabled";
+    public static final String PROPERTY_CACHE_RESOURCES = "c9.cache.resources";
+    public static final String PROPERTY_CACHE_SESSIONS = "c9.cache.sessions";
 
     // settings keys
     public static final String SETTING_HOME_DIR = "home";
@@ -47,6 +50,9 @@ public class ConfigService {
     public static final String SETTING_UNICAST_HOSTS = "network.unicast.hosts";
     public static final String SETTING_UNICAST_ENABLED = "network.unicast.enabled";
     public static final String SETTING_MULTICAST_ENABLED = "network.multicast.enabled";
+    public static final String SETTING_HAZELCAST_ENABLED = "hazelcast.enabled";
+    public static final String SETTING_CACHE_RESOURCES_ENABLED = "cache.resources.enabled";
+    public static final String SETTING_CACHE_SESSIONS_ENABLED = "cache.sessions.enabled";
 
     // resource prefix strings
     public static final String RESOURCE_PREFIX_CLASSPATH = "classpath:";
@@ -420,6 +426,24 @@ public class ConfigService {
         logger.debug("https keystore: {}", httpsKeystore);
         settings.put(SETTING_HTTPS_KEYSTORE, httpsKeystore);
 
+        // hazelcast enabled
+        boolean hazelcastEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_HAZELCAST_ENABLED,
+                defaults.get(SETTING_HAZELCAST_ENABLED, "true")));
+        logger.debug("hazelcast enabled: {}", hazelcastEnabled);
+        settings.put(SETTING_HAZELCAST_ENABLED, hazelcastEnabled);
+
+        // resource cache enabled
+        boolean resourceCacheEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_CACHE_RESOURCES,
+                defaults.get(SETTING_CACHE_RESOURCES_ENABLED, "true")));
+        logger.debug("resource cache enabled: {}", resourceCacheEnabled);
+        settings.put(SETTING_CACHE_RESOURCES_ENABLED, resourceCacheEnabled);
+
+        // session cache enabled
+        boolean sessionCacheEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_CACHE_SESSIONS,
+                defaults.get(SETTING_CACHE_SESSIONS_ENABLED, "true")));
+        logger.debug("session cache enabled: {}", sessionCacheEnabled);
+        settings.put(SETTING_CACHE_SESSIONS_ENABLED, sessionCacheEnabled);
+
         // node name
         // set node name to the current hostname if the user does not specify one
         // order is system properties, settings file, hostname, "cloud9"
@@ -627,5 +651,17 @@ public class ConfigService {
 
     public String[] getUnicastHosts() {
         return cloud9Settings.getAsArray(SETTING_UNICAST_HOSTS);
+    }
+
+    public boolean getHazelcastEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_HAZELCAST_ENABLED, true);
+    }
+
+    public boolean getResourceCacheEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_CACHE_RESOURCES_ENABLED, true);
+    }
+
+    public boolean getSessionCacheEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_CACHE_SESSIONS_ENABLED, true);
     }
 }

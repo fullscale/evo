@@ -86,18 +86,23 @@ public final class Cloud9 {
         logger.debug("registering app context");
         appContext.register(AppContext.class);
 
-        // setup hazelcast filter
-        // spring delegating filter proxy which delegates to our hazelcastWebFilter bean
-        logger.debug("creating hazelcast filter");
-        DelegatingFilterProxy hazelcastFilter = new DelegatingFilterProxy("hazelcastWebFilter");
-        hazelcastFilter.setTargetFilterLifecycle(true);
-        logger.debug("adding hazelcast filter to servlet context");
-        servletContextHandler.addFilter(new FilterHolder(hazelcastFilter), "/*", // send all requests though the filter
-                EnumSet.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST));
+        // setup hazelcast filter if hazelcast and session caching are enabled
+        if (config.getHazelcastEnabled() && config.getSessionCacheEnabled()) {
+            // spring delegating filter proxy which delegates to our hazelcastWebFilter bean
+            logger.debug("Enabling session cache");
+            logger.debug("creating hazelcast filter");
+            DelegatingFilterProxy hazelcastFilter = new DelegatingFilterProxy("hazelcastWebFilter");
+            hazelcastFilter.setTargetFilterLifecycle(true);
+            logger.debug("adding hazelcast filter to servlet context");
+            servletContextHandler.addFilter(new FilterHolder(hazelcastFilter), "/*", // send all requests though the filter
+                    EnumSet.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST));
 
-        // our custom hazelcast event listener that swallows shutdown exceptions
-        logger.debug("adding hazelcast event listener");
-        servletContextHandler.addEventListener(new ErrorSuppressingSessionListener());
+            // our custom hazelcast event listener that swallows shutdown exceptions
+            logger.debug("adding hazelcast event listener");
+            servletContextHandler.addEventListener(new ErrorSuppressingSessionListener());
+        } else {
+            logger.info("Session cache disabled");
+        }
 
         // setup spring security filters
         logger.debug("creating spring security filter");
