@@ -137,9 +137,8 @@ public final class Cloud9 {
         // configure our connection thread pool
         logger.debug("create jetty thread pool");
         QueuedThreadPool threadPool = new QueuedThreadPool();
-        threadPool.setMaxThreads(500);
+        threadPool.setMaxThreads(config.getHttpMaxThreads());
         server.setThreadPool(threadPool);
-        logger.debug("threads: {}", server.getThreadPool().getThreads());
 
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);

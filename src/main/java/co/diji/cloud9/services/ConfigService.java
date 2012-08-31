@@ -43,6 +43,7 @@ public class ConfigService {
     public static final String SETTING_NODE_NAME = "node.name";
     public static final String SETTING_CLUSTER_NAME = "cluster.name";
     public static final String SETTING_HTTP_PORT = "network.http.port";
+    public static final String SETTING_HTTP_MAXTHREADS = "network.http.maxthreads";
     public static final String SETTING_HTTPS_PORT = "network.https.port";
     public static final String SETTING_HTTPS_ENABLED = "network.https.enabled";
     public static final String SETTING_HTTPS_KEYPASS = "network.https.keypass";
@@ -403,6 +404,11 @@ public class ConfigService {
         logger.debug("http port: {}", httpPort);
         settings.put(SETTING_HTTP_PORT, httpPort);
 
+        // max threads
+        int maxThreads = defaults.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
+        logger.debug("max threads: {}", maxThreads);
+        settings.put(SETTING_HTTP_MAXTHREADS, maxThreads);
+        
         // https port
         int httpsPort = Integer.parseInt(System.getProperty(PROPERTY_HTTPS_PORT, defaults.get(SETTING_HTTPS_PORT, "2643")));
         logger.debug("https port: {}", httpsPort);
@@ -617,6 +623,10 @@ public class ConfigService {
         return cloud9Settings.getAsInt(SETTING_HTTP_PORT, 2600);
     }
 
+    public int getHttpMaxThreads() {
+        return cloud9Settings.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
+    }
+    
     public int getHttpsPort() {
         return cloud9Settings.getAsInt(SETTING_HTTPS_PORT, 2643);
     }
