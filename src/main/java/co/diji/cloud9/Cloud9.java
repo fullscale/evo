@@ -37,7 +37,8 @@ public final class Cloud9 {
 
     public static void main(String[] args) throws Exception {
         logger.entry();
-
+        logger.info("Starting Cloud9");
+        
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
 
@@ -53,6 +54,7 @@ public final class Cloud9 {
 
         // see if we need to enabled https
         if (config.getHttpsEnabled()) {
+            logger.info("HTTPS enabled");
             final SslContextFactory sslContextFactory = new SslContextFactory(config.getHttpsKeystore());
             sslContextFactory.setKeyStorePassword(config.getHttpsKeypass());
             sslContextFactory.setKeyManagerPassword(config.getHttpsKeypass());
@@ -141,6 +143,7 @@ public final class Cloud9 {
         logger.debug("Enabling request log handler");
         RequestLogHandler requestLogHandler = new RequestLogHandler();
         RequestLogImpl requestLog = new RequestLogImpl();
+        requestLog.setQuiet(true);
         requestLog.setFileName(config.getHome() + File.separator + "etc" + File.separator + "logback-access.xml");
         requestLogHandler.setRequestLog(requestLog);
 
@@ -156,6 +159,7 @@ public final class Cloud9 {
         server.start();
 
         logger.debug("jetty started");
+        logger.info("Cloud9 started");
         server.join();
 
         logger.debug("jetty stopped");
