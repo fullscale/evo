@@ -10,7 +10,9 @@ import static junit.framework.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -26,6 +28,8 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
+import co.diji.cloud9.exceptions.application.ApplicationExistsException;
+import co.diji.cloud9.exceptions.application.InvalidApplicationNameException;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
 import co.diji.cloud9.exceptions.index.IndexMissingException;
@@ -92,7 +96,7 @@ public class SearchServiceTest {
         assertNull(indexStatus);
         indexStatus = searchService.getIndexStatus();
         assertNotNull(indexStatus);
-        assertEquals(1, indexStatus.size());
+        assertEquals(2, indexStatus.size());
     }
 
     @Test
@@ -191,8 +195,7 @@ public class SearchServiceTest {
 
     @Test
     public void testCreateCollection() throws Exception {
-        // we just need to test that we cant create system
-        // index or a collection that ends with .app
+        // we just need to test that we cant create system or app index
         try {
             searchService.createCollectionIndex("sys");
             fail();
@@ -204,73 +207,12 @@ public class SearchServiceTest {
             fail();
         } catch (IndexCreationException e) {
         }
-
+        
         try {
-            searchService.createCollectionIndex("whatever.app");
+            searchService.createCollectionIndex("app");
             fail();
         } catch (IndexCreationException e) {
         }
-
-        try {
-            searchService.createCollectionIndex("whatever.app", 2, 1);
-            fail();
-        } catch (IndexCreationException e) {
-        }
-    }
-
-    @Test
-    public void testCreateAppIndex() throws Exception {
-        ClusterIndexHealth index = null;
-
-        assertFalse(searchService.hasIndex("testapp.app"));
-
-        searchService.createAppIndex("testapp");
-        searchService.refreshApp("testapp");
-        index = searchService.getClusterHealth().indices().get("testapp.app");
-        assertTrue(searchService.hasIndex("testapp.app"));
-        assertTrue(searchService.hasApp("testapp"));
-        assertEquals(1, index.numberOfShards());
-        assertEquals(1, index.numberOfReplicas());
-
-        try {
-            searchService.createAppIndex("testapp");
-            fail();
-        } catch (IndexExistsException e) {
-        }
-
-        searchService.createAppIndex("testapp2", 3, 1);
-        searchService.refreshApp("testapp2");
-        index = searchService.getClusterHealth().indices().get("testapp2.app");
-        assertTrue(searchService.hasApp("testapp2.app"));
-        assertEquals(3, index.numberOfShards());
-        assertEquals(1, index.numberOfReplicas());
-
-        try {
-            searchService.createAppIndex("css");
-            fail();
-        } catch (IndexCreationException e) {
-        }
-        assertFalse(searchService.hasApp("css"));
-
-        try {
-            searchService.createAppIndex("js");
-            fail();
-        } catch (IndexCreationException e) {
-        }
-        assertFalse(searchService.hasApp("js"));
-
-        try {
-            searchService.createAppIndex("images");
-            fail();
-        } catch (IndexCreationException e) {
-        }
-        assertFalse(searchService.hasApp("images"));
-
-        searchService.createAppIndex("anotherapp.app");
-        searchService.refreshApp("anotherapp");
-        assertTrue(searchService.hasApp("anotherapp"));
-        assertFalse(searchService.hasIndex("anotherapp.app.app"));
-
     }
 
     @Test
@@ -292,22 +234,6 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void testGetAppStatus() {
-        // all these collections should have been created in tests above
-        String[] apps = {"testapp", "testapp2", "anotherapp"};
-        Map<String, IndexStatus> appStatus = searchService.getAppStatus();
-        assertEquals(apps.length, appStatus.size());
-        appStatus = searchService.getAppStatus("does.not.exist");
-        assertEquals(0, appStatus.size());
-        appStatus = searchService.getAppStatus("testapp");
-        assertEquals(1, appStatus.size());
-        appStatus = searchService.getAppStatus(apps);
-        assertEquals(apps.length, appStatus.size());
-        appStatus = searchService.getAppStatus("testapp", "does.not.exist");
-        assertEquals(0, appStatus.size());
-    }
-
-    @Test
     public void testGetTotalCollectionDocCount() {
         // TODO add more tests once we can add/remove docs
         long cnt = searchService.getTotalCollectionDocCount();
@@ -315,35 +241,53 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void testGetTotalAppDocCount() {
-        // TODO add more tests once we can add/remove docs
-        long cnt = searchService.getTotalAppDocCount();
-        assertEquals(0, cnt);
-    }
-
-    @Test
     public void testCreateApp() throws Exception {
-        ClusterIndexHealth index = null;
-        Map<String, IndexStatus> indexStatus = null;
-
+    	
         assertFalse(searchService.hasApp("appwithdocs"));
-
         searchService.createApp("appwithdocs");
-        searchService.refreshApp("appwithdocs");
-        index = searchService.getClusterHealth().indices().get("appwithdocs.app");
-        indexStatus = searchService.getAppStatus("appwithdocs");
-        assertTrue(searchService.hasIndex("appwithdocs.app"));
         assertTrue(searchService.hasApp("appwithdocs"));
-        assertEquals(1, index.numberOfShards());
-        assertEquals(1, index.numberOfReplicas());
-        assertEquals(1, indexStatus.size());
-        assertEquals(4, indexStatus.get("appwithdocs").docs().getNumDocs());
 
         try {
-            searchService.createAppIndex("appwithdocs");
+            searchService.createApp("testapp");
+        } catch (ApplicationExistsException e) {}
+        assertTrue(searchService.hasApp("testapp"));
+
+        try {
+            searchService.createApp("css");
             fail();
-        } catch (IndexExistsException e) {
-        }
+        } catch (InvalidApplicationNameException e) {}
+        assertFalse(searchService.hasApp("css"));
+
+        try {
+            searchService.createApp("js");
+            fail();
+        } catch (InvalidApplicationNameException e) {}
+        assertFalse(searchService.hasApp("js"));
+
+        try {
+            searchService.createApp("images");
+            fail();
+        } catch (InvalidApplicationNameException e) {}
+        assertFalse(searchService.hasApp("images"));
+
+        searchService.createApp("anotherapp");
+        assertTrue(searchService.hasApp("anotherapp"));
+        assertFalse(searchService.hasIndex("anotherapp.app.app"));
+    }
+    
+    @Test
+    public void testGetAppNames() throws Exception {
+    	assertTrue(searchService.hasApp("testapp"));
+    	assertTrue(searchService.hasApp("appwithdocs"));
+    	assertTrue(searchService.hasApp("anotherapp"));
+    	
+    	List<String> apps = new ArrayList<String>();
+    	apps.add("anotherapp");
+    	apps.add("appwithdocs");
+    	apps.add("testapp");
+    	
+    	// app names are returned in sorted order
+    	assertEquals(apps, searchService.getAppNames());
     }
 
     @Test
@@ -367,17 +311,17 @@ public class SearchServiceTest {
     public void testDeleteApp() throws Exception {
         assertTrue(searchService.hasApp("testapp"));
         searchService.deleteApp("testapp");
-        searchService.refreshApp();
+        //searchService.refreshApp();
         assertFalse(searchService.hasApp("testapp"));
-        assertTrue(searchService.hasApp("testapp2"));
-        assertTrue(searchService.hasApp("anotherapp"));
+        //assertTrue(searchService.hasApp("testapp2"));
+        //assertTrue(searchService.hasApp("anotherapp"));
         searchService.deleteApp("testapp2", "anotherapp");
-        searchService.refreshApp();
+        //searchService.refreshApp();
         assertFalse(searchService.hasApp("testapp2"));
         assertFalse(searchService.hasApp("anotherapp"));
 
         // no exception should be thrown
-        searchService.deleteApp("some.junk.app.does.not.exist");
+        //searchService.deleteApp("some.junk.app.does.not.exist");
     }
 
     @Test

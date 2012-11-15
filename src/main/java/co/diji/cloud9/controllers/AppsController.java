@@ -2,7 +2,6 @@ package co.diji.cloud9.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +10,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.search.SearchHit;
 import org.json.simple.JSONObject;
 import org.slf4j.ext.XLogger;
@@ -33,8 +30,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import co.diji.cloud9.apps.resources.ResourceHelper;
 import co.diji.cloud9.exceptions.Cloud9Exception;
-import co.diji.cloud9.exceptions.index.IndexException;
-import co.diji.cloud9.exceptions.index.IndexExistsException;
+import co.diji.cloud9.exceptions.application.ApplicationExistsException;
+import co.diji.cloud9.exceptions.application.InvalidApplicationNameException;
+import co.diji.cloud9.exceptions.mapping.MappingException;
 
 @Controller
 public class AppsController extends BaseController {
@@ -79,15 +77,14 @@ public class AppsController extends BaseController {
     public ModelAndView list(ModelMap model) {
         logger.entry();
 
-        Map<String, IndexStatus> apps = searchService.getAppStatus();
+        List<String> apps = searchService.getAppNames();
         JSONObject appResp = new JSONObject();
 
-        for (String app : apps.keySet()) {
-            IndexStatus appStatus = apps.get(app);
-
+        for (String app : apps) {
+        	// TODO: returns a dummy object for UI which needs to be updated
             JSONObject stats = new JSONObject();
-            stats.put("docs", String.valueOf(appStatus.docs().numDocs()));
-            stats.put("size", appStatus.getPrimaryStoreSize().toString());
+            stats.put("docs", "4");
+            stats.put("size", "");
             appResp.put(app, stats);
         }
 
@@ -101,20 +98,14 @@ public class AppsController extends BaseController {
     @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.GET, produces = "application/json")
     public List<String> listContentTypes(@PathVariable String app) {
         logger.entry(app);
-        List<String> resp = new ArrayList<String>();
-
-        Map<String, MappingMetaData> appTypes = searchService.getAppTypes(app);
-        logger.debug("appTypes: {}", appTypes);
-        if (appTypes != null) {
-            for (String appType : appTypes.keySet()) {
-                logger.debug("adding appType: {}", appType);
-                resp.add(appType);
-            }
+        List<String> response;
+        try {
+        	response = searchService.getAppTypes(app);
+        } catch (InvalidApplicationNameException e) {
+        	response = new ArrayList<String>();
         }
-
-        Collections.sort(resp);
         logger.exit();
-        return resp;
+        return response;
     }
 
     @ResponseBody
@@ -126,7 +117,17 @@ public class AppsController extends BaseController {
         try {
             searchService.createApp(app);
             resp.put("status", "ok");
-        } catch (IndexException e) {
+        } catch (InvalidApplicationNameException e) {
+            logger.warn(e.getMessage());
+            logger.debug("exception: ", e);
+            resp.put("status", "error");
+            resp.put("response", "Inavlid application name");
+        } catch (ApplicationExistsException e) {
+            logger.warn(e.getMessage());
+            logger.debug("exception: ", e);
+            resp.put("status", "error");
+            resp.put("response", "Application name already exists");
+        } catch (MappingException e) {
             logger.warn(e.getMessage());
             logger.debug("exception: ", e);
             resp.put("status", "error");
@@ -159,9 +160,8 @@ public class AppsController extends BaseController {
     public List<String> listResources(@PathVariable String app, @PathVariable String dir) {
         logger.entry(app, dir);
         List<String> resp = new ArrayList<String>();
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("appIdx: {}", appIdx);
-        SearchResponse searchResp = searchService.matchAll(appIdx, dir, null);
+        
+        SearchResponse searchResp = searchService.matchAll(searchService.APP_INDEX, app + "_" + dir, null);
         logger.debug("searchResp:{}", searchResp);
         if (searchResp != null) {
             for (SearchHit hit : searchResp.hits()) {
@@ -177,10 +177,9 @@ public class AppsController extends BaseController {
     public void getResourceFromDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletResponse response) {
         logger.entry(app, dir, resource);
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("appIdx: {}", appIdx);
 
-        GetResponse res = searchService.getDoc(appIdx, dir, resource, null);
+        // TODO: maybe hide this in the searchService?
+        GetResponse res = searchService.getDoc(searchService.APP_INDEX, app + "_" + dir, resource, null);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -284,13 +283,12 @@ public class AppsController extends BaseController {
             @PathVariable String resource, @RequestBody Map<String, Object> data) {
         logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("addIdx: {}", appIdx);
+        logger.debug("addIdx: {}", app);
 
         // evict cached resource
         resourceHelper.evict(app, dir, resource);
         
-        IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
+        IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());
         resp.put("version", indexResponse.version());
@@ -303,13 +301,12 @@ public class AppsController extends BaseController {
     public Map<String, Object> deleteResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
         logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("appIdx: {}", appIdx);
+        logger.debug("appIdx: {}", app);
 
         // evict cached resource
         resourceHelper.evict(app, dir, resource);
         
-        DeleteResponse deleteResponse = searchService.deleteDoc(appIdx, dir, resource);
+        DeleteResponse deleteResponse = searchService.deleteDoc(searchService.APP_INDEX, app+"_"+dir, resource);
         resp.put("status", "ok");
         resp.put("id", deleteResponse.id());
         resp.put("version", deleteResponse.version());
@@ -323,8 +320,7 @@ public class AppsController extends BaseController {
             @RequestBody Map<String, Object> data) {
         logger.entry(app, dir);
         Map<String, Object> resp = new HashMap<String, Object>();
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("appIdx: {}", appIdx);
+        logger.debug("appIdx: {}", app);
 
         try {
             String oldId = (String) data.get("from");
@@ -333,7 +329,7 @@ public class AppsController extends BaseController {
                 throw new Cloud9Exception("Must specify the old and new ids");
             }
 
-            GetResponse oldDoc = searchService.getDoc(appIdx, dir, oldId, null);
+            GetResponse oldDoc = searchService.getDoc(searchService.APP_INDEX, app+"_"+dir, oldId, null);
             if (oldDoc == null) {
                 throw new Cloud9Exception("Resource does not exist");
             }
@@ -343,10 +339,10 @@ public class AppsController extends BaseController {
             resourceHelper.evict(app, dir, oldId);
             
             // index the new doc
-            IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, newId, oldDoc.sourceAsMap());
+            IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, newId, oldDoc.sourceAsMap());
             if (indexResponse.id().equals(newId)) {
                 // delete the old doc
-                searchService.deleteDoc(appIdx, dir, oldId);
+                searchService.deleteDoc("app", app+"_"+dir, oldId);
                 resp.put("status", "ok");
                 resp.put("id", indexResponse.id());
                 resp.put("version", indexResponse.version());
@@ -372,14 +368,21 @@ public class AppsController extends BaseController {
             @RequestBody Map<String, Object> data) {
         logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("addIdx: {}", appIdx);
+        logger.debug("addIdx: {}", app);
 
         try {
-            searchService.createAppIndex(app);
-        } catch (IndexExistsException e1) {
-            logger.debug("Application already exists: {}");
-        } catch (IndexException e) {
+            searchService.createApp(app);
+        } catch (InvalidApplicationNameException e) {
+            logger.warn("Error pushing application file: {}", e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", "Inavlid application name");
+            return resp;
+        } catch (ApplicationExistsException e) {
+            logger.warn("Error pushing application file: {}", e.getMessage());
+            resp.put("status", "error");
+            resp.put("response", "Application name already exists");
+            return resp;
+        } catch (MappingException e) {
             logger.warn("Error pushing application file: {}", e.getMessage());
             resp.put("status", "error");
             resp.put("response", e.getMessage());
@@ -390,7 +393,7 @@ public class AppsController extends BaseController {
         resourceHelper.evict(app, dir, resource);
         
         // index the new resource
-        IndexResponse indexResponse = searchService.indexDoc(appIdx, dir, resource, data);
+        IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());
         resp.put("version", indexResponse.version());
@@ -405,10 +408,10 @@ public class AppsController extends BaseController {
     public void pullAppFile(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletResponse response) {
         logger.entry(app, dir, resource);
-        String appIdx = searchService.appsWithSuffix(app)[0];
-        logger.debug("appIdx: {}", appIdx);
+        //String appIdx = searchService.appsWithSuffix(app)[0];
+        logger.debug("appIdx: {}", app);
 
-        GetResponse res = searchService.getDoc(appIdx, dir, resource, null);
+        GetResponse res = searchService.getDoc(searchService.APP_INDEX, app+"_"+dir, resource, null);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

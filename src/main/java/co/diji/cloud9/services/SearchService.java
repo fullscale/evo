@@ -7,8 +7,12 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,6 +76,8 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.diji.cloud9.exceptions.Cloud9Exception;
+import co.diji.cloud9.exceptions.application.ApplicationExistsException;
+import co.diji.cloud9.exceptions.application.InvalidApplicationNameException;
 import co.diji.cloud9.exceptions.index.IndexCreationException;
 import co.diji.cloud9.exceptions.index.IndexException;
 import co.diji.cloud9.exceptions.index.IndexExistsException;
@@ -85,8 +91,8 @@ import co.diji.cloud9.utils.C9Helper;
 public class SearchService {
 
     private static final String SYSTEM_INDEX = "sys";
-    private static final String APP_SUFFIX = ".app";
-    private static final String[] RESERVED_APPS = {"css.app", "js.app", "images.app"};
+    public final String APP_INDEX = "app";
+    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "images"};
     private static final String[] VALID_TYPES = {"conf", "html", "css", "images", "js", "controllers"};
 
     private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
@@ -98,28 +104,6 @@ public class SearchService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    /**
-     * Utility method to make sure a list of apps has the app suffix
-     * 
-     * @param apps the list of apps to check
-     * @return the list of apps, all containing the app suffix
-     */
-    public String[] appsWithSuffix(String... apps) {
-        logger.entry((Object) apps);
-        String[] appsWithSuffix = new String[apps.length];
-        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
-            String app = apps[appIdx];
-            if (!app.endsWith(APP_SUFFIX)) {
-                appsWithSuffix[appIdx] = app + APP_SUFFIX;
-            } else {
-                appsWithSuffix[appIdx] = app;
-            }
-        }
-
-        logger.exit(appsWithSuffix);
-        return appsWithSuffix;
-    }
 
     /**
      * Initialize and start our ElasticSearch node.
@@ -138,6 +122,7 @@ public class SearchService {
         logger.info("Cluster Initialized [name:{}, status:{}]", health.clusterName(), health.status());
 
         setupSystemIndex();
+        setupApplicationIndex();
         logger.info("Node is bootstrapped and online");
         logger.exit();
     }
@@ -213,6 +198,23 @@ public class SearchService {
         }
 
         logger.exit();
+    }
+    
+    /**
+     * Creates the application index
+     * 
+     * @throws Cloud9Exception
+     */
+    public void setupApplicationIndex() throws Cloud9Exception {
+    	logger.entry();
+    	boolean hasAppIndex = hasIndex(APP_INDEX);
+    	if (!hasAppIndex) {
+    		logger.info("Creating application repository");
+    		boolean ack = createIndex(APP_INDEX, 1, 1);
+    		logger.exit(ack);
+    	} else {
+    		logger.info("Recovering application data");
+    	}
     }
 
     /**
@@ -311,8 +313,7 @@ public class SearchService {
             for (Entry<String, IndexStatus> index : indices.entrySet()) {
                 String indexName = index.getKey();
                 IndexStatus indexStatus = index.getValue();
-                //logger.debug("indexName: {}", indexName);
-                if (!indexName.equals(SYSTEM_INDEX) && !indexName.endsWith(APP_SUFFIX)) {
+                if (!indexName.equals(SYSTEM_INDEX) && !indexName.equals(APP_INDEX)) {
                     collectionStatus.put(indexName, indexStatus);
                 }
             }
@@ -322,32 +323,19 @@ public class SearchService {
         return collectionStatus;
     }
 
-    /**
-     * Gets all the apps and their status.
-     * 
-     * @param apps the apps to get the status for
-     * @return a map where the key is the app name and the value is the status
-     */
-    public Map<String, IndexStatus> getAppStatus(String... apps) {
-        logger.entry((Object) apps);
-        String[] appsWithSuffix = appsWithSuffix(apps);
-        Map<String, IndexStatus> appStatus = new HashMap<String, IndexStatus>();
-        Map<String, IndexStatus> indices = getIndexStatus(appsWithSuffix);
+    public List<String> getAppNames() {
 
-        if (indices != null) {
-            logger.debug("found indices");
-            for (Entry<String, IndexStatus> index : indices.entrySet()) {
-                String indexName = index.getKey();
-                IndexStatus indexStatus = index.getValue();
-                logger.debug("indexName: {}", indexName);
-                if (!indexName.equals(SYSTEM_INDEX) && indexName.endsWith(APP_SUFFIX)) {
-                    appStatus.put(indexName.replace(APP_SUFFIX, ""), indexStatus);
-                }
+    	Collection<String> appSet = new HashSet<String>();
+    	
+    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+        if (appTypes != null) {
+            for (String appType : appTypes.keySet()) {
+            	appSet.add(appType.split("_")[0]);
             }
         }
-
-        logger.exit();
-        return appStatus;
+        List<String> appNames = new ArrayList<String>(appSet);
+        Collections.sort(appNames);
+    	return appNames;
     }
 
     /**
@@ -364,27 +352,6 @@ public class SearchService {
         if (collections != null) {
             for (Entry<String, IndexStatus> collection : collections.entrySet()) {
                 numDocs = numDocs + collection.getValue().docs().numDocs();
-            }
-        }
-
-        logger.exit(numDocs);
-        return numDocs;
-    }
-
-    /**
-     * Gets the total number of app documents that exist in the cluster
-     * 
-     * @return the sum of all app document counts
-     */
-    public long getTotalAppDocCount() {
-        logger.entry();
-        long numDocs = 0;
-        Map<String, IndexStatus> apps = getAppStatus();
-
-        logger.debug("apps: {}", apps);
-        if (apps != null) {
-            for (Entry<String, IndexStatus> app : apps.entrySet()) {
-                numDocs = numDocs + app.getValue().docs().numDocs();
             }
         }
 
@@ -467,13 +434,16 @@ public class SearchService {
      */
     public boolean hasApp(String appName) {
         logger.entry(appName);
-        if (!appName.endsWith(APP_SUFFIX)) {
-            appName = appName + APP_SUFFIX;
-            logger.debug("final appName: {}", appName);
+    	
+    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+        if (appTypes != null) {
+            for (String appType : appTypes.keySet()) {
+            	if (appType.split("_")[0].equalsIgnoreCase(appName)) {
+            		return true;
+            	}
+            }
         }
-
-        logger.exit();
-        return hasIndex(appName);
+        return false;
     }
 
     /**
@@ -595,7 +565,7 @@ public class SearchService {
     public boolean createCollectionIndex(String name) throws IndexException {
         logger.entry(name);
 
-        if (name.equals(SYSTEM_INDEX) || name.endsWith(APP_SUFFIX)) {
+        if (name.equals(SYSTEM_INDEX) || name.equals(APP_INDEX) || Arrays.asList(INVALID_INDEX_NAMES).contains(name)) {
             throw new IndexCreationException("Invliad collection name: " + name);
         }
 
@@ -615,55 +585,12 @@ public class SearchService {
     public boolean createCollectionIndex(String name, int shards, int replicas) throws IndexException {
         logger.entry(name, shards, replicas);
 
-        if (name.equals(SYSTEM_INDEX) || name.endsWith(APP_SUFFIX)) {
+        if (name.equals(SYSTEM_INDEX) || name.equals(APP_INDEX) || Arrays.asList(INVALID_INDEX_NAMES).contains(name)) {
             throw new IndexCreationException("Invliad collection name: " + name);
         }
 
         logger.exit();
         return createIndex(name, shards, replicas);
-    }
-
-    /**
-     * Create application index with default 1 shard and 1 replica
-     * 
-     * @param appName the name of the application
-     * @return if the application was ack'd by the cluster or not
-     * @throws IndexException
-     */
-    public boolean createAppIndex(String appName) throws IndexException {
-        return createAppIndex(appName, 1, 1);
-    }
-
-    /**
-     * Create application with the specified number of shards and replicas
-     * 
-     * @param appName the name of the application
-     * @param shards the number of shards for the application
-     * @param replicas the number of replicas for the application
-     * @return if the application was ack'd by the cluster or not
-     * @throws IndexException
-     */
-    public boolean createAppIndex(String appName, int shards, int replicas) throws IndexException {
-        logger.entry(appName, shards, replicas);
-        if (!appName.endsWith(APP_SUFFIX)) {
-            appName = appName + APP_SUFFIX;
-        }
-
-        logger.debug("appName: {}", appName);
-        if (Arrays.asList(RESERVED_APPS).contains(appName)) {
-            throw new IndexCreationException("Invalid application name: " + appName);
-        }
-
-        Map<String, String> mappings = new HashMap<String, String>();
-        mappings.put("html", config.getHtmlMapping());
-        mappings.put("css", config.getCssMapping());
-        mappings.put("js", config.getJsMapping());
-        mappings.put("images", config.getImagesMapping());
-        mappings.put("controllers", config.getControllerMapping());
-
-        boolean ack = createIndex(appName, shards, replicas, mappings);
-        logger.exit(ack);
-        return ack;
     }
 
     /**
@@ -703,17 +630,13 @@ public class SearchService {
      */
     public IndexResponse indexAppDoc(String app, String type, String id, String code, String mime) {
         logger.entry(app, type, id, mime);
-        if (!app.endsWith(APP_SUFFIX)) {
-            logger.debug("final app name: {}", app);
-            app = app + APP_SUFFIX;
-        }
 
         Map<String, Object> source = new HashMap<String, Object>();
         source.put("code", code);
         source.put("mime", mime);
 
         logger.exit();
-        return indexDoc(app, type, id, source);
+        return indexDoc(APP_INDEX, app + "_" + type, id, source);
     }
 
     /**
@@ -741,19 +664,36 @@ public class SearchService {
     }
 
     /**
-     * Creates an app
+     * Creates a new application by generating a set of boilerplate mappings.
      * 
      * @param appName the name of the app
+     * @throws MappingException 
      * @throws IndexException
      */
-    public void createApp(String appName) throws IndexException {
+    public void createApp(String appName) 
+    	throws ApplicationExistsException, MappingException, InvalidApplicationNameException {
         logger.entry(appName);
-        appName = appName.replace(APP_SUFFIX, "");
-        createAppIndex(appName);
-        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
-        indexAppDoc(appName, "css", "style.css", config.getCssTemplate(appName), "text/css");
-        indexAppDoc(appName, "js", appName + ".js", config.getJsTemplate(appName), "application/javascript");
-        indexAppDoc(appName, "controllers", "examples.js", config.getControllerTemplate(appName), "application/javascript");
+        
+        if (Arrays.asList(INVALID_INDEX_NAMES).contains(appName)) {
+        	throw new InvalidApplicationNameException("Invalid application name");
+        }
+        
+        if (!hasApp(appName)) {
+
+			putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
+			putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
+			putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
+			putMapping(APP_INDEX, appName + "_images", config.getImagesMapping());
+			putMapping(APP_INDEX, appName + "_controllers", config.getControllerMapping());
+		
+	        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
+	        indexAppDoc(appName, "css", "style.css", config.getCssTemplate(appName), "text/css");
+	        indexAppDoc(appName, "js", appName + ".js", config.getJsTemplate(appName), "application/javascript");
+	        indexAppDoc(appName, "controllers", "examples.js", config.getControllerTemplate(appName), "application/javascript");
+
+        } else {
+        	throw new ApplicationExistsException("Application already exists");
+        }
         logger.exit();
     }
 
@@ -776,17 +716,6 @@ public class SearchService {
 
         logger.exit();
         return refreshResponse;
-    }
-
-    /**
-     * Refreshes the specified apps
-     * 
-     * @param apps the apps to refresh
-     * @return the refresh status, null on error
-     */
-    public RefreshResponse refreshApp(String... apps) {
-        String[] appsWithSuffix = appsWithSuffix(apps);
-        return refreshIndex(appsWithSuffix);
     }
 
     /**
@@ -819,8 +748,18 @@ public class SearchService {
      * @return if the delete was ack'd by the cluster or not
      */
     public boolean deleteApp(String... apps) {
-        String[] appsWithSuffix = appsWithSuffix(apps);
-        return deleteIndex(appsWithSuffix);
+        for (int appIdx = 0; appIdx < apps.length; appIdx++) {
+        	try {
+				List<String> types = getAppTypes(apps[appIdx]);
+				for (String type: types) {
+					deleteMapping(APP_INDEX, apps[appIdx] + "_" + type);
+				}
+			} catch (InvalidApplicationNameException e) {
+				logger.warn("Encountered invalid app name trying to delete an application");
+				continue;
+			}
+        }
+        return true;
     }
 
     /**
@@ -848,11 +787,28 @@ public class SearchService {
      * Get types for an application
      * 
      * @param app the name of the application to get the types for
-     * @return a map where the key is the type and the value is the type info. null when there is an error.
+     * @return a sorted list of application names
      */
-    public Map<String, MappingMetaData> getAppTypes(String app) {
-        String appIdx = appsWithSuffix(app)[0];
-        return getMappings(appIdx);
+    public List<String> getAppTypes(String app) throws InvalidApplicationNameException {
+
+    	List<String> resp = new ArrayList<String>();
+    	
+    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+        if (appTypes != null) {
+            for (String appType : appTypes.keySet()) {
+            	String[] parts = appType.split("_");
+            	if (parts.length != 2) {
+            		throw new InvalidApplicationNameException("Invalid application name: " + app);
+            	}
+                
+                if (app.equalsIgnoreCase(parts[0])) {
+                    logger.debug("adding appType: {}", parts[1]);
+                	resp.add(parts[1]);
+                }
+            }
+        }
+        Collections.sort(resp);
+        return resp;
     }
 
     /**
@@ -1062,27 +1018,24 @@ public class SearchService {
     public void importApp(String app, InputStream input, boolean force, boolean mappings) throws Cloud9Exception {
         logger.entry(app, force, mappings);
         String sep = System.getProperty("file.separator");
-        String appIndex = appsWithSuffix(app)[0];
-        logger.debug("sep:{} appIndex:{}", sep, appIndex);
+        logger.debug("sep:{} appIndex:{}", sep, app);
 
         if (input == null) {
             logger.error("input stream for {} is null", app);
             throw new Cloud9Exception("Error importing app:" + app + ", input stream is null");
         }
 
-        Map<String, IndexStatus> apps = getAppStatus();
-        logger.debug("force:{} apps:{}", force, apps.keySet());
-        if (!force && apps.containsKey(app)) {
+        if (!force && hasApp(app)) {
             logger.error("Application already exists: {}, foce to override", app);
             throw new Cloud9Exception("Application already exists: " + app);
         }
 
-        if (force && apps.containsKey(app)) {
+        if (force && hasApp(app)) {
             logger.info("Forcing overwrite of {}", app);
             deleteApp(app);
         }
 
-        createAppIndex(app);
+        createApp(app);
 
         ZipInputStream zip = null;
         try {
@@ -1159,7 +1112,7 @@ public class SearchService {
                 }
             }
 
-            logger.info("Application {} successfully imported", app);
+            logger.debug("Application {} successfully imported", app);
         } catch (Exception e) {
             logger.error("Error importing application: {}", app);
             deleteApp(app);
@@ -1181,31 +1134,39 @@ public class SearchService {
     public void exportApp(String app, OutputStream out, Map<String, String[]> mappings) throws Cloud9Exception {
         logger.entry(app);
         String sep = System.getProperty("file.separator");
-        String appIndex = appsWithSuffix(app)[0];
-        logger.debug("sep:{} appIndex:{}", sep, appIndex);
+        logger.debug("sep:{} appIndex:{}", sep, app);
 
         if (out == null) {
             logger.error("output stream for {} is null", app);
             throw new Cloud9Exception("Error importing app:" + app + ", output stream is null");
         }
 
-        if (!hasIndex(appIndex)) {
+        if (!hasApp(app)) {
             logger.error("Application does not exist: {}", app);
             throw new Cloud9Exception("Application does not exist: " + app);
         }
 
-        SearchResponse response = matchAll(appIndex, null, new String[]{});
+        List<String> contentTypes = getAppTypes(app);
+        String[] appTypes = new String[contentTypes.size()];
+        int idx = 0;
+        for (String type: contentTypes) {
+        	appTypes[idx] = app + "_" + type;
+        	idx++;
+        }
+        
+        SearchResponse response = matchAll(APP_INDEX, appTypes, new String[]{});
 
         ZipOutputStream zip = null;
         try {
             zip = new ZipOutputStream(new BufferedOutputStream(out));
             for (SearchHit hit : response.hits().hits()) {
                 Map<String, Object> fields = hit.sourceAsMap();
-                String resourcePath = app + sep + hit.type() + sep + hit.id();
+                String contentType = hit.type().split("_")[1];
+                String resourcePath = app + sep + contentType + sep + hit.id();
                 logger.debug("resourcePath: {}", resourcePath);
                 zip.putNextEntry(new ZipEntry(resourcePath));
                 String code = (String) fields.get("code");
-                if (hit.type().equals("images")) {
+                if (contentType.equals("images")) {
                     logger.debug("decoding base64");
                     zip.write(Base64.decodeBase64(code));
                 } else {
@@ -1266,6 +1227,12 @@ public class SearchService {
         logger.exit();
     }
 
+    public SearchResponse matchAll(String index, String type, String[] fields) {
+    	String[] types = {type};
+    	logger.info("matchALL type... {}", type);
+    	return matchAll(index, types, fields);
+    }
+    
     /**
      * Executes a matchall query against the specified index and type.
      * 
@@ -1274,7 +1241,7 @@ public class SearchService {
      * @param fields the fields to return, null if no fields, empty array for default source
      * @return the search response, null on error
      */
-    public SearchResponse matchAll(String index, String type, String[] fields) {
+    public SearchResponse matchAll(String index, String[] type, String[] fields) {
         logger.entry(index, type, fields);
         SearchRequestBuilder request = client.prepareSearch(index);
         request.setFilter(matchAllFilter());
@@ -1347,8 +1314,7 @@ public class SearchService {
      * @return the get response, null on error
      */
     public GetResponse getAppResource(String app, String dir, String resource, String[] fields) {
-        String appIndex = appsWithSuffix(app)[0];
-        return getDoc(appIndex, dir, resource, fields);
+        return getDoc(APP_INDEX, app + "_" + dir, resource, fields);
     }
 
     /**
