@@ -64,14 +64,14 @@ C9.ide.editor.save = function(tab) {
                 }
             },
             error:function (xhr, ajaxOptions, thrownError){
-                alert("An Error Occurred")
+                alert("An Error Occurred");
             }    
         });
     } 
 };
 
 C9.ide.editor.saveAll = function() {
-    tabView.get('tabs').forEach(function(tab) { C9.ide.editor.save(tab) });
+    tabView.get('tabs').forEach(function(tab) { C9.ide.editor.save(tab); });
 };
                     
 canon.addCommand({

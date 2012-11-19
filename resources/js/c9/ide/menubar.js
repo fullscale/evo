@@ -29,7 +29,7 @@ YAHOO.util.Event.onDOMReady(function () {
         } else {
             return null;
         }
-    }
+    };
 
     // returns current font size of active editor
     var getFontSize = function() {
@@ -49,7 +49,7 @@ YAHOO.util.Event.onDOMReady(function () {
         } else {
             return null;
         }
-    }
+    };
 
     // increase current font size
     var increaseFontSize = function() {
@@ -58,7 +58,7 @@ YAHOO.util.Event.onDOMReady(function () {
         if (currentSize !== null) {
             editor.setFontSize((currentSize + 1) + 'px');
         }
-    }
+    };
 
     // descreases current font size
     var decreaseFontSize = function() {
@@ -67,7 +67,7 @@ YAHOO.util.Event.onDOMReady(function () {
         if (currentSize !== null) {
             editor.setFontSize((currentSize - 1) + 'px');
         }
-    }
+    };
 
     // adds a listener to increase editor font size
     var newResourceListener = new YAHOO.util.KeyListener(document, {
@@ -102,44 +102,44 @@ YAHOO.util.Event.onDOMReady(function () {
         if (editor !== null) {
             editor.renderer.setShowPrintMargin(true);
         }
-    }
+    };
 
     var disablePrintMargin = function() {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.renderer.setShowPrintMargin(false);
         }  
-    }
+    };
 
     var enableGutter = function() {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.renderer.setShowGutter(true);
         }    
-    }
+    };
 
     var disableGutter = function() {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.renderer.setShowGutter(false);
         } 
-    }
+    };
 
     var previewProject = function() {
         window.open("/" + C9.app.name);    
-    }
+    };
 
     var exportProject = function() {
         window.open("/v1/apps/" + C9.app.name);    
-    }
+    };
 
     var viewDevGuide = function() {
         window.open("http://www.cloud9search.com/docs.html");
-    }
+    };
 
     var viewApiDocs = function() {
         window.open("http://www.cloud9search.com/jsdocs/C9.api.html");
-    }
+    };
 
     // adds a listener to show gutter
     var showGutterListener = new YAHOO.util.KeyListener(document, {
@@ -173,35 +173,35 @@ YAHOO.util.Event.onDOMReady(function () {
         if (editor !== null) {
             editor.setKeyboardHandler(mode);
         }
-    }
+    };
 
     var enableSoftTabs = function() {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.getSession().setUseSoftTabs(true);
         }
-    }
+    };
 
     var disableSoftTabs = function() {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.getSession().setUseSoftTabs(false);
         }
-    }
+    };
 
     var setTabSize = function(type, args, size) {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.getSession().setTabSize(size);
         }        
-    }
+    };
 
     var setTheme = function(type, args, theme) {
         var editor = getCurrentEditor();
         if (editor !== null) {
             editor.setTheme("ace/theme/" + theme);
         }  
-    }
+    };
 
     var enableSoftWrap = function() {
         var editor = getCurrentEditor();
@@ -210,7 +210,7 @@ YAHOO.util.Event.onDOMReady(function () {
             editor.getSession().setWrapLimitRange(80, 80);
             editor.renderer.setPrintMarginColumn(80);
         }         
-    }
+    };
 
     var disableSoftWrap = function() {
         var editor = getCurrentEditor();
@@ -218,7 +218,7 @@ YAHOO.util.Event.onDOMReady(function () {
             editor.getSession().setUseWrapMode(false);
             editor.renderer.setPrintMarginColumn(80);
         }         
-    }
+    };
 
     var onMenuItemClick = function () {
         alert("Callback for MenuItem: " + this.cfg.getProperty("text"));

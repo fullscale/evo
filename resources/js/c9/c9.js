@@ -17,47 +17,48 @@ jQuery.extend({
     put: function(url, data, callback, type) {
         return _ajax_request(url, data, callback, type, 'PUT');
     },
-    'delete': function(url, data, callback, type) {
+    'del': function(url, data, callback, type) {
         return _ajax_request(url, data, callback, type, 'DELETE');
     }
 });
 
-var cloud9 = function() {}
+var cloud9 = function() {};
 
 cloud9.prototype.showError = function(where, msg) {
     var errdiv = $('<div class="error">' + msg + '</div>');
     where.append(errdiv);
     errdiv.fadeOut(5000, function() { $(this).remove(); });
-}
+};
 
 cloud9.prototype.deleteResource = function(app, dir, name, conf) {
-    var url = '/cloud9/apps/' + app + '/' + dir + '/' + name
-    $.delete(url, conf, function(data) {
+    var url = '/cloud9/apps/' + app + '/' + dir + '/' + name;
+    $.del(url, conf, function(data) {
         if (data.status == "error") {
-            console.error("Deleting resource (%s) failed.", url)
+            console.error("Deleting resource (%s) failed.", url);
         }
     });  
-}
+};
 
 cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
-    var url = '/cloud9/apps/' + app + '/' + dir + '/_rename'
+    var url = '/cloud9/apps/' + app + '/' + dir + '/_rename';
     $.ajax({
         type: 'PUT',
         url: url,
         processData: false,
         contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify({from:oldName,to:newName}),
+        data: JSON.stringify({from:oldName, to:newName}),
         success: function(data) {
             if (data.status == "failed") {
-                console.error("Renaming resource (%s) failed.", oldName)
+                console.error("Renaming resource (%s) failed.", oldName);
             }
-        } 
+        }
     });
-}
+};
 
 cloud9.prototype.createResource = function(app, dir, name, code) {
 	url = '/cloud9/apps/' + app + '/' + dir + '/' + name;
+	code = code || "";
   
     $.ajax({
         type: 'POST',
@@ -70,7 +71,8 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                 c9.showError($('#applications'), data.response);
             } else {
                 // update the file tree
-                var node = C9.ide.navigator.tree().getNodeByProperty('label', dir);
+            	var targetNodeLabel = (dir === 'html') ? app : dir;
+                var node = C9.ide.navigator.tree().getNodeByProperty('label', targetNodeLabel);
                 var tempNode = new YAHOO.widget.TextNode(name, node, false);
                 tempNode.label = name;
                 tempNode.type = dir;
@@ -146,7 +148,7 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
             }
         }
     });	
-}
+};
 
 /* temp hack -- need to create a "tabview" object (replicated from navigator.js )*/
 function handleClose(e, tab) { 
@@ -204,7 +206,7 @@ function handleClose(e, tab) {
 cloud9.prototype.deleteCollection = function(url) {
     components = url.split('/');
     id = components[components.length -1];
-    $.delete(url, {},
+    $.del(url, {},
       function(data) {
           if (data.status == "ok") {
               $('#col-'+id).hide();
@@ -212,12 +214,12 @@ cloud9.prototype.deleteCollection = function(url) {
               alert("Sorry, an error occurred");
           }
     }, "json");
-}
+};
 
 cloud9.prototype.deleteApplication = function(url) {
     components = url.split('/');
     id = components[components.length -1];
-    $.delete(url, {},
+    $.del(url, {},
       function(data) {
           if (data.status == "ok") {
               $('#col-'+id).hide();
@@ -225,13 +227,13 @@ cloud9.prototype.deleteApplication = function(url) {
               alert("Sorry, an error occurred");
           }
     }, "json");
-}
+};
 
 cloud9.prototype.deleteType = function(url) {
     components = url.split('/');
     id = components[components.length -1];
     
-    $.delete(url, {},
+    $.del(url, {},
       function(data) {
           if (data.status == "ok") {
               $('#type-'+id).hide();
@@ -239,7 +241,7 @@ cloud9.prototype.deleteType = function(url) {
               alert("Error");
           }
     }, "json");
-}
+};
 
 cloud9.prototype.deleteDocument = function(collection, type, docid) {
     $.ajax({
@@ -250,13 +252,13 @@ cloud9.prototype.deleteDocument = function(collection, type, docid) {
             $('#'+docid).hide("fast");
         },
         error:function (xhr, ajaxOptions, thrownError){
-            alert("An Error Occurred")
+            alert("An Error Occurred");
         }
     });
-}
+};
 
 cloud9.prototype.deleteUser = function(userid){
-    console.log("Delete: " + userid)
+    console.log("Delete: " + userid);
     $.ajax({
         type: "DELETE",
         url: "/cloud9/user/" + userid,
@@ -269,32 +271,32 @@ cloud9.prototype.deleteUser = function(userid){
             }
         }
     });
-}
+};
 
 cloud9.prototype.addDocument = function(url, func) {
     var values = {};
     
     /* check for form values that are numbers */
     $('#contentForm input[type != submit]').each(function() {
-        var parts = (this.name).split('^')
-        var name = parts[0]
-        var mtype = parts[1]
+        var parts = (this.name).split('^');
+        var name = parts[0];
+        var mtype = parts[1];
         
         switch(mtype) {
             case "string":
-                values[name] = $(this).val()
-                break
+                values[name] = $(this).val();
+                break;
             case "integer":
-                values[name] = parseFloat($(this).val())
-                break
+                values[name] = parseFloat($(this).val());
+                break;
             case "float":
-                values[name] = parseFloat($(this).val())
-                break
+                values[name] = parseFloat($(this).val());
+                break;
             case "date":
-                values[name] = $(this).val()
-                break
+                values[name] = $(this).val();
+                break;
             default:
-                alert('Error')
+                alert('Error');
         }
     });
 
@@ -312,7 +314,7 @@ cloud9.prototype.addDocument = function(url, func) {
         	}
         }
     });
-}
+};
 
 cloud9.prototype.loadAndSlide = function(container, data, offset, options) {
     var defaults = {
@@ -325,7 +327,7 @@ cloud9.prototype.loadAndSlide = function(container, data, offset, options) {
     $(container).html(data);
     // TODO: make userTableContainer configurable
     $('.userTableContainer').animate({left: offset}, options);    
-}
+};
 
 cloud9.prototype.slide = function(offset, options) {
     var defaults = {
@@ -336,4 +338,4 @@ cloud9.prototype.slide = function(offset, options) {
     var options = $.extend(defaults, options);
     // TODO: make userTableContainer configurable
     $('.userTableContainer').animate({left: offset}, options);
-}
+};

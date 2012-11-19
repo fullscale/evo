@@ -135,7 +135,7 @@ C9.ide.dialog.resource = function () {
 YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.resource = C9.ide.dialog.resource(); });
 
 C9.ide.dialog.confirm = function () {
-  var my = {}
+  var my = {};
 
   var dialog = new YAHOO.widget.SimpleDialog("c9-dialog-confirm", { 
     width: "300px", 
@@ -199,7 +199,7 @@ C9.ide.dialog.upload = function () {
                 data.name, 
                 evt.target.result.split(",")[1]
               );
-            }
+            };
           })(data);
         reader.readAsDataURL(data);
       	this.hide();

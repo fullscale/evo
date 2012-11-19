@@ -12,7 +12,8 @@
 
 C9.ide.navigator = function () {
         
-    var tree, currentIconMode;
+    var tree = "";
+    var currentIconMode = "";
         
       DDTreeNode = function(id, sGroup, config) {
       DDTreeNode.superclass.constructor.call(this, id, sGroup, config);
@@ -22,11 +23,11 @@ C9.ide.navigator = function () {
         /* don't actually move anything */
         endDrag: function(e) { },
 
-        /* this will trigger the component creation */
+        /* this will trigger the component creation 
         onDragDrop: function(e, id) {
             var xcoord = YAHOO.util.Event.getPageX(e) - 200;
             var ycoord = YAHOO.util.Event.getPageY(e) - 70;
-        }
+        }*/
     });
 
     function changeIconMode() {
@@ -41,18 +42,44 @@ C9.ide.navigator = function () {
         var nodeLabel = encodeURI(node.label);
 		var appName = node.appName;
         var sUrl = "/cloud9/apps/" + nodeLabel;
+        var htmlUrl = "/cloud9/apps/" + appName + "/html";
 
         var callback = {
             success: function(oResponse) {
                 var x = YAHOO.lang.JSON.parse(oResponse.responseText);
-                for (i = 0; i < x.length; i++) {
-                    var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
-                    tempNode.label = x[i];
-                    tempNode.type = nodeLabel;
-					          tempNode.appName = appName;
-					          tempNode.setDynamicLoad(loadResources, currentIconMode);
+                for (var i = 0; i < x.length; i++) {
+                	if (x[i] !== 'html') {
+                		var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
+                		tempNode.label = x[i];
+                		tempNode.type = nodeLabel;
+					    tempNode.appName = appName;
+					    tempNode.setDynamicLoad(loadResources, currentIconMode);
+                	}
                 }
-                oResponse.argument.fnLoadComplete();     
+                //oResponse.argument.fnLoadComplete();
+                var loadHtml = {
+                    	success: function(oResponse) {
+                            var x = YAHOO.lang.JSON.parse(oResponse.responseText);
+                            for (var i = 0; i < x.length; i++) {
+                                var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
+                                tempNode.label = x[i];
+                                tempNode.type = 'html';
+                                tempNode.isLeaf = true;
+                                tempNode.editable = true;
+                                tempNode.labelStyle = "icon-html";
+                            }
+                    		oResponse.argument.fnLoadComplete();
+                    	},
+                    	failure: function(oResponse) {
+                    		oResponse.argument.fnLoadComplete();
+                    	},
+                        argument: {
+                            "node": node,
+                            "fnLoadComplete": fnLoadComplete
+                        },
+                    	timeout: 7000
+                    };
+                YAHOO.util.Connect.asyncRequest('GET', htmlUrl, loadHtml);
             },
             failure: function(oResponse) {
                 oResponse.argument.fnLoadComplete();
@@ -63,18 +90,19 @@ C9.ide.navigator = function () {
             },
             timeout: 7000
         };
+        
         YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
     }
     
     function loadResources(node, fnLoadComplete)  {
         var resource = encodeURI(node.label);
-		    var appName = node.appName
+        var appName = node.appName;
         var sUrl = "/cloud9/apps/" + appName + "/" + resource;
 
         var callback = {
             success: function(oResponse) {
                 var x = YAHOO.lang.JSON.parse(oResponse.responseText);
-                for (i = 0; i < x.length; i++) {
+                for (var i = 0; i < x.length; i++) {
                     var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
                     tempNode.label = x[i];
                     tempNode.type = resource;
@@ -167,8 +195,11 @@ C9.ide.navigator = function () {
       tree.subscribe("clickEvent", function(oArgs) { 
 			  var app = oArgs.node.parent.appName;
 			  var dir = oArgs.node.parent.label;
+			  if (app === dir) {
+				  dir = 'html';
+			  }
 			  var resource = oArgs.node.label;
-			  var id = app + '-' + dir + '-' + resource
+			  var id = app + '-' + dir + '-' + resource;
 
         oArgs.node.highlight();
 			
@@ -185,7 +216,7 @@ C9.ide.navigator = function () {
             }
           }
 			  } else {
-				  var url = "/cloud9/apps/" + app + "/" + dir + "/" + resource
+				  var url = "/cloud9/apps/" + app + "/" + dir + "/" + resource;
 				  var callback = {
 		          success: function(oResponse) {
 		            var code = oResponse.responseText;
@@ -320,7 +351,7 @@ C9.ide.navigator = function () {
         }
       }
       return false;
-    }
+    };
     
     /*
       trigger that displays the resource level context menu.
@@ -347,12 +378,12 @@ C9.ide.navigator = function () {
       var oTarget = this.contextEventTarget; 
 
     	/*
-    	  Get the TextNode instance that that triggered the
+    	  Get the TextNode instance that triggered the
     	  display of the ContextMenu instance.
     	*/ 
     	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
     	
-    	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'controllers'], oCurrentTextNode.label)) { 
+    	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'controllers', 'partials', 'lib'], oCurrentTextNode.label)) { 
     	  // Cancel the display of the ContextMenu instance.     	 
     	  this.cancel();
     	} 
@@ -376,14 +407,14 @@ C9.ide.navigator = function () {
     }
     
     function performDeletion() { 
-      var dir = oCurrentTextNode.parent.label;
-      var resource = oCurrentTextNode.label
-      var id = C9.app.name + '-' + dir + '-' + resource;
+    	var dir = oCurrentTextNode.parent.label;
+    	var resource = oCurrentTextNode.label;
+    	var id = C9.app.name + '-' + dir + '-' + resource;
       
-      c9.deleteResource(C9.app.name, dir, resource);
+    	c9.deleteResource(C9.app.name, dir, resource);
     	
     	tree.removeNode(oCurrentTextNode); 
-      tree.draw(); 
+    	tree.draw(); 
 
       // clean-up any open tabs or allocated Editor instance
       var tabs = tabView.get('tabs');
@@ -413,9 +444,9 @@ C9.ide.navigator = function () {
         
       if (type === "img") {
         C9.app.dialog.upload.show(type);
-      } else if (type in {html:true, css:true, js:true, controllers:true}) {
+      } else if (type in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
         C9.app.dialog.resource.show(type); 
-      } else if (ctype in {html:true, css:true, js:true, controllers:true}) {
+      } else if (ctype in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
         C9.app.dialog.resource.show(ctype);
       } else if (ctype === "img") {
         C9.app.dialog.upload.show(ctype);
@@ -451,10 +482,17 @@ C9.ide.navigator = function () {
             var fileContextMenu = new YAHOO.widget.ContextMenu("c9-file-context-menu", { 
             	trigger: "c9-ide-navigator", 
             	lazyload: true, 
-            	itemdata: [ 
-            	  { text: "Rename...", onclick: { fn: renameNode }},
-            	  { text: "Delete File", onclick: { fn: deleteNode }}
-            	] 
+            	itemdata: [{ 
+            		text: "Rename...", 
+            		onclick: { 
+            			fn: renameNode 
+            		}
+            	},{ 
+            		text: "Delete File", 
+            		onclick: { 
+            			fn: deleteNode 
+            		}
+            	}] 
             });
             
             /*
@@ -463,9 +501,12 @@ C9.ide.navigator = function () {
             var dirContextMenu = new YAHOO.widget.ContextMenu("c9-dir-context-menu", { 
             	trigger: "c9-ide-navigator", 
             	lazyload: true, 
-            	itemdata: [ 
-            	  { text: "New File", onclick: { fn: addNode }}
-            	] 
+            	itemdata: [{ 
+            		text: "New File", 
+            		onclick: { 
+            			fn: addNode 
+            		}
+            	}] 
             });
             
             /*
@@ -474,23 +515,68 @@ C9.ide.navigator = function () {
             var projContextMenu = new YAHOO.widget.ContextMenu("c9-proj-context-menu", { 
             	trigger: "c9-ide-navigator", 
             	lazyload: true, 
-            	itemdata: [ 
-            	  { text: "New", onclick: { fn: addNode }},
-                { text: "Collapse All", onclick: {fn: collapseTree }}
-            	] 
+            	itemdata: [{ 
+            		text: "New", 
+            		onclick: { 
+            			fn: addNode 
+            		}
+            	},{ text: "Collapse All", 
+            		onclick: {
+            			fn: collapseTree 
+            		}
+            	}] 
             });
 
             /*
               Submenu data items for project level context menu.
             */
-            var projSubMenu = [{ 
-              id: "New",  
-            	itemdata: [  
-            	  { text: "html", onclick: { fn: addNode, obj:"html" }},
-            	  { text: "css", onclick: { fn: addNode, obj:"css" }},
-            	  { text: "javascript", onclick: { fn: addNode, obj:"js" }},
-            	  { text: "image", onclick: { fn: addNode, obj:"img" }}
-            	]
+            var projSubMenu = [{
+            	id: "New",  
+        		itemdata: [  
+    		       { 
+    		    	   text: "HTML File", 
+    		    	   onclick: { 
+    		    		   fn: addNode, 
+    		    		   obj:"html" 
+    		    		}
+    		       },{ 
+    		    	   text: "Partial HTML File", 
+    		    	   onclick: {
+    		    		   fn:addNode, 
+    		    		   obj:'partials'
+    		    	   }
+    		       },{ 
+    		    	   text: "CSS File", 
+    		    	   onclick: { 
+    		    		   fn: addNode, 
+    		    		   obj:"css" 
+    		    		}
+    		       },{ 
+    		    	   text: "Javascript File", 
+    		    	   onclick: { 
+    		    		   fn: addNode, 
+    		    		   obj:"js" 
+    		    	   }
+    		       },{ 
+    		    	   text: "Javascript Library", 
+    		    	   onclick: {
+    		    		   fn:addNode, 
+    		    		   obj:'lib'
+    		    		}
+    		       },{ 
+    		    	   text: "Javascript Controller", 
+    		    	   onclick: {
+    		    		   fn:addNode, 
+    		    		   obj:'controllers'
+    		    		}
+    		       },{ 
+    		    	   text: "Image", 
+    		    	   onclick: { 
+    		    		   fn: addNode, 
+    		    		   obj:"img" 
+    		    	   }
+    		       	}
+    		    ]
             }];
             
             /*
@@ -511,6 +597,6 @@ C9.ide.navigator = function () {
             projContextMenu.subscribe("triggerContextMenu", onTriggerProjContextMenu);
         },
         tree: function() { return tree; }
-    }
+    };
 }();
 
