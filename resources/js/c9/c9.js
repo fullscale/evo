@@ -130,7 +130,7 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                 } else {
                     thisTab = new YAHOO.widget.Tab({
                         label: name + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-                        content: '<div style="height:1500px;width:99.8%" id=\"' + id  + '\"><img src="/cloud9/' + app +'/' + dir + '/' + name + '" /></div>',
+                        content: '<div style="height:1500px;width:99.8%" id=\"' + id  + '\"><img src="/' + app +'/' + dir + '/' + name + '" /></div>',
                         active: true,
                         postData: id
                     });
