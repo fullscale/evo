@@ -60,7 +60,7 @@ public class HazelcastService {
             return;
         }
 
-        logger.info("Initializing Hazelcast");
+        logger.info("Initializing distributed in-memory data grid");
         // read default cloud9 hazelcast settings
         Config conf = new ClasspathXmlConfig("hazelcast-cloud9.xml");
 
@@ -97,7 +97,7 @@ public class HazelcastService {
         // start hazelcast
         logger.debug("starting hazelcast");
         hazelcast = Hazelcast.newHazelcastInstance(conf);
-        logger.info("Hazelcast started");
+        logger.info("Data grid is online");
 
         // get our application caches
         if (configService.getResourceCacheEnabled()) {
@@ -263,7 +263,7 @@ public class HazelcastService {
     public void shutdown() {
         logger.entry();
         if (configService.getHazelcastEnabled() && hazelcast != null) {
-            logger.info("Shutting down hazelcast");
+            logger.info("Shutting down distributed in-memory data grid");
             hazelcast.getLifecycleService().shutdown();
         }
         logger.exit();
