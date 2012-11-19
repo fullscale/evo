@@ -31,20 +31,20 @@ C9.ide.editor.save = function(tab) {
 		var id = path[2];
 		var src = Editors[idx].getSession().getValue();
 
-		var mimetype = 'text/plain'
+		var mimetype = 'text/plain';
 
-		if (dir === 'html') {
-			mimetype = 'text/html'
+		if (dir === 'html' || dir === 'partials') {
+			mimetype = 'text/html';
 		} else if (dir === 'css') {
-			mimetype = 'text/css'
-		} else if (dir === 'js') {
-			mimetype = 'application/javascript'
+			mimetype = 'text/css';
+		} else if (dir === 'js' || dir === 'lib') {
+			mimetype = 'application/javascript';
 		} else if (dir === 'img') {
-			var suffix = resource.split('.')[1]
-			mimetype = 'image/' + suffix
+			var suffix = resource.split('.')[1];
+			mimetype = 'image/' + suffix;
 		} else if (dir == 'controllers') {
-      mimetype = 'application/javascript'  
-    }
+			mimetype = 'application/javascript';
+		}
 		
     	jQuery.ajax({
       		type: "PUT",

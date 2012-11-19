@@ -210,11 +210,11 @@ C9.ide.navigator = function () {
                   Editors[id].getSession().setTabSize(4);
                   
                   /* detect and set the proper mode for the resource */
-                  if (dir === "html") {
+                  if (dir === "html" || dir === 'partials') {
                     Editors[id].getSession().setMode(new HtmlMode());
                   } else if (dir === "css") {
                     Editors[id].getSession().setMode(new CssMode());
-                  } else if (dir === "js" || dir === "controllers") {
+                  } else if (dir === "js" || dir === "controllers" || dir === 'lib') {
                     Editors[id].getSession().setMode(new JavaScriptMode());
                   } 
                   Editors[id].getSession().setValue(code);

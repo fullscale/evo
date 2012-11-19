@@ -2,7 +2,9 @@
 .icon-css{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -44px no-repeat} 
 .icon-js{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}
 .icon-controllers{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}  
-.icon-img{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -88px no-repeat} 
+.icon-img{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -88px no-repeat}
+.icon-lib{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}
+.icon-partials{display:block;height:22px;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -22px no-repeat} 
 
 table.ygtvtable{margin-bottom:0;border:0;border-collapse:collapse;width:100%}
 td.ygtvcell{border:0;padding:0}

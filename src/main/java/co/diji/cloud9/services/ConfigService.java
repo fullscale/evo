@@ -383,6 +383,24 @@ public class ConfigService {
         logger.exit();
         return rendered.toString();
     }
+    
+    /**
+     * Gets the json partials mapping as a string
+     * 
+     * @return partials mapping
+     */
+    public String getPartialsMapping() {
+        return getResourceContent("classpath:mappings/partials.json");
+    }
+    
+    /**
+     * Gets the json lib mapping as a string
+     * 
+     * @return lib mapping
+     */
+    public String getLibMapping() {
+        return getResourceContent("classpath:mappings/lib.json");
+    }
 
     /**
      * Generates the main Cloud9 settings. Settings are read from system properties or a user specified file. Some settings use

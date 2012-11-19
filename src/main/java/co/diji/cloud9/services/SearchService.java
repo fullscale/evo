@@ -92,8 +92,8 @@ public class SearchService {
 
     private static final String SYSTEM_INDEX = "sys";
     public final String APP_INDEX = "app";
-    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "img"};
-    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "controllers"};
+    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "img", "partials", "lib"};
+    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "controllers", "partials", "lib"};
 
     private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
     private Node node;
@@ -681,8 +681,10 @@ public class SearchService {
         if (!hasApp(appName)) {
 
 			putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
+			putMapping(APP_INDEX, appName + "_partials", config.getPartialsMapping());
 			putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
 			putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
+			putMapping(APP_INDEX, appName + "_lib", config.getLibMapping());
 			putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
 			putMapping(APP_INDEX, appName + "_controllers", config.getControllerMapping());
 		

@@ -74,6 +74,12 @@ C9.ide.dialog.resource = function () {
           "};\n" +
           "}";
           c9.createResource(C9.app.name, "controllers", resource, code);
+        } else if (self.isPartial) {
+        	c9.createResource(C9.app.name, "partials", resource);
+        	console.log("IDE: creating new partials resource...");
+        } else if (self.isLib) {
+        	c9.createResource(C9.app.name, "lib", resource);
+        	console.log("IDE: creating new lib resource...");
         } else {
           // create the new resource on the server
           c9.createResource(C9.app.name, this.getData().filetype[0], resource);
@@ -91,14 +97,28 @@ C9.ide.dialog.resource = function () {
         dialog.setBody(payload);
 
         if (type === null) {
-          type = 'html'
+          type = 'html';
+        }
+        
+        if (type === 'partials') {
+        	type = 'html';
+        	this.isPartial = true;
+        } else {
+        	this.isPartial = false;
         }
 
         if (type === "controllers") {
-          type = 'js'
+          type = 'js';
           this.isController = true;
         } else {
           this.isController = false;
+        }
+        
+        if (type === 'lib') {
+            type = 'js';
+            this.isLib = true;
+        } else {
+        	this.isLib = false;
         }
 
         this.ctype = type;

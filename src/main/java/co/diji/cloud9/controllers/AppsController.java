@@ -232,15 +232,15 @@ public class AppsController extends BaseController {
         String mime = "text/plain";
 
         try {
-            if ("html".equals(dir)) {
+            if ("html".equals(dir) || "partials".equals(dir)) {
                 mime = "text/html";
-                resource = validateResource(resource, dir);
+                resource = validateResource(resource, "html");
             } else if ("css".equals(dir)) {
                 mime = "text/css";
-                resource = validateResource(resource, dir);
-            } else if ("js".equals(dir)) {
+                resource = validateResource(resource, "css");
+            } else if ("js".equals(dir) || "lib".equals(dir)) {
                 mime = "application/javascript";
-                resource = validateResource(resource, dir);
+                resource = validateResource(resource, "js");
             } else if ("img".equals(dir)) {
                 int sIdx = resource.indexOf('.');
                 logger.debug("sIdx: {}", sIdx);

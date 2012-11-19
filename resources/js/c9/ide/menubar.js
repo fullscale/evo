@@ -278,6 +278,14 @@ YAHOO.util.Event.onDOMReady(function () {
                                 obj:"html"
                             }
                         },{ 
+                            text: 'Partial HTML File', 
+                            value: 'partials', 
+                            id: 'newPartial', 
+                            onclick: {
+                                fn: showResourceDialog, 
+                                obj:"partials"
+                            }
+                        },{ 
                             text: 'CSS File', 
                             value: 'css', 
                             id: 'newCss', 
@@ -292,6 +300,14 @@ YAHOO.util.Event.onDOMReady(function () {
                             onclick: {
                                 fn: showResourceDialog, 
                                 obj:"js"
+                            }
+                        },{ 
+                            text: 'Javascript Library', 
+                            value: 'lib', 
+                            id: 'newLib', 
+                            onclick: {
+                                fn: showResourceDialog, 
+                                obj:"lib"
                             }
                         },{
                             text: 'Javascript Controller',
