@@ -3,7 +3,7 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
+    <link rel="icon" type="image/png" href="/img/c9/favico.png" />
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/protovis-d3.1.js"></script>
     <script src="/js/c9/nodestats.js"></script>
@@ -43,7 +43,7 @@
             #foreach ($node in $nodes.entrySet())
               #set ($stat = $stats.get($node.key))
               <div class="overview-node-header gradient-dark">
-                <img style="margin-left:5px;" align="absmiddle" src="/images/c9/bar_chart.png">
+                <img style="margin-left:5px;" align="absmiddle" src="/img/c9/bar_chart.png">
                 <span class="node-title">$node.value.hostname&nbsp;-&nbsp;$node.value.network().primaryInterface().address()</span>
               </div>
               <div class="overview-node-body">

@@ -12,7 +12,7 @@
 .yui-skin-cloud9 .yui-navset .yui-nav .selected,.yui-skin-sam .yui-navset .yui-navset-top .yui-nav .selected{margin:0 0 -1px 0}
 
 .yui-skin-cloud9 .yui-navset .yui-nav a,.yui-skin-sam .yui-navset .yui-navset-top .yui-nav a{
-	/*background:#ff8000 url(../../../../../images/c9/ide/sprite.png) repeat-x 0 -100px; */
+	/*background:#ff8000 url(../../../../../img/c9/ide/sprite.png) repeat-x 0 -100px; */
 	background-color:#d8d8d8;
 	color:#999;
 	border-left:1px solid #ccc;
@@ -33,14 +33,14 @@
 }
 
 .yui-skin-cloud9 .yui-navset .yui-nav .selected a,.yui-skin-sam .yui-navset .yui-nav .selected a:focus,.yui-skin-sam .yui-navset .yui-nav .selected a:hover{
-	background:#d8d8d8 url(../../../../../images/c9/ide/sprite.png) repeat-x;
+	background:#d8d8d8 url(../../../../../img/c9/ide/sprite.png) repeat-x;
 	/*border:1px solid #ccc;*/
 	color:#666;
 	position:relative;
 	text-decoration:none
 }
 
-.yui-skin-cloud9 .yui-navset .yui-nav a:hover,.yui-skin-sam .yui-navset .yui-nav a:focus{background:#bfdaff url(../../../../../images/c9/ide/sprite.png) repeat-x left -1300px;outline:0}
+.yui-skin-cloud9 .yui-navset .yui-nav a:hover,.yui-skin-sam .yui-navset .yui-nav a:focus{background:#bfdaff url(../../../../../img/c9/ide/sprite.png) repeat-x left -1300px;outline:0}
 .yui-skin-cloud9 .yui-navset .yui-nav .selected a em{padding:.35em .75em}
 
 .yui-skin-sam .yui-navset .yui-nav .selected a,.yui-skin-sam .yui-navset .yui-nav .selected a em{

@@ -36,7 +36,7 @@
 .c9 .searchLogo {
     width:164px; 
     height:48px; 
-    background:url(../images/c9/C9Logo48.png) no-repeat scroll 50% 0%; 
+    background:url(../img/c9/C9Logo48.png) no-repeat scroll 50% 0%; 
     float:left;
     margin-left:10px;
 }
@@ -232,7 +232,7 @@ div#contentForm fieldset {
 em#cloud9label {
     text-indent: -26px;
     display: block;
-    background: url(../images/c9/cloud.png) left center no-repeat;
+    background: url(../img/c9/cloud.png) left center no-repeat;
     width: 28px;
     font-family: "helvetica neue", helvetica, arial, sans-serif;
     font-size: 12px;
@@ -240,11 +240,11 @@ em#cloud9label {
 }
 
 .close {
-    background: url(../images/c9/ide/tab_close12.png) right center no-repeat;
+    background: url(../img/c9/ide/tab_close12.png) right center no-repeat;
     padding-bottom:2px;
 }
 
 .modified {
-    background: url(../images/c9/ide/bullet.png) right center no-repeat;
+    background: url(../img/c9/ide/bullet.png) right center no-repeat;
     padding-bottom:2px;
 }

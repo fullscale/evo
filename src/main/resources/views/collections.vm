@@ -3,7 +3,7 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
+    <link rel="icon" type="image/png" href="/img/c9/favico.png" />
     <title>Cloud9 - Collections</title>
 
     <!-- Common CSS files -->
@@ -58,14 +58,14 @@
             <td>{%= info.size %}</td>
             <td style="text-align:right;">
                 <a href="#" class="c9-collection-delete-icon" onClick="c9.deleteCollection('{%= path %}')">
-                    <img class="removeLink" src="/images/c9/trans.png">
+                    <img class="removeLink" src="/img/c9/trans.png">
                 </a>
             </td>
         </tr>
     </script>
 
     <script id="c9-types-table" type="text/template">
-        <a href="#" id="createTypeElement" onClick="createType('{%= collection %}')"><img class="addLink" src="/images/c9/trans.png"></a>
+        <a href="#" id="createTypeElement" onClick="createType('{%= collection %}')"><img class="addLink" src="/img/c9/trans.png"></a>
         <span class="newCollection">Content Types</span>
         <a href="#" class="crumb" onClick="c9.slide(0)">/ collections /</a><span class="crumb" style="color:#ff8000;"> {%= collection %}</span>
         <br />
@@ -88,14 +88,14 @@
             </td>
             <td style="text-align:right;">
                 <a href="#" class="c9-type-delete-icon" onClick="c9.deleteType('{%= path %}')">
-                    <img class="removeLink" src="/images/c9/trans.png">
+                    <img class="removeLink" src="/img/c9/trans.png">
                 </a>
             </td>
         </tr>
     </script>
 
     <script id="c9-fields-table" type="text/template">
-        <a href="#" id="createFieldElement" onClick="createField('{%= collection %}','{%= type %}')"><img class="addLink" src="/images/c9/trans.png"></a>
+        <a href="#" id="createFieldElement" onClick="createField('{%= collection %}','{%= type %}')"><img class="addLink" src="/img/c9/trans.png"></a>
         <span class="newCollection">Content Fields</span>
         <a href="#" class="crumb" onClick="c9.slide(0)">/ collections </a><a href="#" class="crumb" onClick="c9.slide(-855)">/ {%= collection %} /</a><span class="crumb" style="color:#ff8000;"> {%= type %}</span>
         <br />
@@ -447,7 +447,7 @@
                     
                     <div style="float:left;width:855px;text-align:left;" id="collections">
                       <a href="#" id="createCollectionElement" onClick="createCollection()">
-                        <img class="addLink" src="/images/c9/trans.png">
+                        <img class="addLink" src="/img/c9/trans.png">
                       </a>
                       <span class="newCollection">Collections</span><br />
                       <table id="collectionTable">

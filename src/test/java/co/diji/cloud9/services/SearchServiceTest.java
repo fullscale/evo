@@ -265,10 +265,10 @@ public class SearchServiceTest {
         assertFalse(searchService.hasApp("js"));
 
         try {
-            searchService.createApp("images");
+            searchService.createApp("img");
             fail();
         } catch (InvalidApplicationNameException e) {}
-        assertFalse(searchService.hasApp("images"));
+        assertFalse(searchService.hasApp("img"));
 
         searchService.createApp("anotherapp");
         assertTrue(searchService.hasApp("anotherapp"));

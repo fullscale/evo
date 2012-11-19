@@ -177,7 +177,7 @@ div#footer p a {
 #applications .removeLink,
 #ctypes .removeLink,
 #resources .removeLink {
-    background-image:url('../images/c9/delete.png');
+    background-image:url('../img/c9/delete.png');
     background-position:0px -32px;
     height:16px;
     width:16px;
@@ -191,21 +191,21 @@ div#footer p a {
 #applications .addLink,
 #ctypes .addLink,
 #resources .addLink {
-    background-image:url('../images/c9/add.png');
+    background-image:url('../img/c9/add.png');
     background-position:0px -32px;
     height:16px;
     width:16px;    
 }
 
 #users .returnLink {
-    background-image:url('../images/c9/load.png');
+    background-image:url('../img/c9/load.png');
     background-position:0px -32px;
     height:16px;
     width:16px;    
 }
 
 #userTable .changePassLink {
-    background-image:url('../images/c9/key.png');
+    background-image:url('../img/c9/key.png');
     background-position:0px -32px;
     height:16px;
     width:16px;    

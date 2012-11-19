@@ -27,7 +27,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
     private static final XLogger logger = XLoggerFactory.getXLogger(ResourceHelper.class);
 
     protected static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
-            "css", "images", "js", "html"}));
+            "css", "img", "js", "html"}));
 
     protected Map<String, Script> scriptCache;
 

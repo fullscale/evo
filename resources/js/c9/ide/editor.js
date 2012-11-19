@@ -39,7 +39,7 @@ C9.ide.editor.save = function(tab) {
 			mimetype = 'text/css'
 		} else if (dir === 'js') {
 			mimetype = 'application/javascript'
-		} else if (dir === 'images') {
+		} else if (dir === 'img') {
 			var suffix = resource.split('.')[1]
 			mimetype = 'image/' + suffix
 		} else if (dir == 'controllers') {

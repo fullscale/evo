@@ -241,7 +241,7 @@ public class AppsController extends BaseController {
             } else if ("js".equals(dir)) {
                 mime = "application/javascript";
                 resource = validateResource(resource, dir);
-            } else if ("images".equals(dir)) {
+            } else if ("img".equals(dir)) {
                 int sIdx = resource.indexOf('.');
                 logger.debug("sIdx: {}", sIdx);
                 if (sIdx == -1) {

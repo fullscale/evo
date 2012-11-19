@@ -307,7 +307,7 @@ YAHOO.util.Event.onDOMReady(function () {
                     text: "Upload Image",
                     onclick: {
                         fn: showUploadDialog,
-                        obj:"images"
+                        obj:"img"
                     }
                 }],[{ 
                     text: "Save", 

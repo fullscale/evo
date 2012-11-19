@@ -34,7 +34,7 @@
 
   <div class="container">
     <div class="welcome">
-        <img src="/images/c9/C9Logo_mini.png" /><br>
+        <img src="/img/c9/C9Logo_mini.png" /><br>
         <div class="indent">
           <span class="project-name">Project (${app})</span>&nbsp;&nbsp;<a target="_blank" href="/cloud9/ide/${app}">edit</a>
           <p>This is the default project page. It contains links

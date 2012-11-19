@@ -87,7 +87,7 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                 /* temp hack -- need to create a "tabview" object (replicated from navigator.js )*/
                 var id = app + '-' + dir + '-' + name;
           
-                if (dir !== "images") {
+                if (dir !== "img") {
                     var thisTab = new YAHOO.widget.Tab({
                         label: name + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
                         content: '<div style="min-height:96%;width:99.8%;" id=\"' + id  + '\">' + code + '</div>',

@@ -39,7 +39,7 @@ public class ResourceController {
     protected ResourceHelper resourceHelper;
     
     @ResponseBody
-    @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|images|js|\\.))}")
+    @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|img|js|\\.))}")
     public void getResource(@PathVariable String app, HttpServletRequest request, HttpServletResponse response,
             HttpSession userSession) {
         logger.entry();
@@ -47,7 +47,7 @@ public class ResourceController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{app:(?!(?:css|images|js))[a-z0-9]+}/{dir}")
+    @RequestMapping(value = "/{app:(?!(?:css|img|js))[a-z0-9]+}/{dir}")
     public void getResource(@PathVariable String app, @PathVariable String dir, HttpServletRequest request,
             HttpServletResponse response, HttpSession userSession) {
         logger.entry();
@@ -55,7 +55,7 @@ public class ResourceController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{app:(?!(?:css|images|js))[a-z0-9]+}/{dir}/{resource:.*}")
+    @RequestMapping(value = "/{app:(?!(?:css|img|js))[a-z0-9]+}/{dir}/{resource:.*}")
     public void getResource(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
         logger.entry();

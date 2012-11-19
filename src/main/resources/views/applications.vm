@@ -3,7 +3,7 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/c9/favico.png" />
+    <link rel="icon" type="image/png" href="/img/c9/favico.png" />
     <title>Cloud9 - Applications</title>
 
     <!-- Common CSS files -->
@@ -51,7 +51,7 @@
             </td>
             <td style="text-align:right;">
                 <a href="#" class="c9-application-delete-icon" onClick="c9.deleteApplication('/cloud9/apps/{%= app %}')">
-                    <img class="removeLink" src="/images/c9/trans.png">
+                    <img class="removeLink" src="/img/c9/trans.png">
                 </a>
             </td>
         </tr>
@@ -191,7 +191,7 @@
               
               <div style="float:left;width:855px;text-align:left;" id="applications">
                 <a href="#" id="createApplicationElement" onClick="createApplication()">
-                  <img class="addLink" src="/images/c9/trans.png">
+                  <img class="addLink" src="/img/c9/trans.png">
                 </a>
                 <span class="newCollection">Applications</span><br />
                 <table id="applicationTable">

@@ -191,7 +191,7 @@ C9.ide.navigator = function () {
 		            var code = oResponse.responseText;
 		            var thisTab; 
 
-		            if (dir !== "images") {
+		            if (dir !== "img") {
 						      thisTab = new YAHOO.widget.Tab({
                     label: resource + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 				    		    content: '<div style="min-height:96%;width:99.8%" id=\"' + id  + '\"></div>',
@@ -352,7 +352,7 @@ C9.ide.navigator = function () {
     	*/ 
     	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
     	
-    	if (!oCurrentTextNode || !contains(['css', 'html', 'images', 'js', 'controllers'], oCurrentTextNode.label)) { 
+    	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'controllers'], oCurrentTextNode.label)) { 
     	  // Cancel the display of the ContextMenu instance.     	 
     	  this.cancel();
     	} 
@@ -411,13 +411,13 @@ C9.ide.navigator = function () {
     function addNode(type, args, ctype) {
       var type = oCurrentTextNode.label;
         
-      if (type === "images") {
+      if (type === "img") {
         C9.app.dialog.upload.show(type);
       } else if (type in {html:true, css:true, js:true, controllers:true}) {
         C9.app.dialog.resource.show(type); 
       } else if (ctype in {html:true, css:true, js:true, controllers:true}) {
         C9.app.dialog.resource.show(ctype);
-      } else if (ctype === "images") {
+      } else if (ctype === "img") {
         C9.app.dialog.upload.show(ctype);
       }
     }
@@ -489,7 +489,7 @@ C9.ide.navigator = function () {
             	  { text: "html", onclick: { fn: addNode, obj:"html" }},
             	  { text: "css", onclick: { fn: addNode, obj:"css" }},
             	  { text: "javascript", onclick: { fn: addNode, obj:"js" }},
-            	  { text: "image", onclick: { fn: addNode, obj:"image" }}
+            	  { text: "image", onclick: { fn: addNode, obj:"img" }}
             	]
             }];
             

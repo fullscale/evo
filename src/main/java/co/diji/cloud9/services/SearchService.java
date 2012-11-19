@@ -92,8 +92,8 @@ public class SearchService {
 
     private static final String SYSTEM_INDEX = "sys";
     public final String APP_INDEX = "app";
-    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "images"};
-    private static final String[] VALID_TYPES = {"conf", "html", "css", "images", "js", "controllers"};
+    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "img"};
+    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "controllers"};
 
     private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
     private Node node;
@@ -683,7 +683,7 @@ public class SearchService {
 			putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
 			putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
 			putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
-			putMapping(APP_INDEX, appName + "_images", config.getImagesMapping());
+			putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
 			putMapping(APP_INDEX, appName + "_controllers", config.getControllerMapping());
 		
 	        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
@@ -1094,14 +1094,14 @@ public class SearchService {
                     indexAppDoc(app, "html", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
                 } else if (partType.equals("css")) {
                     indexAppDoc(app, "css", partName, IOUtils.toString(zip, "UTF-8"), "text/css");
-                } else if (partType.equals("images")) {
+                } else if (partType.equals("img")) {
                     int sIdx = partName.indexOf('.');
                     if (sIdx == -1) {
                         logger.warn("Image without extension: {}", partName);
                         throw new Cloud9Exception("Image without extension: " + partName);
                     }
                     String suffix = partName.substring(sIdx + 1, partName.length());
-                    indexAppDoc(app, "images", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
+                    indexAppDoc(app, "img", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
                 } else if (partType.equals("controllers")) {
@@ -1166,7 +1166,7 @@ public class SearchService {
                 logger.debug("resourcePath: {}", resourcePath);
                 zip.putNextEntry(new ZipEntry(resourcePath));
                 String code = (String) fields.get("code");
-                if (contentType.equals("images")) {
+                if (contentType.equals("img")) {
                     logger.debug("decoding base64");
                     zip.write(Base64.decodeBase64(code));
                 } else {
@@ -1229,7 +1229,6 @@ public class SearchService {
 
     public SearchResponse matchAll(String index, String type, String[] fields) {
     	String[] types = {type};
-    	logger.info("matchALL type... {}", type);
     	return matchAll(index, types, fields);
     }
     
