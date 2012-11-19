@@ -1056,8 +1056,14 @@ public class SearchService {
 
                 logger.debug("number of parts: {}", pathParts.length);
                 if (pathParts.length != 3) {
-                    logger.warn("Invalid resource: {}", entry.getName());
-                    throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                	if (pathParts.length == 2) {
+                		// the html dir isn't specified in most cases
+                		pathParts[2] = pathParts[1];
+                		pathParts[1] = "html";
+                	} else {
+                		logger.warn("Invalid resource: {}", entry.getName());
+                		throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                	}
                 }
 
                 String partApp = pathParts[0];
@@ -1164,7 +1170,12 @@ public class SearchService {
             for (SearchHit hit : response.hits().hits()) {
                 Map<String, Object> fields = hit.sourceAsMap();
                 String contentType = hit.type().split("_")[1];
-                String resourcePath = app + sep + contentType + sep + hit.id();
+                String resourcePath = "";
+                if (contentType.equals("html")) {
+                	resourcePath = app + sep + hit.id();
+                } else {
+                	resourcePath = app + sep + contentType + sep + hit.id();
+                }
                 logger.debug("resourcePath: {}", resourcePath);
                 zip.putNextEntry(new ZipEntry(resourcePath));
                 String code = (String) fields.get("code");
