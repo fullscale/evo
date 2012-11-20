@@ -8,8 +8,6 @@
  * @module ContentTree
  * @requires dom, event, layout
  */
-
-
 C9.ide.navigator = function () {
         
     var tree = "";
@@ -20,14 +18,8 @@ C9.ide.navigator = function () {
     };
 
     YAHOO.extend(DDTreeNode, YAHOO.util.DDProxy, {
-        /* don't actually move anything */
-        endDrag: function(e) { },
-
-        /* this will trigger the component creation 
-        onDragDrop: function(e, id) {
-            var xcoord = YAHOO.util.Event.getPageX(e) - 200;
-            var ycoord = YAHOO.util.Event.getPageY(e) - 70;
-        }*/
+        endDrag: function(e) {},
+        onDragDrop: function(e, id) {}
     });
 
     function changeIconMode() {
@@ -56,7 +48,7 @@ C9.ide.navigator = function () {
 					    tempNode.setDynamicLoad(loadResources, currentIconMode);
                 	}
                 }
-                //oResponse.argument.fnLoadComplete();
+
                 var loadHtml = {
                     	success: function(oResponse) {
                             var x = YAHOO.lang.JSON.parse(oResponse.responseText);
@@ -276,8 +268,8 @@ C9.ide.navigator = function () {
 						}
 							    
 			            /* add the close handler */
-			            YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
-			        },
+						YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
+					},
 			        failure: function(oResponse) {
 			        	alert("Unable to retrieve document.");
 			        },
@@ -343,20 +335,20 @@ C9.ide.navigator = function () {
     
     var oCurrentTextNode = null;
     var contains = function(a, obj) {
-      var i = a.length;
-      while (i--) {
-        if (a[i] === obj) {
-          return true;
-        }
-      }
-      return false;
+    	var i = a.length;
+    	while (i--) {
+    		if (a[i] === obj) {
+    			return true;
+    		}
+    	}
+    	return false;
     };
     
     /*
-      trigger that displays the resource level context menu.
+     trigger that displays the resource level context menu.
     */
     function onTriggerFileContextMenu(p_oEvent) { 
-      var oTarget = this.contextEventTarget; 
+    	var oTarget = this.contextEventTarget; 
 
     	/*
     	  Get the TextNode instance that that triggered the
@@ -365,8 +357,8 @@ C9.ide.navigator = function () {
     	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
     	
     	if (!oCurrentTextNode || !oCurrentTextNode.isLeaf) { 
-    	  // Cancel the display of the ContextMenu instance.     	 
-    	  this.cancel();
+    		// Cancel the display of the ContextMenu instance.     	 
+    		this.cancel();
     	} 
     }
     
@@ -374,7 +366,7 @@ C9.ide.navigator = function () {
       trigger that displays the directory level context menu.
     */
     function onTriggerDirContextMenu(p_oEvent) { 
-      var oTarget = this.contextEventTarget; 
+    	var oTarget = this.contextEventTarget; 
 
     	/*
     	  Get the TextNode instance that triggered the
@@ -383,8 +375,8 @@ C9.ide.navigator = function () {
     	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
     	
     	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'controllers', 'partials', 'lib'], oCurrentTextNode.label)) { 
-    	  // Cancel the display of the ContextMenu instance.     	 
-    	  this.cancel();
+    		// Cancel the display of the ContextMenu instance.     	 
+    		this.cancel();
     	} 
     }
     
@@ -392,7 +384,7 @@ C9.ide.navigator = function () {
       trigger that displays the project level context menu.
     */
     function onTriggerProjContextMenu(p_oEvent) { 
-      var oTarget = this.contextEventTarget; 
+    	var oTarget = this.contextEventTarget; 
     	/*
     	  Get the TextNode instance that that triggered the
     	  display of the ContextMenu instance.
@@ -415,50 +407,56 @@ C9.ide.navigator = function () {
     	tree.removeNode(oCurrentTextNode); 
     	tree.draw(); 
 
-      // clean-up any open tabs or allocated Editor instance
-      var tabs = tabView.get('tabs');
-      var i = tabs.length;
+    	// clean-up any open tabs or allocated Editor instance
+    	var tabs = tabView.get('tabs');
+    	var i = tabs.length;
 
-      while (i--) {
-        if (tabs[i].get('postData') === id) {
-          tabView.removeTab(tabs[i]);
-          delete Editors[id];
-          break;
-        }
-      }
-      C9.app.dialog.confirm.hide();
+    	while (i--) {
+    		if (tabs[i].get('postData') === id) {
+    			tabView.removeTab(tabs[i]);
+    			delete Editors[id];
+    			break;
+    		}
+    	}
+    	C9.app.dialog.confirm.hide();
     }
     
     function deleteNode() { 
-      var deleteNodeCallbacks = [
-          { text: "Yes", handler: performDeletion, isDefault: true },
-          { text: "No", handler: function() { C9.app.dialog.confirm.hide(); }}
-      ];
+      var deleteNodeCallbacks = [{ 
+    	  text: "Yes", 
+    	  handler: performDeletion, 
+    	  isDefault: true 
+      },{ 
+    	  text: "No", 
+    	  handler: function() { 
+    		  C9.app.dialog.confirm.hide(); 
+    	  }
+      }];
       C9.app.dialog.confirm.cfg.setProperty("buttons", deleteNodeCallbacks);
       C9.app.dialog.confirm.show();
     }
     
     function addNode(type, args, ctype) {
-      var type = oCurrentTextNode.label;
+    	var type = oCurrentTextNode.label;
         
-      if (type === "img") {
-        C9.app.dialog.upload.show(type);
-      } else if (type in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
-        C9.app.dialog.resource.show(type); 
-      } else if (ctype in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
-        C9.app.dialog.resource.show(ctype);
-      } else if (ctype === "img") {
-        C9.app.dialog.upload.show(ctype);
-      }
+    	if (type === "img") {
+    		C9.app.dialog.upload.show(type);
+    	} else if (type in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
+    		C9.app.dialog.resource.show(type); 
+    	} else if (ctype in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
+    		C9.app.dialog.resource.show(ctype);
+    	} else if (ctype === "img") {
+    		C9.app.dialog.upload.show(ctype);
+    	}
     }
 
     function renameNode() {
-      // shows an inline editor
-      oCurrentTextNode.editNode();
+    	// shows an inline editor
+    	oCurrentTextNode.editNode();
     }
 
     function collapseTree() {
-      tree.collapseAll();
+    	tree.collapseAll();
     }
 
     return {
