@@ -26,8 +26,6 @@ C9.ide.editor.save = function(tab) {
 		//var textArea = el.getElementsByTagName('div')[0];
 		//var idx = textArea.getAttribute('id');
 		var path = idx.split(':');
-		
-		//console.log(path);
 	  
 		var app = path[0];
 		var dir = path[1];
@@ -48,7 +46,7 @@ C9.ide.editor.save = function(tab) {
 		} else if (dir == 'server-side') {
 			mimetype = 'application/javascript';
 		}
-		
+
     	jQuery.ajax({
       		type: "PUT",
       		url: '/cloud9/apps/' + app + '/' + dir + '/' + id,

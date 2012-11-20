@@ -87,7 +87,7 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                 node.expand()*/
           
                 /* temp hack -- need to create a "tabview" object (replicated from navigator.js )*/
-                var id = app + '-' + dir + '-' + name;
+                var id = app + ':' + dir + ':' + name;
           
                 if (dir !== "img") {
                     var thisTab = new YAHOO.widget.Tab({
