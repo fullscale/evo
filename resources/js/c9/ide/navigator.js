@@ -135,13 +135,17 @@ C9.ide.navigator = function () {
 	    tree.draw();
 
 	    /* editorSaveEvent is fired when user presses enter on inline editor. This 
-	     * function hanldes persisting that change on the backend.
+	     * function handles persisting that change on the back-end.
 	     */
 	    tree.subscribe("editorSaveEvent", function(oArgs) {
 	    	var newName = oArgs.newValue;
 	    	var oldName = oArgs.oldValue;
 	    	var appName = oArgs.node.parent.appName;
 	    	var dirName = oArgs.node.parent.label;
+	    	
+	    	if (dirName === appName) {
+	    		dirName = 'html';
+	    	}
 	    	c9.renameResource(appName, dirName, oldName, newName);
 
 	    	var id = appName + '-' + dirName + '-' + oldName;
@@ -452,6 +456,7 @@ C9.ide.navigator = function () {
 
     function renameNode() {
     	// shows an inline editor
+    	// callback is tree.subscribe("editorSaveEvent", function(oArgs)...
     	oCurrentTextNode.editNode();
     }
 
