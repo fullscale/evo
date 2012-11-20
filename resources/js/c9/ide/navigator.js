@@ -52,6 +52,7 @@ C9.ide.navigator = function () {
                 var loadHtml = {
                     	success: function(oResponse) {
                             var x = YAHOO.lang.JSON.parse(oResponse.responseText);
+                            x.sort();
                             for (var i = 0; i < x.length; i++) {
                                 var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
                                 tempNode.label = x[i];
@@ -94,6 +95,7 @@ C9.ide.navigator = function () {
         var callback = {
             success: function(oResponse) {
                 var x = YAHOO.lang.JSON.parse(oResponse.responseText);
+                x.sort();
                 for (var i = 0; i < x.length; i++) {
                     var tempNode = new YAHOO.widget.TextNode(x[i], node, false);
                     tempNode.label = x[i];
