@@ -1,0 +1,16 @@
+'use strict';
+
+/* Declare app level module which depends on filters, and services */
+angular.module('${app}', ['${app}.controllers', '${app}.filters', '${app}.services', '${app}.directives']).
+    config(['$routeProvider', function($routeProvider) {
+        $routeProvider
+            .when('/search', {
+                templateUrl: '/test/partials/search.html', 
+            })
+            .when('/results', {
+                templateUrl: '/test/partials/results.html', 
+            })
+            .otherwise({
+                redirectTo: '/search'
+            });
+  }]);

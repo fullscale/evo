@@ -1,0 +1,20 @@
+'use strict';
+
+angular.module('${app}.controllers', [])
+    .controller('SearchCtrl', function($scope, $location, ejs) {
+        
+        var request = ejs.Request()
+            .collections("twitter")
+            .types("tweet");
+            
+        $scope.queryTerm;
+        
+        $scope.search = function() {
+            $scope.results = request
+                .query(ejs.QueryString($scope.queryTerm))
+                .get();
+                
+            $location.path("/results");
+        };
+        
+    });

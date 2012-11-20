@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -277,48 +278,12 @@ public class ConfigService {
     }
 
     /**
-     * Gets the rendered velocity html template
-     * 
-     * @return the velocity template
-     */
-    public String getHtmlTemplate(String app) {
-        logger.entry(app);
-        VelocityContext context = new VelocityContext();
-        context.put("app", app);
-
-        StringWriter rendered = new StringWriter();
-        String tmpl = getResourceContent("classpath:templates/html.vm");
-
-        Velocity.evaluate(context, rendered, "html", tmpl);
-        logger.exit();
-        return rendered.toString();
-    }
-
-    /**
      * Gets the json css mapping as a string
      * 
      * @return css mapping
      */
     public String getCssMapping() {
         return getResourceContent("classpath:mappings/css.json");
-    }
-
-    /**
-     * Gets the rendered velocity css template
-     * 
-     * @return the velocity template
-     */
-    public String getCssTemplate(String app) {
-        logger.entry(app);
-        VelocityContext context = new VelocityContext();
-        context.put("app", app);
-
-        StringWriter rendered = new StringWriter();
-        String tmpl = getResourceContent("classpath:templates/css.vm");
-
-        Velocity.evaluate(context, rendered, "css", tmpl);
-        logger.exit();
-        return rendered.toString();
     }
 
     /**
@@ -329,25 +294,61 @@ public class ConfigService {
     public String getJsMapping() {
         return getResourceContent("classpath:mappings/js.json");
     }
-
+    
     /**
      * Gets the rendered velocity js template
      * 
      * @return the velocity template
      */
-    public String getJsTemplate(String app) {
+    public String getAngularTemplate(String app, String template) {
         logger.entry(app);
         VelocityContext context = new VelocityContext();
         context.put("app", app);
 
         StringWriter rendered = new StringWriter();
-        String tmpl = getResourceContent("classpath:templates/js.vm");
+        String tmpl = getResourceContent("classpath:templates/" + template + ".vm");
 
-        Velocity.evaluate(context, rendered, "js", tmpl);
+        Velocity.evaluate(context, rendered, template, tmpl);
         logger.exit();
         return rendered.toString();
     }
 
+    /**
+     * Gets the project resource as a string
+     * 
+     * @return contents of file/resource as a String
+     */
+    public String getAngularResource(String path) {
+        return getResourceContent("file:resources/" + path);
+    }
+    
+    /**
+     * Returns the image as a base64 encoded String
+     * 
+     * @param resource the resource to get the contents for
+     * @return the content of the resource as a string
+     */
+    public String getBase64Image(String resource) {
+        logger.entry(resource);
+        String content = null;
+        InputStream in = null;
+
+        try {
+            in = getResourceInputStream("file:resources/" + resource);
+            content = Base64.encodeBase64String(IOUtils.toByteArray(in));
+        } catch (Exception e) {
+            logger.warn("Unable to load resource: {}", resource);
+            logger.debug("exception", e);
+        } finally {
+            if (in != null) {
+                IOUtils.closeQuietly(in);
+            }
+        }
+
+        logger.exit();
+        return content;
+    }
+    
     /**
      * Gets the json images mapping as a string
      * 
@@ -370,7 +371,7 @@ public class ConfigService {
      * Gets the rendered velocity server template
      * 
      * @return the velocity template
-     */
+     *
     public String getServerSideTemplate(String app) {
         logger.entry(app);
         VelocityContext context = new VelocityContext();
@@ -382,7 +383,7 @@ public class ConfigService {
         Velocity.evaluate(context, rendered, "server-side", tmpl);
         logger.exit();
         return rendered.toString();
-    }
+    }*/
     
     /**
      * Gets the json partials mapping as a string

@@ -680,6 +680,7 @@ public class SearchService {
         
         if (!hasApp(appName)) {
 
+        	/* setup application mappings */
 			putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
 			putMapping(APP_INDEX, appName + "_partials", config.getPartialsMapping());
 			putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
@@ -687,11 +688,42 @@ public class SearchService {
 			putMapping(APP_INDEX, appName + "_lib", config.getLibMapping());
 			putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
 			putMapping(APP_INDEX, appName + "_server-side", config.getServerSideMapping());
-		
-	        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
-	        indexAppDoc(appName, "css", "style.css", config.getCssTemplate(appName), "text/css");
-	        indexAppDoc(appName, "js", appName + ".js", config.getJsTemplate(appName), "application/javascript");
-	        indexAppDoc(appName, "server-side", "examples.js", config.getServerSideTemplate(appName), "application/javascript");
+			
+			/* load the HTML application boilerplate */
+	        indexAppDoc(appName, "html", "index.html", config.getAngularTemplate(appName, "index.html"), "text/html");
+	        indexAppDoc(appName, "partials", "search.html", config.getAngularTemplate(appName, "partial1.html"), "text/html");
+	        indexAppDoc(appName, "partials", "results.html", config.getAngularTemplate(appName, "partial2.html"), "text/html");
+	        
+	        /* load the JavaScript application boilerplate */
+	        indexAppDoc(appName, "js", "app.js", config.getAngularTemplate(appName, "app.js"), "application/javascript");
+	        indexAppDoc(appName, "js", "controllers.js", config.getAngularTemplate(appName, "controllers.js"), "application/javascript");
+	        indexAppDoc(appName, "js", "services.js", config.getAngularTemplate(appName, "services.js"), "application/javascript");
+	        indexAppDoc(appName, "js", "directives.js", config.getAngularTemplate(appName, "directives.js"), "application/javascript");
+	        indexAppDoc(appName, "js", "filters.js", config.getAngularTemplate(appName, "filters.js"), "application/javascript");
+	        
+	        /* load the JavaScript libraries/dependencies */
+	        indexAppDoc(appName, "lib", "json2.js", config.getAngularResource("js/json2.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "jquery-1.8.0.min.js", config.getAngularResource("js/jquery-1.8.0.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "modernizr-2.6.1.min.js", config.getAngularResource("js/modernizr-2.6.1.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "underscore.min.js", config.getAngularResource("js/underscore.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "bootstrap.min.js", config.getAngularResource("js/bootstrap.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "angular.min.js", config.getAngularResource("js/angular.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "elastic.min.js", config.getAngularResource("js/elastic.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "elastic-jquery-client.min.js", config.getAngularResource("js/elastic-jquery-client.min.js"), "application/javascript");
+	        
+	        /* load the CSS application boilerplate */
+	        indexAppDoc(appName, "css", appName+".css", config.getAngularTemplate(appName, "project.css"), "text/css");
+	        indexAppDoc(appName, "css", "bootstrap.min.css", config.getAngularResource("css/bootstrap.min.css"), "text/css");
+	        indexAppDoc(appName, "css", "bootstrap-responsive.min.css", config.getAngularResource("css/bootstrap-responsive.min.css"), "text/css");
+	        indexAppDoc(appName, "css", "normalize.min.css", config.getAngularResource("css/normalize.min.css"), "text/css");
+	        indexAppDoc(appName, "css", "main.min.css", config.getAngularResource("css/main.min.css"), "text/css");
+	        
+	        /* load the SSJS example boilerplate */
+	        indexAppDoc(appName, "server-side", "examples.js", config.getAngularTemplate(appName, "examples.js"), "application/javascript");
+	        
+	        /* load application images */
+	        indexAppDoc(appName, "img", "glyphicons-halflings.png", config.getBase64Image("img/glyphicons-halflings.png"), "image/png");
+	        indexAppDoc(appName, "img", "glyphicons-halflings-white.png", config.getBase64Image("img/glyphicons-halflings-white.png"), "image/png");
 
         } else {
         	throw new ApplicationExistsException("Application already exists");

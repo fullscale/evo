@@ -1,0 +1,6 @@
+<div class="row-fluid" style="margin-top:15%">
+    <div class="input-append">
+        <input ng-model="$parent.queryTerm" class="span3 offset4" type="text" placeholder="Search">
+        <button ng-click="search()" class="btn" type="button">Search</button>
+    </div>
+</div>
