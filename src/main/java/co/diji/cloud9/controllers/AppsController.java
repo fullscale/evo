@@ -256,7 +256,7 @@ public class AppsController extends BaseController {
                 }
 
                 mime = "image/" + suffix;
-            } else if ("controllers".equals(dir)) {
+            } else if ("server-side".equals(dir)) {
                 mime = "application/javascript";
             }
 

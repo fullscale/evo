@@ -21,11 +21,7 @@ YAHOO.util.Event.onDOMReady(function () {
     var getCurrentEditor = function() {
         var idx = tabView.get('activeIndex');
         if (idx !== null) {
-            var tab = tabView.getTab(idx);
-            var el = tab.get('contentEl');
-            var textArea = el.getElementsByTagName('div')[0];
-            var idx = textArea.getAttribute('id');
-            return Editors[idx];
+            return Editors[tabView.getTab(idx).get('postData')];
         } else {
             return null;
         }
@@ -310,12 +306,12 @@ YAHOO.util.Event.onDOMReady(function () {
                                 obj:"lib"
                             }
                         },{
-                            text: 'Javascript Controller',
-                            value: 'controllers',
-                            id: 'newController',
+                            text: 'Server-Side Javascript File',
+                            value: 'server-side',
+                            id: 'newServer',
                             onclick: {
                                 fn: showResourceDialog,
-                                obj:"controllers"
+                                obj:"server-side"
                             }
                         }]
                     }

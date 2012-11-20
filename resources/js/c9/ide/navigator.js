@@ -196,7 +196,7 @@ C9.ide.navigator = function () {
 				dir = 'html';
 			}
 			var resource = oArgs.node.label;
-			var id = app + '-' + dir + '-' + resource;
+			var id = app + ':' + dir + ':' + resource;
 
 			oArgs.node.highlight();
 			
@@ -242,7 +242,7 @@ C9.ide.navigator = function () {
 	  							Editors[id].getSession().setMode(new HtmlMode());
 	  						} else if (dir === "css") {
 	  							Editors[id].getSession().setMode(new CssMode());
-	  						} else if (dir === "js" || dir === "controllers" || dir === 'lib') {
+	  						} else if (dir === "js" || dir === "server-side" || dir === 'lib') {
 	  							Editors[id].getSession().setMode(new JavaScriptMode());
 	  						} 
 	  						Editors[id].getSession().setValue(code);
@@ -380,7 +380,7 @@ C9.ide.navigator = function () {
     	*/ 
     	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
     	
-    	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'controllers', 'partials', 'lib'], oCurrentTextNode.label)) { 
+    	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'server-side', 'partials', 'lib'], oCurrentTextNode.label)) { 
     		// Cancel the display of the ContextMenu instance.     	 
     		this.cancel();
     	} 
@@ -447,9 +447,9 @@ C9.ide.navigator = function () {
         
     	if (type === "img") {
     		C9.app.dialog.upload.show(type);
-    	} else if (type in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
+    	} else if (type in {html:true, css:true, js:true, 'server-side':true, partials:true, lib:true}) {
     		C9.app.dialog.resource.show(type); 
-    	} else if (ctype in {html:true, css:true, js:true, controllers:true, partials:true, lib:true}) {
+    	} else if (ctype in {html:true, css:true, js:true, 'server-side':true, partials:true, lib:true}) {
     		C9.app.dialog.resource.show(ctype);
     	} else if (ctype === "img") {
     		C9.app.dialog.upload.show(ctype);
@@ -568,10 +568,10 @@ C9.ide.navigator = function () {
     		    		   obj:'lib'
     		    		}
     		       },{ 
-    		    	   text: "Javascript Controller", 
+    		    	   text: "Server-Side Javascript File", 
     		    	   onclick: {
     		    		   fn:addNode, 
-    		    		   obj:'controllers'
+    		    		   obj:'server-side'
     		    		}
     		       },{ 
     		    	   text: "Image", 

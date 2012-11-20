@@ -21,10 +21,13 @@ C9.ide.editor.save = function(tab) {
 
 	if (idx !== null) {
 		var tab = tabView.getTab(idx);
-		var el = tab.get('contentEl');
-		var textArea = el.getElementsByTagName('div')[0];
-		var idx = textArea.getAttribute('id');
-		var path = idx.split('-');
+		var idx = tab.get('postData');
+		//var el = tab.get('contentEl');
+		//var textArea = el.getElementsByTagName('div')[0];
+		//var idx = textArea.getAttribute('id');
+		var path = idx.split(':');
+		
+		//console.log(path);
 	  
 		var app = path[0];
 		var dir = path[1];
@@ -42,7 +45,7 @@ C9.ide.editor.save = function(tab) {
 		} else if (dir === 'img') {
 			var suffix = resource.split('.')[1];
 			mimetype = 'image/' + suffix;
-		} else if (dir == 'controllers') {
+		} else if (dir == 'server-side') {
 			mimetype = 'application/javascript';
 		}
 		

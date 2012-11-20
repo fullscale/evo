@@ -113,7 +113,7 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                         Editors[id].getSession().setMode(new HtmlMode());
                     } else if (dir === "css") {
                         Editors[id].getSession().setMode(new CssMode());
-                    } else if (dir === "js" || dir === "controllers") {
+                    } else if (dir === "js" || dir === 'server-side') {
                         Editors[id].getSession().setMode(new JavaScriptMode());
                     }
 

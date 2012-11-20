@@ -1,5 +1,5 @@
 {
-    "controller": {
+    "server-side": {
         "_timestamp": {
             "enabled": true,
             "store": true

@@ -93,7 +93,7 @@ public class SearchService {
     private static final String SYSTEM_INDEX = "sys";
     public final String APP_INDEX = "app";
     private static final String[] INVALID_INDEX_NAMES = {"css", "js", "img", "partials", "lib"};
-    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "controllers", "partials", "lib"};
+    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "server-side", "partials", "lib"};
 
     private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
     private Node node;
@@ -686,12 +686,12 @@ public class SearchService {
 			putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
 			putMapping(APP_INDEX, appName + "_lib", config.getLibMapping());
 			putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
-			putMapping(APP_INDEX, appName + "_controllers", config.getControllerMapping());
+			putMapping(APP_INDEX, appName + "_server-side", config.getServerSideMapping());
 		
 	        indexAppDoc(appName, "html", "index.html", config.getHtmlTemplate(appName), "text/html");
 	        indexAppDoc(appName, "css", "style.css", config.getCssTemplate(appName), "text/css");
 	        indexAppDoc(appName, "js", appName + ".js", config.getJsTemplate(appName), "application/javascript");
-	        indexAppDoc(appName, "controllers", "examples.js", config.getControllerTemplate(appName), "application/javascript");
+	        indexAppDoc(appName, "server-side", "examples.js", config.getServerSideTemplate(appName), "application/javascript");
 
         } else {
         	throw new ApplicationExistsException("Application already exists");
@@ -1112,8 +1112,8 @@ public class SearchService {
                     indexAppDoc(app, "img", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
-                } else if (partType.equals("controllers")) {
-                    indexAppDoc(app, "controllers", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
+                } else if (partType.equals("server")) {
+                    indexAppDoc(app, "server-side", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
                 } else {
                     logger.warn("Unknown resource type: {}", partType);
                     continue;

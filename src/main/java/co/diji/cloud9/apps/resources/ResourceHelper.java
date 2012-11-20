@@ -117,7 +117,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js
             logger.debug("found javascript controller, using controllers/{}.js", dir);
             resource = dir + ".js";
-            dir = "controllers";
+            dir = "server-side";
         }
 
         // see if the resource is cached
