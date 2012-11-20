@@ -125,170 +125,169 @@ C9.ide.navigator = function () {
     }
 
     function buildTree(appName) {
-      /* create a new tree: */
-      tree = new YAHOO.widget.TreeView("c9-ide-navigator");
+    	/* create a new tree: */
+    	tree = new YAHOO.widget.TreeView("c9-ide-navigator");
 
-      /* set tree expand/collapse animation */
-      tree.setExpandAnim(YAHOO.widget.TVAnim.FADE_IN);
-      tree.setCollapseAnim(YAHOO.widget.TVAnim.FADE_OUT);
+    	/* set tree expand/collapse animation */
+    	tree.setExpandAnim(YAHOO.widget.TVAnim.FADE_IN);
+    	tree.setCollapseAnim(YAHOO.widget.TVAnim.FADE_OUT);
            
-      /* get root node for tree: */
-	    var root = new YAHOO.widget.TextNode(appName, tree.getRoot(), false);
+    	/* get root node for tree: */
+    	var root = new YAHOO.widget.TextNode(appName, tree.getRoot(), false);
 	    root.appName = appName;
 	    root.setDynamicLoad(loadContentTypes, currentIconMode);
            
-      /* render tree with these toplevel nodes; all descendants of these node
-      * will be generated as needed by the dynamoader.
-      */
-      tree.draw();
+	    /* render tree with these toplevel nodes; all descendants of these node
+	     * will be generated as needed by the dynamoader.
+	     */
+	    tree.draw();
 
-      /* editorSaveEvent is fired when user presses enter on inline editor. This 
-       * function hanldes persisting that change on the backend.
-       */
-      tree.subscribe("editorSaveEvent", function(oArgs){
-        var newName = oArgs.newValue;
-        var oldName = oArgs.oldValue;
-        var appName = oArgs.node.parent.appName;
-        var dirName = oArgs.node.parent.label;
-        c9.renameResource(appName, dirName, oldName, newName);
+	    /* editorSaveEvent is fired when user presses enter on inline editor. This 
+	     * function hanldes persisting that change on the backend.
+	     */
+	    tree.subscribe("editorSaveEvent", function(oArgs) {
+	    	var newName = oArgs.newValue;
+	    	var oldName = oArgs.oldValue;
+	    	var appName = oArgs.node.parent.appName;
+	    	var dirName = oArgs.node.parent.label;
+	    	c9.renameResource(appName, dirName, oldName, newName);
 
-        var id = appName + '-' + dirName + '-' + oldName;
-        var newId = appName + '-' + dirName + '-' + newName;
+	    	var id = appName + '-' + dirName + '-' + oldName;
+	    	var newId = appName + '-' + dirName + '-' + newName;
 
-        /* if this file is tied to an open editor then we need to
-         * also rename the associated tab name and id */
-        if (Editors[id]) {
-          var tabs = tabView.get('tabs');
-          var i = tabs.length;
+	    	/* if this file is tied to an open editor then we need to
+	    	 * also rename the associated tab name and id */
+	    	if (Editors[id]) {
+	    		var tabs = tabView.get('tabs');
+	    		var i = tabs.length;
 
-          while (i--) {
-            if (tabs[i].get('postData') === id) {
-              var thisTab = tabs[i];
-              // This file is currently open in a tab
-              thisTab.set('label', newName + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
-              thisTab.set('postData', newId);
+	    		while (i--) {
+	    			if (tabs[i].get('postData') === id) {
+	    				var thisTab = tabs[i];
+	    				// This file is currently open in a tab
+	    				thisTab.set('label', newName + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+	    				thisTab.set('postData', newId);
 
-              var el = thisTab.get('contentEl');
-              var textArea = el.getElementsByTagName('div')[0];
+	    				var el = thisTab.get('contentEl');
+	    				var textArea = el.getElementsByTagName('div')[0];
 
-              /* if this tab had an editor (may have been an image) */
-              if (typeof textArea !== "undefined") {
-                textArea.setAttribute('id', newId);
-              }
+	    				/* if this tab had an editor (may have been an image) */
+	    				if (typeof textArea !== "undefined") {
+	    					textArea.setAttribute('id', newId);
+	    				}
 
-              Editors[newId] = Editors[id];
-              delete Editors[id];
+	    				Editors[newId] = Editors[id];
+	    				delete Editors[id];
 
-              // rewire the close event based on the new id
-              YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
+	    				// rewire the close event based on the new id
+	    				YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
 
-              break;
-            }
-          }
-        }
+	    				break;
+	    			}
+	    		}
+	    	}
+	    });
 
-      });
-
-      tree.singleNodeHighlight = true;
+	    tree.singleNodeHighlight = true;
 
 	    /* creates a new tab for this resource */
-      tree.subscribe("clickEvent", function(oArgs) { 
-			  var app = oArgs.node.parent.appName;
-			  var dir = oArgs.node.parent.label;
-			  if (app === dir) {
-				  dir = 'html';
-			  }
-			  var resource = oArgs.node.label;
-			  var id = app + '-' + dir + '-' + resource;
+	    tree.subscribe("clickEvent", function(oArgs) { 
+	    	var app = oArgs.node.parent.appName;
+			var dir = oArgs.node.parent.label;
+			if (app === dir) {
+				dir = 'html';
+			}
+			var resource = oArgs.node.label;
+			var id = app + '-' + dir + '-' + resource;
 
-        oArgs.node.highlight();
+			oArgs.node.highlight();
 			
-			  if (Editors[id] || oArgs.node.isLeaf == false) {
-				  /* tab is already open, need to set as active tab */
-          var tabs = tabView.get('tabs');
-          var i = tabs.length;
+			if (Editors[id] || oArgs.node.isLeaf == false) {
+				/* tab is already open, need to set as active tab */
+				var tabs = tabView.get('tabs');
+				var i = tabs.length;
 
-          while (i--) {
-            if (tabs[i].get('postData') === id) {
-              var idx = tabView.getTabIndex(tabs[i]);
-              tabView.selectTab(idx);
-              break;
-            }
-          }
-			  } else {
-				  var url = "/cloud9/apps/" + app + "/" + dir + "/" + resource;
-				  var callback = {
-		          success: function(oResponse) {
-		            var code = oResponse.responseText;
-		            var thisTab; 
+				while (i--) {
+					if (tabs[i].get('postData') === id) {
+						var idx = tabView.getTabIndex(tabs[i]);
+						tabView.selectTab(idx);
+						break;
+					}
+				}
+			} else {
+				var url = "/cloud9/apps/" + app + "/" + dir + "/" + resource;
+				var callback = {
+					success: function(oResponse) {
+						var code = oResponse.responseText;
+						var thisTab; 
 
-		            if (dir !== "img") {
-						      thisTab = new YAHOO.widget.Tab({
-                    label: resource + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-				    		    content: '<div style="min-height:96%;width:99.8%" id=\"' + id  + '\"></div>',
-							      active: true,
-							      postData: id
-						      });
-						      /* add the new tab */
-  						    tabView.addTab(thisTab);
+						if (dir !== "img") {
+							thisTab = new YAHOO.widget.Tab({
+								label: resource + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+								content: '<div style="min-height:96%;width:99.8%" id=\"' + id  + '\"></div>',
+								active: true,
+								postData: id
+							});
+							/* add the new tab */
+							tabView.addTab(thisTab);
 						      
-						      /* add this editor instance to the global map */
-  						    Editors[id] = ace.edit(id);
-                  Editors[id].setTheme("ace/theme/eclipse");
+							/* add this editor instance to the global map */
+							Editors[id] = ace.edit(id);
+							Editors[id].setTheme("ace/theme/eclipse");
 
-                  /* by default, use soft tabs (spaces) and set size to 4 */
-                  Editors[id].getSession().setUseSoftTabs(true);
-                  Editors[id].getSession().setTabSize(4);
-                  
-                  /* detect and set the proper mode for the resource */
-                  if (dir === "html" || dir === 'partials') {
-                    Editors[id].getSession().setMode(new HtmlMode());
-                  } else if (dir === "css") {
-                    Editors[id].getSession().setMode(new CssMode());
-                  } else if (dir === "js" || dir === "controllers" || dir === 'lib') {
-                    Editors[id].getSession().setMode(new JavaScriptMode());
-                  } 
-                  Editors[id].getSession().setValue(code);
-
-                  /* wire up event handler to fire when document is changed */
-                  Editors[id].getSession().doc.on('change', function(){
-                    var idx = tabView.get('activeIndex');
-                    if (idx !== null) {
-                      var tab = tabView.getTab(idx).getElementsByClassName('modified')[0];
-                      if (tab === undefined) {
-                        tab = tabView.getTab(idx).getElementsByClassName('close')[0];
-                        YAHOO.util.Dom.replaceClass(tab, 'close', 'modified');
-                      }
-                    } 
-                  });
-  						    
-						    } else {
-						      thisTab = new YAHOO.widget.Tab({
-				    		    label: resource + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-				    		    content: '<div style="height:1500px;width:99.8%" id=\"' + id  + '\"><img src="/' + app +'/' + dir + '/' + resource + '" /></div>',
-							      active: true,
-							      postData: id
-						      });
-						      /* add the new tab */
-  						    tabView.addTab(thisTab);
-  						    
-  						    /*  regsiters the tab as "open" */
-  						    Editors[id] = true;
-						    }
-						    
-						    /* add the close handler */
-						    YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
-
-		          },
-		          failure: function(oResponse) {
-						    alert("Unable to retrieve document. Check your Internet connection.");
-		          },
-		          timeout: 7000
-		        };
-		        YAHOO.util.Connect.asyncRequest('GET', url, callback);
-			    }
-       });
-    }
+	  						/* by default, use soft tabs (spaces) and set size to 4 */
+	  						Editors[id].getSession().setUseSoftTabs(true);
+	  						Editors[id].getSession().setTabSize(4);
+	                  
+	  						/* detect and set the proper mode for the resource */
+	  						if (dir === "html" || dir === 'partials') {
+	  							Editors[id].getSession().setMode(new HtmlMode());
+	  						} else if (dir === "css") {
+	  							Editors[id].getSession().setMode(new CssMode());
+	  						} else if (dir === "js" || dir === "controllers" || dir === 'lib') {
+	  							Editors[id].getSession().setMode(new JavaScriptMode());
+	  						} 
+	  						Editors[id].getSession().setValue(code);
+	
+	  						/* wire up event handler to fire when document is changed */
+	  						Editors[id].getSession().doc.on('change', function() {
+	  							var idx = tabView.get('activeIndex');
+	  							if (idx !== null) {
+	  								var tab = tabView.getTab(idx).getElementsByClassName('modified')[0];
+	  								if (tab === undefined) {
+	  									tab = tabView.getTab(idx).getElementsByClassName('close')[0];
+	  									YAHOO.util.Dom.replaceClass(tab, 'close', 'modified');
+	  								}
+	  							} 
+	  						});
+	  						    
+			            } else {
+			            	thisTab = new YAHOO.widget.Tab({
+			            		label: resource + '<span class="close">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+			            		content: '<div style="height:1500px;width:99.8%" id=\"' + id  + '\"><img src="/' + app +'/' + dir + '/' + resource + '" /></div>',
+			            		active: true,
+			            		postData: id
+			            	});
+			            	/* add the new tab */
+			            	tabView.addTab(thisTab);
+	  						    
+			            	/*  regsiters the tab as "open" */
+			            	Editors[id] = true;
+						}
+							    
+			            /* add the close handler */
+			            YAHOO.util.Event.on(thisTab.getElementsByClassName('close')[0], 'click', handleClose, thisTab);
+			        },
+			        failure: function(oResponse) {
+			        	alert("Unable to retrieve document.");
+			        },
+			        timeout: 7000
+				};
+				YAHOO.util.Connect.asyncRequest('GET', url, callback);
+			}
+	    });
+	    return root;
+    };
     
     function handleClose(e, tab) { 
         YAHOO.util.Event.preventDefault(e); 
@@ -474,7 +473,7 @@ C9.ide.navigator = function () {
             } else {
                 currentIconMode = 0;
             }
-            buildTree(appName);
+            buildTree(appName).toggle();
             
             /*
             	Instantiates the context menu when right clicking on a resource (file).
@@ -596,7 +595,9 @@ C9.ide.navigator = function () {
             dirContextMenu.subscribe("triggerContextMenu", onTriggerDirContextMenu);
             projContextMenu.subscribe("triggerContextMenu", onTriggerProjContextMenu);
         },
-        tree: function() { return tree; }
+        tree: function() {
+        	return tree; 
+        }
     };
 }();
 
