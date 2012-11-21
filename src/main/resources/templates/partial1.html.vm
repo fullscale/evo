@@ -1,6 +1,16 @@
 <div class="row-fluid" style="margin-top:15%">
+    <span class="span3 offset4"><i class="icon-search"></i> <strong>Default Application</strong></span>
+</div>
+<div class="row-fluid">
     <div class="input-append">
-        <input ng-model="$parent.queryTerm" class="span3 offset4" type="text" placeholder="Search">
+        <input ng-model="$parent.queryTerm" class="span3 offset4" type="text" placeholder="Enter a keyword">
         <button ng-click="search()" class="btn" type="button">Search</button>
     </div>
+</div>
+<div class="row-fluid">
+    <small class="span4 offset4" style="margin-top:20px">
+        To begin working with this application, edit <code>js/controllers.js</code> by setting a valid 
+        collection and type. Then modify <code>partials/results.html</code> to display
+        the the appropriate fields.
+    </small>
 </div>

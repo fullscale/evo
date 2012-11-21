@@ -36,10 +36,20 @@
 
 </head>
 <body ng-controller="SearchCtrl">
+
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <span class="brand">${app}</span>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row-fluid">
             <div ng-view></div>
         </div><br>
     </div>
+    
 </body>
 </html>
