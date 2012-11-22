@@ -1,13 +1,15 @@
+/*jshint globalstrict:true */
+/*global angular:true */
 'use strict';
 
 angular.module('${app}.controllers', [])
-    .controller('SearchCtrl', function($scope, $location, ejs) {
+    .controller('SearchCtrl', function($scope, $location, ejsResource) {
+    
+        var ejs = ejsResource('/v1');
         
         var request = ejs.Request()
             .collections("twitter")
             .types("tweet");
-            
-        $scope.queryTerm;
         
         $scope.search = function() {
             $scope.results = request

@@ -1,6 +1,6 @@
+/*jshint globalstrict:true */
+/*global angular:true */
 'use strict';
-
-/* Filters */
 
 angular.module('${app}.filters', [])
     .filter('interpolate', ['version', function(version) {

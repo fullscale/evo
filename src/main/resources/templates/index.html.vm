@@ -18,13 +18,14 @@
     <link rel="stylesheet" href="/${app}/css/${app}.css">
 
     <script src="/${app}/lib/modernizr-2.6.1.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
     <script src="//code.angularjs.org/1.0.1/angular-resource-1.0.1.min.js"></script>
     <script src="/${app}/lib/elastic.min.js"></script>
+    <script src="/${app}/lib/elastic-angular-client.min.js"></script>
     
     <!-- fallback to local libs -->
-    <script>window.jQuery || document.write('<script src="/${app}/lib/jquery-1.8.0.min.js"><\/script>')</script>
+    <script>window.jQuery  || document.write('<script src="/${app}/lib/jquery-1.8.0.min.js"><\/script>')</script>
     <script>window.angular || document.write('<script src="/test/lib/angular.min.js"><\/script>')</script>
     
     <!-- project specific files -->
@@ -33,10 +34,9 @@
     <script src="/${app}/js/controllers.js"></script>
     <script src="/${app}/js/filters.js"></script>
     <script src="/${app}/js/directives.js"></script>
-
 </head>
-<body ng-controller="SearchCtrl">
 
+<body ng-controller="SearchCtrl">
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
@@ -50,6 +50,5 @@
             <div ng-view></div>
         </div><br>
     </div>
-    
 </body>
 </html>

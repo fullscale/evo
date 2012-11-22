@@ -1,6 +1,6 @@
+/*jshint globalstrict:true */
+/*global angular:true */
 'use strict';
-
-/* Directives */
 
 angular.module('${app}.directives', [])
     .directive('appVersion', ['version', function(version) {

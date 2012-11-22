@@ -1,14 +1,21 @@
+/*jshint globalstrict:true */
+/*global angular:true */
 'use strict';
 
-/* Declare app level module which depends on filters, and services */
-angular.module('${app}', ['${app}.controllers', '${app}.filters', '${app}.services', '${app}.directives']).
-    config(['$routeProvider', function($routeProvider) {
+/* Application level module which depends on filters, controllers, and services */
+angular.module('${app}', [
+    '${app}.controllers', 
+    '${app}.filters', 
+    '${app}.services', 
+    '${app}.directives', 
+    'elasticjs.service'])
+    .config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/search', {
-                templateUrl: '/test/partials/search.html', 
+                templateUrl: '/test/partials/search.html'
             })
             .when('/results', {
-                templateUrl: '/test/partials/results.html', 
+                templateUrl: '/test/partials/results.html' 
             })
             .otherwise({
                 redirectTo: '/search'

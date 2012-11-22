@@ -1,26 +1,13 @@
+/*jshint globalstrict:true */
+/*global angular:true */
 'use strict';
 
-/* Services */
 angular.module('${app}.services', [])
-    .factory('ejs', function($http) {
-    
-        var ejs = window.ejs || {};
-        
-        var promiseThen = function (httpPromise, successcb, errorcb, isArray) {
-            return httpPromise.then(function (response) {
-                (successcb || angular.noop)(response.data);
-                return response.data;
-            });
+    .factory('foo', function($resource) {
+        return {
+            bar: $resource('/${app}/{controller}/{action}', {}, {
+                get: {method: 'GET'},
+                put: {method: 'PUT'}
+            })
         };
-        
-        ejs.client = {
-            post: function (path, data, cb) {
-                path = '/v1' + path;
-                var p = $http.post(path, data);
-                return promiseThen(p, cb);
-            } 
-        };
-        
-        return ejs;
-
     });
