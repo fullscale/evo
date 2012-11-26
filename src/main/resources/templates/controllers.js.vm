@@ -17,6 +17,7 @@ angular.module('${app}.controllers', [])
                 .get();
                 
             $location.path("/results");
+            $scope.queryTerm = "";
         };
         
     });
