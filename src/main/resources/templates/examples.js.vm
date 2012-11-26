@@ -81,35 +81,24 @@ function examples() {
         /* example using Cloud9 javascript client */
         search: function(env) {
         
-            /* create a query object */
-            var query = c9.query.QueryString("*");
-
-            /* Creates a search request object.
-             * provide your collection/type */
-            var searchRequest = c9.search.Request({
-                collections:["index1"],
-                types:["type1"],
-                request: REQUEST // REQUEST is SSJS global variable
-            });
-
-            /* a function to display results */
-            var resultsCallBack = function(results) {
-                return resultTmpl(results.hits);
-            };
-
-            /* execute the request */
-            var searchResults = searchRequest.query(query).get(resultsCallBack);
-        
-            if (searchResults === null) {
+            var request = ejs.Request()
+                .collections("twitter")
+                .types("tweet");
+            
+            var results = request
+                .query(ejs.QueryString('user:kimchy'))
+                .get();
+                        
+            if (results === null) {
                 return {
                     status: 500,
-                    body: ['Error executing search (did you specify a valid index and type?)']
+                    body: ['Error executing search (did you specify a valid collection and/or type?)']
                 };
             } else {
                 return {
                     status: 200,
                     headers: { "Content-Type": "text/html" },
-                    body: [searchResults]
+                    body: [resultTmpl(results.hits)]
                 };
             }
         }

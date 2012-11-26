@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import co.diji.cloud9.javascript.PrimitiveWrapFactory;
 import co.diji.cloud9.javascript.XMLHttpRequest;
+import co.diji.cloud9.javascript.ElasticJsClient;
 
 @Component
 public class JavascriptService {
@@ -39,13 +40,15 @@ public class JavascriptService {
         try {
             // for ajax calls
             ScriptableObject.defineClass(scope, XMLHttpRequest.class);
+            ScriptableObject.defineClass(scope, ElasticJsClient.class);
 
             // used in cloud9 javascript api to detect if we are running server side or not
             scope.put("ServerSideC9", scope, true);
 
             // load shared libs
             loadLib(cx, scope, "underscore", "file:resources/js/underscore-min.js");
-            loadLib(cx, scope, "c9api", "file:resources/js/c9/c9api.min.js");
+            loadLib(cx, scope, "ejs", "file:resources/js/elastic.min.js");
+            loadLib(cx, scope, "elastic-client-loader", "file:resources/js/elastic-client-loader.js");
 
             // seal everything not already sealed
             scope.sealObject();
