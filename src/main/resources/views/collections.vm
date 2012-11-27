@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
 
     <script src="/js/jquery-1.6.2.min.js"></script>
-    <script src="/js/json2.js"></script>
+    <script src="/js/json2.min.js"></script>
     <script src="/js/jquery.qtip-1.0.0-rc3.min.js"></script>
     <script src="/js/c9/c9.js"></script>
     <script src="/js/underscore-min.js"></script>
