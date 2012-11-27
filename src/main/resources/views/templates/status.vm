@@ -1,8 +1,7 @@
 <div class="navigation-header gradient-dark rounded-top">
   <ul class="navigation-list">
     <li>
-      <img align="top" src="/img/c9/cloud.png" alt="${build}" title="${build}">
-      <span class="cloud9-logo">Cloud9</span>
+      <img align="top" src="/img/c9/evo-logo-tiny.png" alt="${build}" title="${build}" style="padding-right:5px">
     </li>
     <li><a id="c9-overview-page" href="/cloud9/overview">Overview</a></li>
     <li><a id="c9-content-page" href="/cloud9/content">Collections</a></li>
