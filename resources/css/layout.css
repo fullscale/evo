@@ -149,7 +149,7 @@ div#footer p {
 }
 
 div#footer p a {
-	color:#ff8000;
+	color:#db2929;
 }
 
 #collectionTable a,
@@ -167,7 +167,7 @@ div#footer p a {
 }
 
 #collectionTable a:hover {
-    color:#ff8000;
+    color:#db2929;
 }
 
 #fields .removeLink,
@@ -345,12 +345,12 @@ div#footer p a {
 }
 
 .widget p {
-    color:#ff8000;
+    color:#db2929;
 }
 
 .widget a,
 .facetTerm a {
-    color:#ff8000;
+    color:#db2929;
 }
 
 .facetCount {

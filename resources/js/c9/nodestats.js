@@ -41,7 +41,7 @@ var barChart = function(dom_id) {
         .top(function() { return y(this.index)})
         .height(y.range().band)
         .left(pv.Layout.stack())
-        .fillStyle(pv.colors("#ff8000", "#bfbfbf"))
+        .fillStyle(pv.colors("#db2929", "#bfbfbf"))
         .width(x);
     
     bar.anchor("right");//.add(pv.Label)

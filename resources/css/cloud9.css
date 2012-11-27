@@ -104,7 +104,7 @@
 .c9 .newCollection {
   font: 1.4em arial, helvetica, sans-serif;
 	margin-right:1em;
-	color:#ff8000;
+	color:#db2929;
 }
 .c9 .crumb {
     font: 1.4em arial, helvetica, sans-serif;
@@ -112,7 +112,7 @@
 	text-decoration:none;
 }
 .c9 a {
-    color:#ff8000;
+    color:#db2929;
     text-decoration:none;
 }
 .c9 a:hover {color:#333;}
@@ -147,7 +147,7 @@
     color:#333;
     font: normal 11px arial, helvetica, sans-serif;
 }
-.attach a {color:#ff8000;}
+.attach a {color:#db2929;}
 em {font-weight:bold;}
 /* end admin */
 
@@ -180,7 +180,7 @@ div#contentForm label {
 	margin-top:3px;
 }
 div#contentForm legend {
-	color:#ff8000;
+	color:#db2929;
 	font-size:16px;
 	text-align:left;
 	margin:4px;
