@@ -22,7 +22,7 @@
 .yui-skin-cloud9 .yuimenubaritemlabel{padding:0 7px;color:#333;text-decoration:none;cursor:default;border-style:solid;border-color:#9f9f9f;border-width:1px 0;*position:relative;margin:-1px 0;font-size:13px;line-height:23px;}
 .yui-skin-cloud9 .yuimenubaritemlabel:visited{color:#000;}.yui-skin-sam .yuimenubarnav .yuimenubaritemlabel{padding-right:20px;*display:inline-block;}
 .yui-skin-cloud9 .yuimenubarnav .yuimenubaritemlabel-hassubmenu{background:url(../../../../../img/c9/ide/menu/menubaritem_submenuindicator.png) right center no-repeat;}
-.yui-skin-cloud9 .yuimenubaritem-selected{background-color:#BBCEE9}/*background:url(../../../../../img/c9/ide/sprite.png) repeat-x 0 -1700px;}*/
+.yui-skin-cloud9 .yuimenubaritem-selected{background-color:#d6d6d6}/*background:url(../../../../../img/c9/ide/sprite.png) repeat-x 0 -1700px;}*/
 .yui-skin-cloud9 .yuimenubaritemlabel-selected{border-color:#7D98B8;}
 .yui-skin-cloud9 .yuimenubarnav .yuimenubaritemlabel-selected{border-left-width:1px;margin-left:-1px;*left:-1px;}
 .yui-skin-cloud9 .yuimenubaritemlabel-disabled,.yui-skin-cloud9 .yuimenubaritemlabel-disabled:visited{cursor:default;color:#A6A6A6;}
@@ -46,7 +46,7 @@
 .yui-skin-cloud9 .yuimenuitem-hassubmenu{background-image:url(../../../../../img/c9/ide/menu/menuitem_submenuindicator.png);background-position:right center;background-repeat:no-repeat;}
 .yui-skin-cloud9 .yuimenuitem-checked{background-image:url(../../../../../img/c9/ide/menu/menuitem_checkbox.png);background-position:left center;background-repeat:no-repeat;}
 .yui-skin-cloud9 .yui-menu-shadow-visible{background-color:#000;opacity:.12;filter:alpha(opacity=12);}
-.yui-skin-cloud9 .yuimenuitem-selected{background-color:#BBCEE9;}
+.yui-skin-cloud9 .yuimenuitem-selected{background-color:#d6d6d6;}
 .yui-skin-cloud9 .yuimenuitemlabel-disabled,.yui-skin-cloud9 .yuimenuitemlabel-disabled:visited{cursor:default;color:#A6A6A6;}
 .yui-skin-cloud9 .yuimenuitem-hassubmenu-disabled{background-image:url(../../../../../img/c9/ide/menu/menuitem_submenuindicator_disabled.png);}
 .yui-skin-cloud9 .yuimenuitem-checked-disabled{background-image:url(../../../../../img/c9/ide/menu/menuitem_checkbox_disabled.png);}
