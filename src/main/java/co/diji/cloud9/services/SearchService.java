@@ -702,7 +702,7 @@ public class SearchService {
 	        indexAppDoc(appName, "js", "filters.js", config.getAngularTemplate(appName, "filters.js"), "application/javascript");
 	        
 	        /* load the JavaScript libraries/dependencies */
-	        indexAppDoc(appName, "lib", "json2.js", config.getAngularResource("js/json2.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "json2.min.js", config.getAngularResource("js/json2.min.js"), "application/javascript");
 	        indexAppDoc(appName, "lib", "jquery-1.8.0.min.js", config.getAngularResource("js/jquery-1.8.0.min.js"), "application/javascript");
 	        indexAppDoc(appName, "lib", "modernizr-2.6.1.min.js", config.getAngularResource("js/modernizr-2.6.1.min.js"), "application/javascript");
 	        indexAppDoc(appName, "lib", "underscore.min.js", config.getAngularResource("js/underscore.min.js"), "application/javascript");
