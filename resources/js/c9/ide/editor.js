@@ -49,7 +49,7 @@ C9.ide.editor.save = function(tab) {
 
     	jQuery.ajax({
       		type: "PUT",
-      		url: '/cloud9/apps/' + app + '/' + dir + '/' + id,
+      		url: '/evo/apps/' + app + '/' + dir + '/' + id,
       		contentType: "application/json",
       		data: JSON.stringify({"mime":mimetype, "code":src}),
       		dataType:"json",

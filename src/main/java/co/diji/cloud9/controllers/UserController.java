@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/cloud9/user")
+@RequestMapping("/evo/user")
 public class UserController extends BaseController {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(UserController.class);

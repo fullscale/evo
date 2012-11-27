@@ -16,17 +16,17 @@ public class OverviewController extends BaseController {
     private static final XLogger logger = XLoggerFactory.getXLogger(OverviewController.class);
 
     @ResponseBody
-    @RequestMapping(value = {"/", "/cloud9"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/evo"}, method = RequestMethod.GET)
     public ModelAndView getIndex(ModelMap model) {
         logger.entry();
-        RedirectView redirect = new RedirectView("/cloud9/overview");
+        RedirectView redirect = new RedirectView("/evo/overview");
         redirect.setExposeModelAttributes(false);
         logger.exit();
         return new ModelAndView(redirect);
     }
 
     @ResponseBody
-    @RequestMapping(value = {"/cloud9/overview"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/evo/overview"}, method = RequestMethod.GET)
     public ModelAndView get(ModelMap model) {
         logger.entry();
         logger.exit();

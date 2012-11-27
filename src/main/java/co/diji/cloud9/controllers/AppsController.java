@@ -61,7 +61,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/ide/{app}", method = RequestMethod.GET)
+    @RequestMapping(value = "/evo/ide/{app}", method = RequestMethod.GET)
     public ModelAndView showIde(@PathVariable String app) {
         logger.entry(app);
         ModelAndView mav = new ModelAndView();
@@ -73,7 +73,7 @@ public class AppsController extends BaseController {
 
     @ResponseBody
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/cloud9/apps", method = RequestMethod.GET)
+    @RequestMapping(value = "/evo/apps", method = RequestMethod.GET)
     public ModelAndView list(ModelMap model) {
         logger.entry();
 
@@ -95,7 +95,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}", method = RequestMethod.GET, produces = "application/json")
     public List<String> listContentTypes(@PathVariable String app) {
         logger.entry(app);
         List<String> response;
@@ -109,7 +109,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> createApp(@PathVariable String app) {
         logger.entry(app);
         Map<String, Object> resp = new HashMap<String, Object>();
@@ -139,7 +139,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> deleteApp(@PathVariable String app) {
         logger.entry(app);
         Map<String, Object> resp = new HashMap<String, Object>();
@@ -156,7 +156,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}/{dir}", method = RequestMethod.GET, produces = "application/json")
     public List<String> listResources(@PathVariable String app, @PathVariable String dir) {
         logger.entry(app, dir);
         List<String> resp = new ArrayList<String>();
@@ -173,7 +173,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
+    @RequestMapping(value = "/evo/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.GET)
     public void getResourceFromDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletResponse response) {
         logger.entry(app, dir, resource);
@@ -224,7 +224,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.POST, produces = "application/json")
     public Map<String, Object> createResourceInDir(@PathVariable String app, @PathVariable String dir,
             @PathVariable String resource, @RequestBody String data) {
         logger.entry(app, dir, resource);
@@ -278,7 +278,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> updateResourceInDir(@PathVariable String app, @PathVariable String dir,
             @PathVariable String resource, @RequestBody Map<String, Object> data) {
         logger.entry(app, dir, resource);
@@ -297,7 +297,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}/{dir}/{resource:.*}", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Object> deleteResourceInDir(@PathVariable String app, @PathVariable String dir, @PathVariable String resource) {
         logger.entry(app, dir, resource);
         Map<String, Object> resp = new HashMap<String, Object>();
@@ -315,7 +315,7 @@ public class AppsController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/cloud9/apps/{app}/{dir}/_rename", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/evo/apps/{app}/{dir}/_rename", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public Map<String, Object> renameResource(@PathVariable String app, @PathVariable String dir,
             @RequestBody Map<String, Object> data) {
         logger.entry(app, dir);

@@ -40,11 +40,11 @@
     	<intercept-url pattern="/login.html" access="permitAll" />
     	
     	<!-- Administrative Interface Security Rules -->
-    	<intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" />
+    	<intercept-url pattern="/evo/**" access="hasRole('supervisor')" />
     	
     	<!-- Comment out the above intercept and uncomment the following to force login over https -->
     	<!--
-    	<intercept-url pattern="/cloud9/**" access="hasRole('supervisor')" requires-channel="https" />
+    	<intercept-url pattern="/evo/**" access="hasRole('supervisor')" requires-channel="https" />
         -->
         
         <!-- API Security Rules -->
@@ -53,7 +53,7 @@
         
         <form-login 
         	login-page="/login.html" 
-        	login-processing-url="/cloud9_login" 
+        	login-processing-url="/evo_login" 
         	authentication-failure-url="/login.html" />
         	
         <logout

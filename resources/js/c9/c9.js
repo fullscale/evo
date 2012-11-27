@@ -31,7 +31,7 @@ cloud9.prototype.showError = function(where, msg) {
 };
 
 cloud9.prototype.deleteResource = function(app, dir, name, conf) {
-    var url = '/cloud9/apps/' + app + '/' + dir + '/' + name;
+    var url = '/evo/apps/' + app + '/' + dir + '/' + name;
     $.del(url, conf, function(data) {
         if (data.status == "error") {
             console.error("Deleting resource (%s) failed.", url);
@@ -40,7 +40,7 @@ cloud9.prototype.deleteResource = function(app, dir, name, conf) {
 };
 
 cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
-    var url = '/cloud9/apps/' + app + '/' + dir + '/_rename';
+    var url = '/evo/apps/' + app + '/' + dir + '/_rename';
     $.ajax({
         type: 'PUT',
         url: url,
@@ -57,7 +57,7 @@ cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
 };
 
 cloud9.prototype.createResource = function(app, dir, name, code) {
-	url = '/cloud9/apps/' + app + '/' + dir + '/' + name;
+	url = '/evo/apps/' + app + '/' + dir + '/' + name;
 	code = code || "";
   
     $.ajax({
@@ -246,7 +246,7 @@ cloud9.prototype.deleteType = function(url) {
 cloud9.prototype.deleteDocument = function(collection, type, docid) {
     $.ajax({
         type: "DELETE",
-        url: "/cloud9/content/" + collection +"/"+ type +"/"+ docid, 
+        url: "/evo/content/" + collection +"/"+ type +"/"+ docid, 
         dataType: "json",
         success: function(msg){
             $('#'+docid).hide("fast");
@@ -261,7 +261,7 @@ cloud9.prototype.deleteUser = function(userid){
     console.log("Delete: " + userid);
     $.ajax({
         type: "DELETE",
-        url: "/cloud9/user/" + userid,
+        url: "/evo/user/" + userid,
         dataType: "json",
         success: function(response){
             if (response.status == "ok") {

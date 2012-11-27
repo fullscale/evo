@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/cloud9/content")
+@RequestMapping("/evo/content")
 public class ContentController extends BaseController {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(ContentController.class);

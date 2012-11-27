@@ -33,8 +33,8 @@ C9.ide.navigator = function () {
     function loadContentTypes(node, fnLoadComplete)  {
         var nodeLabel = encodeURI(node.label);
 		var appName = node.appName;
-        var sUrl = "/cloud9/apps/" + nodeLabel;
-        var htmlUrl = "/cloud9/apps/" + appName + "/html";
+        var sUrl = "/evo/apps/" + nodeLabel;
+        var htmlUrl = "/evo/apps/" + appName + "/html";
 
         var callback = {
             success: function(oResponse) {
@@ -90,7 +90,7 @@ C9.ide.navigator = function () {
     function loadResources(node, fnLoadComplete)  {
         var resource = encodeURI(node.label);
         var appName = node.appName;
-        var sUrl = "/cloud9/apps/" + appName + "/" + resource;
+        var sUrl = "/evo/apps/" + appName + "/" + resource;
 
         var callback = {
             success: function(oResponse) {
@@ -213,7 +213,7 @@ C9.ide.navigator = function () {
 					}
 				}
 			} else {
-				var url = "/cloud9/apps/" + app + "/" + dir + "/" + resource;
+				var url = "/evo/apps/" + app + "/" + dir + "/" + resource;
 				var callback = {
 					success: function(oResponse) {
 						var code = oResponse.responseText;

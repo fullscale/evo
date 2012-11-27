@@ -165,7 +165,7 @@
                     cnt: $('#collectionTable tbody tr').length,
                     index: indexName, 
                     info: indexInfo, 
-                    path: '/cloud9/content/' + indexName
+                    path: '/evo/content/' + indexName
                 })
             );
           });
@@ -212,7 +212,7 @@
         });
       
         function loadTypesForCollection(collection) {
-            var path = '/cloud9/content/' + collection;
+            var path = '/evo/content/' + collection;
             
             $.get(path, function(data) {
                 data.path = path;
@@ -262,7 +262,7 @@
         }
  
         function loadFieldsForType(collection, type) {
-            var path = '/cloud9/content/' + collection + '/' + type;
+            var path = '/evo/content/' + collection + '/' + type;
             
             $.get(path, function(data) {
                 data.path = path;
@@ -292,7 +292,7 @@
         }
 
         function addDocument(collection, type) {
-            var path = '/cloud9/content/' + collection + '/' + type + '/';
+            var path = '/evo/content/' + collection + '/' + type + '/';
             $.get(path + 'publish', function(data) {
                 data.path = path + data.id;
                 var html = _.template($('#c9-add-doc-form').html(), data);
@@ -309,7 +309,7 @@
             $('#link' + cnt).click(function (e) {
                 var name = encodeURIComponent($('#txt' + cnt).val());
                 var row = $('.row' + cnt);
-                var url = '/cloud9/content/' + name;
+                var url = '/evo/content/' + name;
 
                 $.post(url, function(data) {
                     if (data.status === 'ok') {
@@ -340,7 +340,7 @@
             $('#link' + cnt).click(function(e) {
                 var name = encodeURIComponent($('#txt' + cnt).val());
                 var row = $('.row' + cnt);
-                var url = '/cloud9/content/' + collection + '/' + name;
+                var url = '/evo/content/' + collection + '/' + name;
                 
                 $.post(url, function(data) {
                     if (data.status === 'ok') {
@@ -372,7 +372,7 @@
                 var name = encodeURIComponent($('#txt' + cnt).val());
                 var mtype = $('#sel' + cnt).val();
                 var row = $('.row' + cnt);
-                var url = '/cloud9/content/' + collection + '/' + type;
+                var url = '/evo/content/' + collection + '/' + type;
 
                 var mapping = {};
                 var mappingType = "";

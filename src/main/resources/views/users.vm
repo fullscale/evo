@@ -156,7 +156,7 @@
             var name = $('#txtName').val();
             var role = $('#selRole').val();
             var password = $('#txtPassword').val();
-            var url = '/cloud9/user/' + encodeURIComponent(uname);
+            var url = '/evo/user/' + encodeURIComponent(uname);
 
             var data = {
                 uname: uname,
@@ -202,7 +202,7 @@
             var role = $('#role-' + cnt).val();
             var password = $('#pass-' + cnt).val();
             var row = $('#row' + cnt);
-            var url = '/cloud9/user/' + encodeURIComponent(uname); 
+            var url = '/evo/user/' + encodeURIComponent(uname); 
 
             var data = {
                 uname: uname,

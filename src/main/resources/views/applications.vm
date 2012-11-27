@@ -47,10 +47,10 @@
             <td>{%= info.docs %} Documents</td>
             <td>
               <a target="_blank" href="/{%= app %}" style="color:#db2929;font-size:12px;">Open</a>
-              &nbsp;|&nbsp;&nbsp;<a target="_blank" href="/cloud9/ide/{%= app %}" style="color:#db2929;font-size:12px;">Edit</a>
+              &nbsp;|&nbsp;&nbsp;<a target="_blank" href="/evo/ide/{%= app %}" style="color:#db2929;font-size:12px;">Edit</a>
             </td>
             <td style="text-align:right;">
-                <a href="#" class="c9-application-delete-icon" onClick="c9.deleteApplication('/cloud9/apps/{%= app %}')">
+                <a href="#" class="c9-application-delete-icon" onClick="c9.deleteApplication('/evo/apps/{%= app %}')">
                     <img class="removeLink" src="/img/c9/trans.png">
                 </a>
             </td>
@@ -148,7 +148,7 @@
             $('#link' + cnt).click(function (e) {
                 var name = encodeURIComponent($('#txt' + cnt).val());
                 var row = $('.row' + cnt);
-                var url = '/cloud9/apps/' + name;
+                var url = '/evo/apps/' + name;
 
                 $.post(url, function(data) {
                     if (data.status === 'ok') {

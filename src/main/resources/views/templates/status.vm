@@ -3,10 +3,10 @@
     <li>
       <img align="top" src="/img/c9/evo-logo-tiny.png" alt="${build}" title="${build}" style="padding-right:5px">
     </li>
-    <li><a id="c9-overview-page" href="/cloud9/overview">Overview</a></li>
-    <li><a id="c9-content-page" href="/cloud9/content">Collections</a></li>
-    <li><a id="c9-apps-page" href="/cloud9/apps">Applications</a></li>
-    <li><a id="c9-user-page" href="/cloud9/user">Users</a></li>
+    <li><a id="c9-overview-page" href="/evo/overview">Overview</a></li>
+    <li><a id="c9-content-page" href="/evo/content">Collections</a></li>
+    <li><a id="c9-apps-page" href="/evo/apps">Applications</a></li>
+    <li><a id="c9-user-page" href="/evo/user">Users</a></li>
   </ul>
 </div>
 

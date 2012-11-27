@@ -222,7 +222,7 @@ YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.upload =
 
 C9.ide.dialog.about = function () { 
     var self = {};
-    var bodyImage = '<center><span style="font-weight:bold;font-size:18px;">Cloud9</span><br><span>Developer Preview</span><br><span>Build 0327</span><br><br><span>Copyright &copy; 2010-2011 Diji Inc.</span><br><span>All rights reserved.</span></center>';
+    var bodyImage = '<center><span style="font-weight:bold;font-size:18px;">EVO</span><br><span>Developer Preview</span><br><span>Build 0327</span><br><br><span>Copyright &copy; 2010-2011 Diji Inc.</span><br><span>All rights reserved.</span></center>';
     
     var dialog = new YAHOO.widget.Dialog("c9-dialog-about",  { 
       width : "300px", 

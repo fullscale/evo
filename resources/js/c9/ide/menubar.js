@@ -130,11 +130,11 @@ YAHOO.util.Event.onDOMReady(function () {
     };
 
     var viewDevGuide = function() {
-        window.open("http://www.cloud9search.com/docs.html");
+        window.open("http://www.fullscale.co/docs.html");
     };
 
     var viewApiDocs = function() {
-        window.open("http://www.cloud9search.com/jsdocs/C9.api.html");
+        window.open("http://www.fullscale.co/docs/elasticjs/ejs.html");
     };
 
     // adds a listener to show gutter
@@ -229,7 +229,7 @@ YAHOO.util.Event.onDOMReady(function () {
             submenu: { 
                 id: "cloud9", 
                 itemdata: [{
-                    text: "About Cloud9",
+                    text: "About EVO",
                     onclick: {
                         fn: showAboutDialog
                     }

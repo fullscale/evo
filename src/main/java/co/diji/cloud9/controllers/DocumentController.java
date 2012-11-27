@@ -19,7 +19,7 @@ import co.diji.cloud9.exceptions.Cloud9Exception;
 import co.diji.cloud9.services.SearchService;
 
 @Controller
-@RequestMapping("/cloud9/content")
+@RequestMapping("/evo/content")
 public class DocumentController {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(DocumentController.class);
