@@ -382,10 +382,10 @@ div#footer p a {
 
 .project-header {}
 .project-header.title {
-    color:#606e80;
+    color:#db2929;
     font-family:arial,sans-serif;
     font-weight: bold;
-    text-shadow: #fff 0px 1px 0px;
+    /*text-shadow: #fff 0px 1px 0px;*/
     font-size:13px;
     height:21px;
     padding-top:6px;
