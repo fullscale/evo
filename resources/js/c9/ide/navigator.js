@@ -520,7 +520,8 @@ C9.ide.navigator = function () {
             	trigger: "c9-ide-navigator", 
             	lazyload: true, 
             	itemdata: [{ 
-            		text: "New", 
+            		text: "New",
+            		helptext: "Ctrl + N",
             		onclick: { 
             			fn: addNode 
             		}
@@ -528,7 +529,13 @@ C9.ide.navigator = function () {
             		onclick: {
             			fn: collapseTree 
             		}
-            	}] 
+            	},[{
+                    text: "Upload Image",
+ 		    	   	onclick: { 
+ 		    	   		fn: addNode, 
+ 		    	   		obj:"img" 
+ 		    	   	}
+                }]] 
             });
 
             /*
@@ -536,7 +543,7 @@ C9.ide.navigator = function () {
             */
             var projSubMenu = [{
             	id: "New",  
-        		itemdata: [  
+        		itemdata: [
     		       { 
     		    	   text: "HTML File", 
     		    	   onclick: { 
@@ -544,7 +551,7 @@ C9.ide.navigator = function () {
     		    		   obj:"html" 
     		    		}
     		       },{ 
-    		    	   text: "Partial HTML File", 
+    		    	   text: "HTML Partial", 
     		    	   onclick: {
     		    		   fn:addNode, 
     		    		   obj:'partials'
@@ -568,19 +575,13 @@ C9.ide.navigator = function () {
     		    		   obj:'lib'
     		    		}
     		       },{ 
-    		    	   text: "Server-Side Javascript File", 
+    		    	   text: "Server-Side Controller", 
     		    	   onclick: {
     		    		   fn:addNode, 
     		    		   obj:'server-side'
     		    		}
-    		       },{ 
-    		    	   text: "Image", 
-    		    	   onclick: { 
-    		    		   fn: addNode, 
-    		    		   obj:"img" 
-    		    	   }
-    		       	}
-    		    ]
+    		       }
+    		   ]
             }];
             
             /*

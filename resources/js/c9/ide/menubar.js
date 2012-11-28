@@ -263,7 +263,7 @@ YAHOO.util.Event.onDOMReady(function () {
                                 obj:"html"
                             }
                         },{ 
-                            text: 'Partial HTML File', 
+                            text: 'HTML Partial', 
                             value: 'partials', 
                             id: 'newPartial', 
                             onclick: {
@@ -295,7 +295,7 @@ YAHOO.util.Event.onDOMReady(function () {
                                 obj:"lib"
                             }
                         },{
-                            text: 'Server-Side Javascript File',
+                            text: 'Server-Side Controller',
                             value: 'server-side',
                             id: 'newServer',
                             onclick: {
