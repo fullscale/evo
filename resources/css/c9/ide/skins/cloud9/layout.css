@@ -50,9 +50,10 @@
   *border-top-width:0;
   /*background-color:#fff;*/
   text-align:left;
-  color:#ebebeb;
+  color:#ccc;
 }
 
+/*.yui-skin-cloud9 .yui-layout .yui-layout-unit div.yui-layout-bd .ygtvdepth1 {color:#fff} */
 .yui-skin-cloud9 .yui-layout .yui-layout-unit div.yui-layout-bd-noft{border-bottom:1px solid #ccc;}
 .yui-skin-cloud9 .yui-layout .yui-layout-unit div.yui-layout-bd-nohd{border-top:0px solid #ccc;}
 .yui-skin-cloud9 .yui-layout .yui-layout-clip{position:absolute;height:20px;background-color:#EDF5FF;display:none;border:1px solid #ccc;}

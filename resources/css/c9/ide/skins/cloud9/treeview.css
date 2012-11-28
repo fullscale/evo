@@ -23,8 +23,8 @@ a.ygtvspacer{text-decoration:none;outline-style:none;display:block}
 .ygtvdepthcell{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8000px no-repeat}
 .ygtvblankdepthcell{width:18px;height:22px}* html .ygtvchildren{height:2%}
 .ygtvlabel,.ygtvlabel:link,.ygtvlabel:visited,.ygtvlabel:hover{margin-left:2px;text-decoration:none;cursor:pointer}
-.ygtvcontent{cursor:default}.ygtvspacer{height:22px;width:0px}.ygtvfocus{background-color:#666;border:0}
-.ygtvfocus .ygtvlabel,.ygtvfocus .ygtvlabel:link,.ygtvfocus .ygtvlabel:visited,.ygtvfocus .ygtvlabel:hover{background-color:#666}
+.ygtvcontent{cursor:default}.ygtvspacer{height:22px;width:0px}.ygtvfocus{background-color:#282828;border:0}
+.ygtvfocus .ygtvlabel,.ygtvfocus .ygtvlabel:link,.ygtvfocus .ygtvlabel:visited,.ygtvfocus .ygtvlabel:hover{background-color:#282828}
 .ygtvfocus a{outline-style:none}.ygtvok{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8800px no-repeat}
 .ygtvok:hover{background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8844px no-repeat}
 .ygtvcancel{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8822px no-repeat}
@@ -37,11 +37,11 @@ a.ygtvspacer{text-decoration:none;outline-style:none;display:block}
 .ygtv-edit-DateNode .ygtvcancel{border:0}
 .ygtv-edit-DateNode .ygtvok{display:none}
 .ygtv-edit-DateNode .ygtv-button-container{text-align:right;margin:auto}
-.ygtv-highlight .ygtv-highlight1,.ygtv-highlight .ygtv-highlight1 .ygtvlabel{background-color:#666;color:#ccc}
+.ygtv-highlight .ygtv-highlight1,.ygtv-highlight .ygtv-highlight1 .ygtvlabel{background-color:#282828;color:#fff}
 .ygtv-highlight .ygtv-highlight2,.ygtv-highlight .ygtv-highlight2 .ygtvlabel{background-color:silver}
-.ygtv-highlight .ygtv-highlight0 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight1 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight2 .ygtvfocus .ygtvlabel{background-color:#666}
+.ygtv-highlight .ygtv-highlight0 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight1 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight2 .ygtvfocus .ygtvlabel{background-color:#282828}
 .ygtv-highlight .ygtvcontent{padding-right:1em}
 .ygtv-checkbox .ygtv-highlight0 .ygtvcontent{padding-left:1em;background:url(../../../../../img/c9/ide/treeview/check0.gif) no-repeat}
-.ygtv-checkbox .ygtv-highlight0 .ygtvfocus.ygtvcontent,.ygtv-checkbox .ygtv-highlight1 .ygtvfocus.ygtvcontent,.ygtv-checkbox .ygtv-highlight2 .ygtvfocus.ygtvcontent{background-color:#666}
+.ygtv-checkbox .ygtv-highlight0 .ygtvfocus.ygtvcontent,.ygtv-checkbox .ygtv-highlight1 .ygtvfocus.ygtvcontent,.ygtv-checkbox .ygtv-highlight2 .ygtvfocus.ygtvcontent{background-color:#282828}
 .ygtv-checkbox .ygtv-highlight1 .ygtvcontent{padding-left:1em;background:url(../../../../../img/c9/ide/treeview/check1.gif) no-repeat}
 .ygtv-checkbox .ygtv-highlight2 .ygtvcontent{padding-left:1em;background:url(../../../../../img/c9/ide/treeview/check2.gif) no-repeat}
