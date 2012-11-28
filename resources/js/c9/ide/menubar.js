@@ -224,19 +224,8 @@ YAHOO.util.Event.onDOMReady(function () {
      * Define an array of object literals, each containing 
      * the data necessary to create the items for a MenuBar.
      */
-    var menuData = [{ 
-        text: "<em id=\"cloud9label\">&nbsp;</em>", 
-            submenu: { 
-                id: "cloud9", 
-                itemdata: [{
-                    text: "About EVO",
-                    onclick: {
-                        fn: showAboutDialog
-                    }
-                }]
-            }
-        },{
-            text: "Project",
+    var menuData = [{
+        text: "Project",
             submenu: {
                 id: "preview",
                 itemdata: [{
@@ -514,6 +503,11 @@ YAHOO.util.Event.onDOMReady(function () {
                     } 
                 }]
             }
+        },{        
+        	text: "About",
+			onclick: {
+				fn: showAboutDialog
+			}
         }
     ];
 
