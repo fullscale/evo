@@ -81,9 +81,9 @@
     <div id="top1">
       <div id="c9-ide-menubar-container"></div>
     </div>
-    <div id="left1" style="margin:3px 3px 3px 10px;">
+    <div id="left1" style="margin:3px 3px 3px 0;">
       <div class="project-header">
-      	<div class="project-header title">PROJECT</div>
+      	<div class="project-header title" style="margin-left:6px">FOLDERS</div>
       </div>
       <div id="c9-ide-navigator" class="ygtv-highlight"></div>
     </div> 
