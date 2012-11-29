@@ -1,20 +1,20 @@
-.icon-html{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -22px no-repeat} 
+/*.icon-html{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -22px no-repeat} 
 .icon-css{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -44px no-repeat} 
 .icon-js{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}
 .icon-server-side{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}  
 .icon-img{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -88px no-repeat}
 .icon-lib{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -132px no-repeat}
-.icon-partials{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -22px no-repeat} 
+.icon-partials{display:block;padding-left:20px;background:transparent url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -22px no-repeat} */
 
 table.ygtvtable{margin-bottom:0;border:0;border-collapse:collapse;width:100%}
 td.ygtvcell{border:0;padding:0}
 a.ygtvspacer{text-decoration:none;outline-style:none;display:block}
-/*.ygtvtn{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat;cursor:pointer} /* index file */
+.ygtvtn{width:22px;height:22px}/*;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat;cursor:pointer} /* index file */
 .ygtvtm{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -110px no-repeat}
 .ygtvtmh,.ygtvtmhh{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -110px no-repeat}
 .ygtvtp{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat}
 .ygtvtph,.ygtvtphh{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0px no-repeat} /**/
-/*.ygtvln{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat;cursor:pointer} /* rest of files */
+.ygtvln{width:22px;height:22px}/*;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat;cursor:pointer} /* rest of files */
 .ygtvlm{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -110px no-repeat}
 .ygtvlmh,.ygtvlmhh{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 -110px no-repeat}
 .ygtvlp{width:18px;height:22px;cursor:pointer;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.png) 0 0 no-repeat}
@@ -22,7 +22,7 @@ a.ygtvspacer{text-decoration:none;outline-style:none;display:block}
 .ygtvloading{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-loading.gif) 0 0 no-repeat}
 .ygtvdepthcell{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8000px no-repeat}
 .ygtvblankdepthcell{width:18px;height:22px}* html .ygtvchildren{height:2%}
-.ygtvlabel,.ygtvlabel:link,.ygtvlabel:visited,.ygtvlabel:hover{margin-left:2px;text-decoration:none;cursor:pointer}
+.ygtvlabel,.ygtvlabel:link,.ygtvlabel:visited,.ygtvlabel:hover{margin-left:2px;text-decoration:none;cursor:pointer;color:#fff}
 .ygtvcontent{cursor:default}.ygtvspacer{height:22px;width:0px}.ygtvfocus{background-color:#282828;border:0}
 .ygtvfocus .ygtvlabel,.ygtvfocus .ygtvlabel:link,.ygtvfocus .ygtvlabel:visited,.ygtvfocus .ygtvlabel:hover{background-color:#282828}
 .ygtvfocus a{outline-style:none}.ygtvok{width:18px;height:22px;background:url(../../../../../img/c9/ide/treeview/treeview-sprite.gif) 0 -8800px no-repeat}
@@ -37,7 +37,7 @@ a.ygtvspacer{text-decoration:none;outline-style:none;display:block}
 .ygtv-edit-DateNode .ygtvcancel{border:0}
 .ygtv-edit-DateNode .ygtvok{display:none}
 .ygtv-edit-DateNode .ygtv-button-container{text-align:right;margin:auto}
-.ygtv-highlight .ygtv-highlight1,.ygtv-highlight .ygtv-highlight1 .ygtvlabel{background-color:#282828;color:#fff}
+.ygtv-highlight .ygtv-highlight1,.ygtv-highlight .ygtv-highlight1 .ygtvlabel{background-color:#282828;color:#ddd}
 .ygtv-highlight .ygtv-highlight2,.ygtv-highlight .ygtv-highlight2 .ygtvlabel{background-color:silver}
 .ygtv-highlight .ygtv-highlight0 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight1 .ygtvfocus .ygtvlabel,.ygtv-highlight .ygtv-highlight2 .ygtvfocus .ygtvlabel{background-color:#282828}
 .ygtv-highlight .ygtvcontent{padding-right:1em}
