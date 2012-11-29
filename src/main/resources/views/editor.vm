@@ -43,7 +43,7 @@
     <script src="/js/yui/2.9.0/build/container/container_core-min.js"></script>
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/ace/ace.js"></script>
-    <script src="/js/ace/theme-eclipse.js"></script>
+    <script src="/js/ace/theme-evo.js"></script>
     <script src="/js/ace/theme-clouds.js"></script>
     <script src="/js/ace/theme-clouds_midnight.js"></script>
     <script src="/js/ace/theme-cobalt.js"></script>

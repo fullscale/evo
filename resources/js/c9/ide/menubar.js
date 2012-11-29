@@ -446,6 +446,7 @@ YAHOO.util.Event.onDOMReady(function () {
                             {text: "Crimson Editor",onclick: {fn: setTheme,obj: "crimson_editor"}},
                             {text: "Dawn",onclick: {fn: setTheme,obj: "dawn"}},
                             {text: "Eclipse",onclick: {fn: setTheme,obj: "eclipse"}},
+                            {text: "Evo",onclick: {fn: setTheme,obj: "evo"}},
                             {text: "Idle Fingers",onclick: {fn: setTheme,obj: "idle_fingers"}},
                             {text: "Kr Theme",onclick: {fn: setTheme,obj: "kr_theme"}},
                             {text: "Merbivore",onclick: {fn: setTheme,obj: "merbivore"}},

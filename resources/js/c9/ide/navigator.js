@@ -231,7 +231,7 @@ C9.ide.navigator = function () {
 						      
 							/* add this editor instance to the global map */
 							Editors[id] = ace.edit(id);
-							Editors[id].setTheme("ace/theme/eclipse");
+							Editors[id].setTheme("ace/theme/evo");
 
 	  						/* by default, use soft tabs (spaces) and set size to 4 */
 	  						Editors[id].getSession().setUseSoftTabs(true);
