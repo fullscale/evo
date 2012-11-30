@@ -109,11 +109,11 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
                     Editors[id].getSession().setTabSize(4);
           
                     /* detect and set the proper mode for the resource */
-                    if (dir === "html") {
+                    if (dir === "html" || dir === 'partials') {
                         Editors[id].getSession().setMode(new HtmlMode());
                     } else if (dir === "css") {
                         Editors[id].getSession().setMode(new CssMode());
-                    } else if (dir === "js" || dir === 'server-side') {
+                    } else if (dir === "js" || dir === 'server-side' || dir === 'lib') {
                         Editors[id].getSession().setMode(new JavaScriptMode());
                     }
 
