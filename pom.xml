@@ -3,8 +3,8 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.diji</groupId>
-    <artifactId>cloud9</artifactId>
-    <name>cloud9</name>
+    <artifactId>evo</artifactId>
+    <name>evo</name>
     <packaging>jar</packaging>
     <version>developer-preview.b0427</version>
 
@@ -412,7 +412,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>${project.build.directory}/releases/</outputDirectory>
                     <descriptors>
-                        <descriptor>${basedir}/src/main/assemblies/cloud9.xml</descriptor>
+                        <descriptor>${basedir}/src/main/assemblies/evo.xml</descriptor>
                     </descriptors>
                     <archiverConfig>
                         <defaultDirectoryMode>493</defaultDirectoryMode> <!-- 755 -->

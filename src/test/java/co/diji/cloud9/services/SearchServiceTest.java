@@ -43,8 +43,8 @@ public class SearchServiceTest {
 
     @BeforeClass
     public static void setup() throws Cloud9Exception {
-        System.setProperty("c9.cluster.name", "c9.test.cluster");
-        System.setProperty("c9.node.name", "c9.test.node");
+        System.setProperty("evo.cluster.name", "evo.test.cluster");
+        System.setProperty("evo.node.name", "evo.test.node");
 
         searchService = new SearchService();
         config = ConfigService.getConfigService();
@@ -78,7 +78,7 @@ public class SearchServiceTest {
     public void testHealth() {
         ClusterHealthResponse health = searchService.getClusterHealth(true);
         assertNotNull(health);
-        assertEquals("c9.test.cluster", health.getClusterName());
+        assertEquals("evo.test.cluster", health.getClusterName());
         assertEquals(1, health.getNumberOfNodes());
     }
 
@@ -104,7 +104,7 @@ public class SearchServiceTest {
         Map<String, NodeInfo> info = searchService.getNodeInfo();
         assertNotNull(info);
         assertEquals(1, info.size());
-        assertEquals("c9.test.node", info.values().iterator().next().getNode().name());
+        assertEquals("evo.test.node", info.values().iterator().next().getNode().name());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SearchServiceTest {
         Map<String, NodeStats> stats = searchService.getNodeStats();
         assertNotNull(stats);
         assertEquals(1, stats.size());
-        assertEquals("c9.test.node", stats.values().iterator().next().getNode().name());
+        assertEquals("evo.test.node", stats.values().iterator().next().getNode().name());
     }
 
     @Test

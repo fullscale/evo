@@ -33,7 +33,7 @@
     
     	<!-- Used for Spring redirects -->
     	<port-mappings>
-     		<port-mapping http="${c9.http.port:2600}" https="${c9.https.port:2643}" />
+     		<port-mapping http="${evo.http.port:2600}" https="${evo.https.port:2643}" />
    		</port-mappings>
    
     	<!-- Everyone can access the login page -->

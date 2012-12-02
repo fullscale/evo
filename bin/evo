@@ -35,7 +35,7 @@ while [ -h "$SCRIPT" ] ; do
   fi
 done
 
-# determine cloud9 home
+# determine evo home
 C9_HOME=`dirname "$SCRIPT"`/..
 
 # make C9_HOME absolute
@@ -96,7 +96,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:+UseCondCardMark"
 # JAVA_OPTS="$JAVA_OPTS -XX:+PrintClassHistogram"
 # JAVA_OPTS="$JAVA_OPTS -XX:+PrintTenuringDistribution"
 # JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCApplicationStoppedTime"
-# JAVA_OPTS="$JAVA_OPTS -Xloggc:/var/log/cloud9/gc.log"
+# JAVA_OPTS="$JAVA_OPTS -Xloggc:/var/log/evo/gc.log"
 
 # Causes the JVM to dump its heap on OutOfMemory.
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
@@ -150,7 +150,7 @@ stop_service()
 
     if [ ! -z "$pidpath" -a -f $pidpath ]; then
         pid=`cat $pidpath`
-        echo "Stopping cloud9 with pid $pid"
+        echo "Stopping evo with pid $pid"
         kill $pid
         retval=$?
 
@@ -168,7 +168,7 @@ stop_service()
 args=`getopt sfhp:D:X: "$@"`
 eval set -- "$args"
 
-pidfile="$C9_HOME/cloud9.pid"
+pidfile="$C9_HOME/evo.pid"
 
 while true; do
     case $1 in
@@ -208,7 +208,7 @@ while true; do
 done
 
 if [ "x$stop" != "x" ]; then
-    # Stop cloud9
+    # Stop evo
     stop_service "$pidfile"
 else
     # Start up the service

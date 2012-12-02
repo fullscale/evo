@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <assembly>
 
-    <id>cloud9</id>
+    <id>evo</id>
 
     <formats>
         <format>zip</format>
@@ -22,7 +22,7 @@
             <outputDirectory>bin</outputDirectory>
             <lineEnding>dos</lineEnding>
             <includes>
-                <include>cloud9.bat</include>
+                <include>evo.bat</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -33,7 +33,7 @@
             <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
             <includes>
-                <include>cloud9</include>
+                <include>evo</include>
             </includes>
         </fileSet>
         <fileSet>

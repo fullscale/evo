@@ -37,7 +37,7 @@ public final class Cloud9 {
 
     public static void main(String[] args) throws Exception {
         logger.entry();
-        logger.info("Starting Cloud9");
+        logger.info("Starting EVO");
 
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
@@ -168,7 +168,7 @@ public final class Cloud9 {
         server.start();
 
         logger.debug("jetty started");
-        logger.info("Cloud9 started");
+        logger.info("EVO started");
         server.join();
 
         logger.debug("jetty stopped");

@@ -27,17 +27,17 @@ public class ConfigService {
     private static final XLogger logger = XLoggerFactory.getXLogger(ConfigService.class);
 
     // system property keys
-    public static final String PROPERTY_C9_HOME = "c9.home";
-    public static final String PROPERTY_HTTP_PORT = "c9.http.port";
-    public static final String PROPERTY_HTTPS_PORT = "c9.https.port";
-    public static final String PROPERTY_HTTPS_ENABLED = "c9.https.enabled";
-    public static final String PROPERTY_HTTPS_KEYPASS = "c9.https.keypass";
-    public static final String PROPERTY_HTTPS_KEYSTORE = "c9.https.keystore";
-    public static final String PROPERTY_NODE_NAME = "c9.node.name";
-    public static final String PROPERTY_CLUSTER_NAME = "c9.cluster.name";
-    public static final String PROPERTY_HAZELCAST_ENABLED = "c9.hazelcast.enabled";
-    public static final String PROPERTY_CACHE_RESOURCES = "c9.cache.resources";
-    public static final String PROPERTY_CACHE_SESSIONS = "c9.cache.sessions";
+    public static final String PROPERTY_C9_HOME = "evo.home";
+    public static final String PROPERTY_HTTP_PORT = "evo.http.port";
+    public static final String PROPERTY_HTTPS_PORT = "evo.https.port";
+    public static final String PROPERTY_HTTPS_ENABLED = "evo.https.enabled";
+    public static final String PROPERTY_HTTPS_KEYPASS = "evo.https.keypass";
+    public static final String PROPERTY_HTTPS_KEYSTORE = "evo.https.keystore";
+    public static final String PROPERTY_NODE_NAME = "evo.node.name";
+    public static final String PROPERTY_CLUSTER_NAME = "evo.cluster.name";
+    public static final String PROPERTY_HAZELCAST_ENABLED = "evo.hazelcast.enabled";
+    public static final String PROPERTY_CACHE_RESOURCES = "evo.cache.resources";
+    public static final String PROPERTY_CACHE_SESSIONS = "evo.cache.sessions";
 
     // settings keys
     public static final String SETTING_HOME_DIR = "home";
@@ -414,7 +414,7 @@ public class ConfigService {
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
 
         // get the default settings
-        settings.put(getSettingsFromResource("classpath:cloud9.yml"));
+        settings.put(getSettingsFromResource("classpath:evo.yml"));
 
         // do a build with the current settings so we can use the built-in getters not
         // available on the builder
