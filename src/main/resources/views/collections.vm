@@ -33,7 +33,7 @@
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light row{%= cnt %}">
             <td colspan="{%= colspan %}">
                 <input style="width:170px;" type="text" id="txt{%= cnt %}" />&nbsp;
-                <a href="#" style="color:#db2929;font-size:12px;" id="link{%= cnt %}">Create</a>
+                <a href="#" style="color:#ff8000;font-size:12px;" id="link{%= cnt %}">Create</a>
             </td>
             {% if (type === 'field') { %}
             <td style="text-align:right">
@@ -67,7 +67,7 @@
     <script id="c9-types-table" type="text/template">
         <a href="#" id="createTypeElement" onClick="createType('{%= collection %}')"><img class="addLink" src="/img/c9/trans.png"></a>
         <span class="newCollection">Content Types</span>
-        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections /</a><span class="crumb" style="color:#db2929;"> {%= collection %}</span>
+        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections /</a><span class="crumb" style="color:#ff8000;"> {%= collection %}</span>
         <br />
         <table id="typeTable">
             <tr class="c9-table-header gradient-dark">
@@ -97,7 +97,7 @@
     <script id="c9-fields-table" type="text/template">
         <a href="#" id="createFieldElement" onClick="createField('{%= collection %}','{%= type %}')"><img class="addLink" src="/img/c9/trans.png"></a>
         <span class="newCollection">Content Fields</span>
-        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections </a><a href="#" class="crumb" onClick="c9.slide(-855)">/ {%= collection %} /</a><span class="crumb" style="color:#db2929;"> {%= type %}</span>
+        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections </a><a href="#" class="crumb" onClick="c9.slide(-855)">/ {%= collection %} /</a><span class="crumb" style="color:#ff8000;"> {%= type %}</span>
         <br />
         <table id="fieldTable">
             <tr class="c9-table-header gradient-dark">
