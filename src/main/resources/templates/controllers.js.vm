@@ -3,9 +3,7 @@
 'use strict';
 
 angular.module('${app}.controllers', [])
-    .controller('SearchCtrl', function($scope, $location, ejsResource) {
-    
-        var ejs = ejsResource('/v1');
+    .controller('SearchCtrl', function($scope, $location, ejs) {
         
         var request = ejs.Request()
             .collections("twitter")

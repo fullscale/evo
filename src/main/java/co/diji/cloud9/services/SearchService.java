@@ -708,8 +708,7 @@ public class SearchService {
 	        indexAppDoc(appName, "lib", "underscore.min.js", config.getAngularResource("js/underscore.min.js"), "application/javascript");
 	        indexAppDoc(appName, "lib", "bootstrap.min.js", config.getAngularResource("js/bootstrap.min.js"), "application/javascript");
 	        indexAppDoc(appName, "lib", "angular.min.js", config.getAngularResource("js/angular.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "elastic.min.js", config.getAngularResource("js/elastic.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "elastic-angular-client.min.js", config.getAngularResource("js/elastic-angular-client.min.js"), "application/javascript");
+	        indexAppDoc(appName, "lib", "evo.min.js", config.getAngularResource("js/evo.min.js"), "application/javascript");
 	        
 	        /* load the CSS application boilerplate */
 	        indexAppDoc(appName, "css", appName+".css", config.getAngularTemplate(appName, "project.css"), "text/css");

@@ -8,8 +8,9 @@ angular.module('${app}', [
     '${app}.filters', 
     '${app}.services', 
     '${app}.directives', 
-    'elasticjs.service'])
-    .config(['$routeProvider', function($routeProvider) {
+    'evo.services',
+    'evo.graphing'
+    ]).config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/search', {
                 templateUrl: '/test/partials/search.html'
