@@ -8,8 +8,7 @@ angular.module('${app}', [
     '${app}.filters', 
     '${app}.services', 
     '${app}.directives', 
-    'evo.services',
-    'evo.graphing'
+    'evo'
     ]).config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/search', {
