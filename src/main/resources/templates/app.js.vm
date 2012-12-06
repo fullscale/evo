@@ -12,10 +12,10 @@ angular.module('${app}', [
     ]).config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/search', {
-                templateUrl: '/test/partials/search.html'
+                templateUrl: '/${app}/partials/search.html'
             })
             .when('/results', {
-                templateUrl: '/test/partials/results.html' 
+                templateUrl: '/${app}/partials/results.html' 
             })
             .otherwise({
                 redirectTo: '/search'
