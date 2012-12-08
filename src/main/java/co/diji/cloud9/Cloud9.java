@@ -17,6 +17,7 @@ import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.ext.XLogger;
@@ -111,6 +112,11 @@ public final class Cloud9 {
         servletContextHandler.addFilter(new FilterHolder(springSecurityFilter),
                 "/*",
                 EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD));
+        
+        // setup gzip filter
+        if (config.getGzipEnabled()) {
+        	servletContextHandler.addFilter(GzipFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+        }
 
         // setup dispatcher servlet
         logger.debug("creating dispatcher");

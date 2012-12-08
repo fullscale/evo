@@ -38,6 +38,7 @@ public class ConfigService {
     public static final String PROPERTY_HAZELCAST_ENABLED = "evo.hazelcast.enabled";
     public static final String PROPERTY_CACHE_RESOURCES = "evo.cache.resources";
     public static final String PROPERTY_CACHE_SESSIONS = "evo.cache.sessions";
+    public static final String PROPERTY_GZIP_ENABLED = "evo.gzip.enabled";
 
     // settings keys
     public static final String SETTING_HOME_DIR = "home";
@@ -57,6 +58,7 @@ public class ConfigService {
     public static final String SETTING_HAZELCAST_ENABLED = "hazelcast.enabled";
     public static final String SETTING_CACHE_RESOURCES_ENABLED = "cache.resources.enabled";
     public static final String SETTING_CACHE_SESSIONS_ENABLED = "cache.sessions.enabled";
+    public static final String SETTING_GZIP_ENABLED = "gzip.enabled";
 
     // resource prefix strings
     public static final String RESOURCE_PREFIX_CLASSPATH = "classpath:";
@@ -481,6 +483,12 @@ public class ConfigService {
         logger.debug("session cache enabled: {}", sessionCacheEnabled);
         settings.put(SETTING_CACHE_SESSIONS_ENABLED, sessionCacheEnabled);
 
+        // gzip compression enabled
+        boolean gzipEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_GZIP_ENABLED,
+                defaults.get(SETTING_GZIP_ENABLED, "true")));
+        logger.debug("gzip compression enabled: {}", gzipEnabled);
+        settings.put(SETTING_GZIP_ENABLED, gzipEnabled);
+        
         // node name
         // set node name to the current hostname if the user does not specify one
         // order is system properties, settings file, hostname, "cloud9"
@@ -712,5 +720,9 @@ public class ConfigService {
 
     public boolean getSessionCacheEnabled() {
         return cloud9Settings.getAsBoolean(SETTING_CACHE_SESSIONS_ENABLED, true);
+    }
+    
+    public boolean getGzipEnabled() {
+    	return cloud9Settings.getAsBoolean(SETTING_GZIP_ENABLED, true);
     }
 }
