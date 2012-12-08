@@ -6,8 +6,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.elasticsearch.common.Unicode;
+import org.elasticsearch.common.bytes.BytesReference;
+import org.elasticsearch.common.bytes.ChannelBufferBytesReference;
 import org.elasticsearch.common.io.Streams;
+import org.elasticsearch.common.netty.buffer.ChannelBuffers;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.support.AbstractRestRequest;
 import org.elasticsearch.rest.support.RestUtils;
@@ -22,7 +24,7 @@ public class ServletRestRequest extends AbstractRestRequest implements RestReque
     private final Method method;
     private final Map<String, String> params;
     private final String path;
-    private final byte[] content;
+    private final BytesReference content;
 
     public ServletRestRequest(HttpServletRequest servletRequest) throws IOException {
         logger.entry();
@@ -37,7 +39,10 @@ public class ServletRestRequest extends AbstractRestRequest implements RestReque
             RestUtils.decodeQueryString(servletRequest.getQueryString(), 0, params);
         }
 
-        content = Streams.copyToByteArray(servletRequest.getInputStream());
+        content = new ChannelBufferBytesReference(
+        			ChannelBuffers.copiedBuffer(
+        				Streams.copyToByteArray(servletRequest.getInputStream())
+        			));
         logger.debug("method:{} path:{} params:{}", new Object[]{method, path, params});
         logger.exit();
     }
@@ -59,32 +64,17 @@ public class ServletRestRequest extends AbstractRestRequest implements RestReque
 
     @Override
     public boolean hasContent() {
-        return content.length > 0;
+        return content.length() > 0;
     }
 
     @Override
     public boolean contentUnsafe() {
         return false;
     }
-
+    
     @Override
-    public byte[] contentByteArray() {
-        return content;
-    }
-
-    @Override
-    public int contentByteArrayOffset() {
-        return 0;
-    }
-
-    @Override
-    public int contentLength() {
-        return content.length;
-    }
-
-    @Override
-    public String contentAsString() {
-        return Unicode.fromBytes(contentByteArray(), contentByteArrayOffset(), contentLength());
+    public BytesReference content() {
+    	return content;
     }
 
     @Override
