@@ -14,7 +14,7 @@
             <tbody>
                 <tr ng-repeat="doc in results.hits.hits">
                     <td>{{doc._source.user}}</td>
-                    <td>{{doc._source.message}}</td>
+                    <td>{{doc._source.text}}</td>
                 </tr>
             </tbody>
         </table>
