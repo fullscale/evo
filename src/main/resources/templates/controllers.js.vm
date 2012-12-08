@@ -11,7 +11,7 @@ angular.module('${app}.controllers', [])
         
         $scope.search = function() {
             $scope.results = request
-                .query(ejs.QueryString($scope.queryTerm || '*'))
+                .query(ejs.QueryStringQuery($scope.queryTerm || '*'))
                 .get();
                 
             $location.path("/results");
