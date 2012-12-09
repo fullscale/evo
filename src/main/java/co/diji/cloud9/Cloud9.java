@@ -7,19 +7,23 @@ import javax.servlet.DispatcherType;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 
-import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
@@ -42,29 +46,68 @@ public final class Cloud9 {
 
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
+        
+        // configure our connection thread pool
+        logger.debug("create jetty thread pool");
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMaxThreads(config.getHttpMaxThreads());
 
         // create jetty server
-        Server server = new Server();
+        Server server = new Server(threadPool);
+        server.manage(threadPool);
+        server.setDumpAfterStart(false);
+        server.setDumpBeforeStop(false);
 
-        // Setup http connector
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(config.getHttpPort());
-        connector.setMaxIdleTime(30000);
-        connector.setStatsOn(false);
-        server.setConnectors(new Connector[]{connector});
+        // HTTP configuration
+        HttpConfiguration httpConf = new HttpConfiguration();
+        httpConf.setSecurePort(config.getHttpsPort());
+        httpConf.addCustomizer(new ForwardedRequestCustomizer());
+        httpConf.addCustomizer(new SecureRequestCustomizer());
+        
+        // HTTP connector
+        HttpConnectionFactory http = new HttpConnectionFactory(httpConf);
+        ServerConnector httpConnector = new ServerConnector(server, http);
+        httpConnector.setPort(2600);
+        httpConnector.setIdleTimeout(10000);
+        server.addConnector(httpConnector);
+        
+        // SSL context
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStorePath(config.getHttpsKeystore());
+        sslContextFactory.setKeyStorePassword(config.getHttpsKeypass());
+        sslContextFactory.setKeyManagerPassword(config.getHttpsKeypass());
+        sslContextFactory.setTrustStorePath(config.getHttpsKeystore());
+        sslContextFactory.setExcludeCipherSuites(
+                "SSL_RSA_WITH_DES_CBC_SHA",
+                "SSL_DHE_RSA_WITH_DES_CBC_SHA",
+                "SSL_DHE_DSS_WITH_DES_CBC_SHA",
+                "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
+                "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
+        
+        /* Spdy Connector
+        SPDYServerConnectionFactory.checkNPNAvailable();
 
+        PushStrategy push = new ReferrerPushStrategy();
+        HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(2,conf,push);
+        spdy2.setInputBufferSize(8192);
+        spdy2.setInitialWindowSize(32768);
+
+        HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3,conf,push);
+        spdy2.setInputBufferSize(8192);
+
+        NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(),spdy2.getProtocol(),http.getProtocol());
+        npn.setDefaultProtocol(http.getProtocol());
+        npn.setInputBufferSize(1024);*/
+        
         // see if we need to enabled https
         if (config.getHttpsEnabled()) {
             logger.info("HTTPS enabled");
-            final SslContextFactory sslContextFactory = new SslContextFactory(config.getHttpsKeystore());
-            sslContextFactory.setKeyStorePassword(config.getHttpsKeypass());
-            sslContextFactory.setKeyManagerPassword(config.getHttpsKeypass());
-
-            final SslSocketConnector sslConn = new SslSocketConnector(sslContextFactory);
-            sslConn.setPort(config.getHttpsPort());
-            sslConn.setStatsOn(false);
-            server.addConnector(sslConn);
-            sslConn.open();
+            SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, "http/1.1");
+            ServerConnector sslConnector = new ServerConnector(server, ssl, http);
+            sslConnector.setPort(config.getHttpsPort());
+            server.addConnector(sslConnector);
         }
 
         // main servlet context
@@ -139,12 +182,6 @@ public final class Cloud9 {
         // set the directory where our resources are located
         logger.debug("for resources");
         servletContextHandler.setResourceBase("resources");
-
-        // configure our connection thread pool
-        logger.debug("create jetty thread pool");
-        QueuedThreadPool threadPool = new QueuedThreadPool();
-        threadPool.setMaxThreads(config.getHttpMaxThreads());
-        server.setThreadPool(threadPool);
 
         logger.debug("enabling stop on shutdown");
         server.setStopAtShutdown(true);
