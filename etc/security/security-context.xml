@@ -27,7 +27,8 @@
 	<!-- no need to secure static resources -->
     <http pattern="/css/**" security="none"/>
     <http pattern="/js/**" security="none"/>
-    <http pattern="/images/**" security="none"/>
+    <http pattern="/img/**" security="none"/>
+    <http pattern="/v1/**" security="none"/>
 
     <http use-expressions="true" disable-url-rewriting="true">
     
