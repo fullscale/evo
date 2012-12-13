@@ -2,7 +2,7 @@
 <configuration>
     <!-- Properties -->
     <property name="LOGDIR" value="${C9_HOME:-.}/logs" />
-    <property name="LOGFILE" value="cloud9.log" />
+    <property name="LOGFILE" value="evo.log" />
     <property name="SLOWLOG" value="slowlog.log" />
 
 	<!-- Appenders -->
