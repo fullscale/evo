@@ -433,7 +433,7 @@ public class ConfigService {
         settings.put(SETTING_HTTP_MAXTHREADS, maxThreads);
 
         // session timeout (in seconds)
-        int sessionTimeout = defaults.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, 43200); // 12-hours
+        int sessionTimeout = defaults.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, -1); // 12-hours
         logger.debug("session timeout in seconds: {}", sessionTimeout);
         settings.put(SETTING_HTTP_SESSION_TIMEOUT, sessionTimeout);
 
