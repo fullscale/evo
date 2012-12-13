@@ -6,7 +6,7 @@
     <artifactId>evo</artifactId>
     <name>evo</name>
     <packaging>jar</packaging>
-    <version>developer-preview.b0427</version>
+    <version>developer-preview.b2413</version>
 
     <properties>
         <java-version>1.7</java-version>
