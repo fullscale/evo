@@ -104,6 +104,8 @@ JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 # space for a full heap dump.
 #JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$C9_HOME/logs/heapdump.hprof"
 
+JAVA_OPTS="$JAVA_OPTS -Xbootclasspath/p:$C9_HOME/lib/boot/npn-boot-1.1.1.v20121030.jar"
+
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA=$JAVA_HOME/bin/java
 else

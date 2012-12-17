@@ -23,6 +23,11 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.spdy.server.NPNServerConnectionFactory;
+import org.eclipse.jetty.spdy.server.SPDYServerConnectionFactory;
+import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnectionFactory;
+import org.eclipse.jetty.spdy.server.http.PushStrategy;
+import org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy;
 
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -86,28 +91,41 @@ public final class Cloud9 {
                 "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
                 "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
         
-        /* Spdy Connector
-        SPDYServerConnectionFactory.checkNPNAvailable();
-
-        PushStrategy push = new ReferrerPushStrategy();
-        HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(2,conf,push);
-        spdy2.setInputBufferSize(8192);
-        spdy2.setInitialWindowSize(32768);
-
-        HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3,conf,push);
-        spdy2.setInputBufferSize(8192);
-
-        NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(),spdy2.getProtocol(),http.getProtocol());
-        npn.setDefaultProtocol(http.getProtocol());
-        npn.setInputBufferSize(1024);*/
-        
         // see if we need to enabled https
         if (config.getHttpsEnabled()) {
-            logger.info("HTTPS enabled");
-            SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, "http/1.1");
-            ServerConnector sslConnector = new ServerConnector(server, ssl, http);
-            sslConnector.setPort(config.getHttpsPort());
-            server.addConnector(sslConnector);
+        	
+        	if (config.getSpdyEnabled()) {
+        		
+        		logger.info("HTTPS/SPDY enabled");
+        		
+        		/* Spdy Connector */
+        		SPDYServerConnectionFactory.checkNPNAvailable();
+
+	            PushStrategy push = new ReferrerPushStrategy();
+	            HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(2, httpConf, push);
+	            spdy2.setInputBufferSize(8192);
+	            spdy2.setInitialWindowSize(32768);
+	
+	            HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3, httpConf,push);
+	            spdy2.setInputBufferSize(8192);
+	
+	            NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol());
+	            npn.setDefaultProtocol(http.getProtocol());
+	            npn.setInputBufferSize(1024);
+	            
+	            SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, npn.getProtocol());
+	            ServerConnector sslConnector = new ServerConnector(server, ssl, npn, spdy3, spdy2, http);
+	            sslConnector.setPort(config.getHttpsPort());
+	            server.addConnector(sslConnector);
+	            
+        	} else {
+            	logger.info("HTTPS enabled");
+            	
+	            SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, "http/1.1");
+	            ServerConnector sslConnector = new ServerConnector(server, ssl, http);
+	            sslConnector.setPort(config.getHttpsPort());
+	            server.addConnector(sslConnector);
+        	}
         }
 
         // main servlet context

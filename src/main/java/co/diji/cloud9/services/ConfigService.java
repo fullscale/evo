@@ -33,6 +33,7 @@ public class ConfigService {
     public static final String PROPERTY_HTTPS_ENABLED = "evo.https.enabled";
     public static final String PROPERTY_HTTPS_KEYPASS = "evo.https.keypass";
     public static final String PROPERTY_HTTPS_KEYSTORE = "evo.https.keystore";
+    public static final String PROPERTY_SPDY_ENABLED = "evo.spdy.enabled";
     public static final String PROPERTY_NODE_NAME = "evo.node.name";
     public static final String PROPERTY_CLUSTER_NAME = "evo.cluster.name";
     public static final String PROPERTY_HAZELCAST_ENABLED = "evo.hazelcast.enabled";
@@ -52,6 +53,7 @@ public class ConfigService {
     public static final String SETTING_HTTPS_ENABLED = "network.https.enabled";
     public static final String SETTING_HTTPS_KEYPASS = "network.https.keypass";
     public static final String SETTING_HTTPS_KEYSTORE = "network.https.keystore";
+    public static final String SETTING_SPDY_ENABLED = "network.spdy.enabled";
     public static final String SETTING_UNICAST_HOSTS = "network.unicast.hosts";
     public static final String SETTING_UNICAST_ENABLED = "network.unicast.enabled";
     public static final String SETTING_MULTICAST_ENABLED = "network.multicast.enabled";
@@ -464,6 +466,12 @@ public class ConfigService {
                 defaults.get(SETTING_HTTPS_KEYSTORE, getHome() + "/etc/security/c9.default.keystore"));
         logger.debug("https keystore: {}", httpsKeystore);
         settings.put(SETTING_HTTPS_KEYSTORE, httpsKeystore);
+        
+        // spdy enabled
+        boolean spdyEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_SPDY_ENABLED,
+                defaults.get(SETTING_SPDY_ENABLED, "true")));
+        logger.debug("spdy enabled: {}", spdyEnabled);
+        settings.put(SETTING_SPDY_ENABLED, spdyEnabled);
 
         // hazelcast enabled
         boolean hazelcastEnabled = Boolean.parseBoolean(System.getProperty(PROPERTY_HAZELCAST_ENABLED,
@@ -690,6 +698,10 @@ public class ConfigService {
         return cloud9Settings.get(SETTING_HTTPS_KEYSTORE);
     }
 
+    public boolean getSpdyEnabled() {
+        return cloud9Settings.getAsBoolean(SETTING_SPDY_ENABLED, true);
+    }
+    
     public String getNodeName() {
         return cloud9Settings.get(SETTING_NODE_NAME);
     }

@@ -70,6 +70,13 @@
                 <include>*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>lib/boot</directory>
+            <outputDirectory>lib/boot</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
 </assembly>
