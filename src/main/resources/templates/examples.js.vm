@@ -78,16 +78,16 @@ function examples() {
             };
         },
         
-        /* example using Cloud9 javascript client */
+        /* example using evo javascript client */
         search: function(env) {
         
             var request = ejs.Request()
-                .collections("twitter")
+                .indices("twitter")
                 .types("tweet");
             
             var results = request
-                .query(ejs.QueryString('user:kimchy'))
-                .get();
+                .query(ejs.QueryStringQuery('user:kimchy'))
+                .doSearch();
                         
             if (results === null) {
                 return {

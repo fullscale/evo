@@ -6,13 +6,13 @@ angular.module('${app}.controllers', [])
     .controller('SearchCtrl', function($scope, $location, ejs) {
         
         var request = ejs.Request()
-            .collections("twitter")
+            .indices("twitter")
             .types("tweet");
         
         $scope.search = function() {
             $scope.results = request
                 .query(ejs.QueryStringQuery($scope.queryTerm || '*'))
-                .get();
+                .doSearch();
                 
             $location.path("/results");
             $scope.queryTerm = "";
