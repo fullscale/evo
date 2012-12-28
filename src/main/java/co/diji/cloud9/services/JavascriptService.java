@@ -12,6 +12,7 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import co.diji.cloud9.javascript.NodeClient;
 import co.diji.cloud9.javascript.PrimitiveWrapFactory;
 import co.diji.cloud9.javascript.XMLHttpRequest;
 import co.diji.cloud9.javascript.ElasticJsClient;
@@ -41,6 +42,7 @@ public class JavascriptService {
             // for ajax calls
             ScriptableObject.defineClass(scope, XMLHttpRequest.class);
             ScriptableObject.defineClass(scope, ElasticJsClient.class);
+            ScriptableObject.defineClass(scope, NodeClient.class);
 
             // used in cloud9 javascript api to detect if we are running server side or not
             scope.put("ServerSideC9", scope, true);
