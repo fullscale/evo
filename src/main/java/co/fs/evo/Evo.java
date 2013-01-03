@@ -42,9 +42,9 @@ import co.fs.evo.config.RootContext;
 import co.fs.evo.http.ErrorSuppressingSessionListener;
 import co.fs.evo.services.ConfigService;
 
-public final class Cloud9 {
+public final class Evo {
 
-    private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(Evo.class);
 
     public static void main(String[] args) throws Exception {
         logger.entry();

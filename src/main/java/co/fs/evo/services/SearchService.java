@@ -75,7 +75,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
 import co.fs.evo.exceptions.index.IndexCreationException;
@@ -85,7 +85,7 @@ import co.fs.evo.exceptions.index.IndexMissingException;
 import co.fs.evo.exceptions.mapping.MappingException;
 import co.fs.evo.exceptions.type.TypeCreationException;
 import co.fs.evo.exceptions.type.TypeExistsException;
-import co.fs.evo.utils.C9Helper;
+import co.fs.evo.utils.EvoHelper;
 
 @Service
 public class SearchService {
@@ -108,10 +108,10 @@ public class SearchService {
     /**
      * Initialize and start our ElasticSearch node.
      * 
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
     @PostConstruct
-    public void booststrap() throws Cloud9Exception {
+    public void booststrap() throws EvoException {
         logger.entry();
         logger.info("Initializing data/search services");
         node = NodeBuilder.nodeBuilder().settings(config.getNodeSettings()).node();
@@ -161,11 +161,11 @@ public class SearchService {
     }
 
     /**
-     * Creates the Cloud9 system index
+     * Creates the Evo system index
      * 
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
-    public void setupSystemIndex() throws Cloud9Exception {
+    public void setupSystemIndex() throws EvoException {
         logger.entry();
         boolean hasSysIndex = hasIndex(SYSTEM_INDEX);
         logger.debug("hasSysIndex: {}", hasSysIndex);
@@ -175,7 +175,7 @@ public class SearchService {
                 createIndex(SYSTEM_INDEX, 1, 1);
             } catch (IndexException e) {
                 logger.error("Error creating system index");
-                throw new Cloud9Exception("Error creating system index", e);
+                throw new EvoException("Error creating system index", e);
             }
 
             String uid = UUID.randomUUID().toString();
@@ -203,9 +203,9 @@ public class SearchService {
     /**
      * Creates the application index
      * 
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
-    public void setupApplicationIndex() throws Cloud9Exception {
+    public void setupApplicationIndex() throws EvoException {
     	logger.entry();
     	boolean hasAppIndex = hasIndex(APP_INDEX);
     	if (!hasAppIndex) {
@@ -513,7 +513,7 @@ public class SearchService {
      */
     public boolean createIndex(String name, Settings settings, Map<String, String> mappings) throws IndexException {
         logger.entry(name);
-        boolean valid = C9Helper.isValidName(name);
+        boolean valid = EvoHelper.isValidName(name);
         logger.debug("is valid name: {}", valid);
         if (!valid) {
             throw new IndexCreationException("Invalid index name: " + name);
@@ -981,14 +981,14 @@ public class SearchService {
      * @param index the index you want to create the type for
      * @param type the name of the type to create
      * @return if the type creation was ack'd by the cluster or not
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
-    public boolean createType(String index, String type) throws Cloud9Exception {
+    public boolean createType(String index, String type) throws EvoException {
         logger.entry(index, type);
         Map<String, MappingMetaData> mappings = getMappings(index);
         boolean resp = false;
 
-        boolean validName = C9Helper.isValidName(type);
+        boolean validName = EvoHelper.isValidName(type);
         logger.debug("validName:{}", validName);
         if (!validName) {
             throw new TypeCreationException("Invalid type name: " + type);
@@ -1020,9 +1020,9 @@ public class SearchService {
      * 
      * @param app the name of the application to import
      * @param input the input stream of the zip file containing the application's files
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
-    public void importApp(String app, InputStream input) throws Cloud9Exception {
+    public void importApp(String app, InputStream input) throws EvoException {
         importApp(app, input, false, true);
     }
 
@@ -1032,9 +1032,9 @@ public class SearchService {
      * @param app the name of the application to import
      * @param input the input stream of the zip file containing the application's files
      * @param force to force install the application
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
-    public void importApp(String app, InputStream input, boolean force) throws Cloud9Exception {
+    public void importApp(String app, InputStream input, boolean force) throws EvoException {
         importApp(app, input, force, true);
     }
 
@@ -1045,22 +1045,22 @@ public class SearchService {
      * @param input the input stream of the zip file containing the application's files
      * @param force to force install the application
      * @param mappings to install any mappings found in the file or not
-     * @throws Cloud9Exception
+     * @throws EvoException
      */
     @SuppressWarnings("unchecked")
-    public void importApp(String app, InputStream input, boolean force, boolean mappings) throws Cloud9Exception {
+    public void importApp(String app, InputStream input, boolean force, boolean mappings) throws EvoException {
         logger.entry(app, force, mappings);
         String sep = System.getProperty("file.separator");
         logger.debug("sep:{} appIndex:{}", sep, app);
 
         if (input == null) {
             logger.error("input stream for {} is null", app);
-            throw new Cloud9Exception("Error importing app:" + app + ", input stream is null");
+            throw new EvoException("Error importing app:" + app + ", input stream is null");
         }
 
         if (!force && hasApp(app)) {
             logger.error("Application already exists: {}, foce to override", app);
-            throw new Cloud9Exception("Application already exists: " + app);
+            throw new EvoException("Application already exists: " + app);
         }
 
         if (force && hasApp(app)) {
@@ -1093,7 +1093,7 @@ public class SearchService {
                         pathParts = newParts;
                 	} else {
                 		logger.warn("Invalid resource: {}", entry.getName());
-                		throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                		throw new EvoException("Invalid resource: " + entry.getName());
                 	}
                 }
 
@@ -1104,13 +1104,13 @@ public class SearchService {
                 logger.debug("force:{} partApp:{}", force, partApp);
                 if (!force && !partApp.equals(app)) {
                     logger.warn("Name mismatch, found {}, expecting {}, use force option to override", partApp, app);
-                    throw new Cloud9Exception("Name mismatch, use force?");
+                    throw new EvoException("Name mismatch, use force?");
                 }
 
                 logger.debug("partType: {}", partType);
                 if (!Arrays.asList(VALID_TYPES).contains(partType)) {
                     logger.warn("Invalid resource: {}", entry.getName());
-                    throw new Cloud9Exception("Invalid resource: " + entry.getName());
+                    throw new EvoException("Invalid resource: " + entry.getName());
                 }
 
                 if (partType.equals("conf")) {
@@ -1141,7 +1141,7 @@ public class SearchService {
                     int sIdx = partName.indexOf('.');
                     if (sIdx == -1) {
                         logger.warn("Image without extension: {}", partName);
-                        throw new Cloud9Exception("Image without extension: " + partName);
+                        throw new EvoException("Image without extension: " + partName);
                     }
                     String suffix = partName.substring(sIdx + 1, partName.length());
                     indexAppDoc(app, "img", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
@@ -1159,7 +1159,7 @@ public class SearchService {
         } catch (Exception e) {
             logger.error("Error importing application: {}", app);
             deleteApp(app);
-            throw new Cloud9Exception("Error importing application: " + app, e);
+            throw new EvoException("Error importing application: " + app, e);
         } finally {
             logger.debug("closing zip");
             if (zip != null) {
@@ -1174,19 +1174,19 @@ public class SearchService {
         logger.exit();
     }
 
-    public void exportApp(String app, OutputStream out, Map<String, String[]> mappings) throws Cloud9Exception {
+    public void exportApp(String app, OutputStream out, Map<String, String[]> mappings) throws EvoException {
         logger.entry(app);
         String sep = System.getProperty("file.separator");
         logger.debug("sep:{} appIndex:{}", sep, app);
 
         if (out == null) {
             logger.error("output stream for {} is null", app);
-            throw new Cloud9Exception("Error importing app:" + app + ", output stream is null");
+            throw new EvoException("Error importing app:" + app + ", output stream is null");
         }
 
         if (!hasApp(app)) {
             logger.error("Application does not exist: {}", app);
-            throw new Cloud9Exception("Application does not exist: " + app);
+            throw new EvoException("Application does not exist: " + app);
         }
 
         List<String> contentTypes = getAppTypes(app);
@@ -1260,7 +1260,7 @@ public class SearchService {
             }
         } catch (Exception e) {
             logger.error("Error exporting application: {}", app);
-            throw new Cloud9Exception("Error exporting application: " + app, e);
+            throw new EvoException("Error exporting application: " + app, e);
         } finally {
             logger.debug("closing zip");
             if (zip != null) {

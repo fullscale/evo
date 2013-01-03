@@ -13,7 +13,7 @@
 
 	<!-- Bean definitions -->
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
-    <beans:bean id="cloud9UserDetailsService" class="co.fs.evo.security.Cloud9UserDetailsService" />
+    <beans:bean id="evoUserDetailsService" class="co.fs.evo.security.EvoUserDetailsService" />
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
     	<beans:constructor-arg value="256"/>
     </beans:bean>
@@ -76,8 +76,8 @@
     
     <authentication-manager>
     
-    	<!-- Cloud9 provider -->
-    	<authentication-provider user-service-ref="cloud9UserDetailsService">
+    	<!-- Evo provider -->
+    	<authentication-provider user-service-ref="evoUserDetailsService">
     		<password-encoder ref="passwordEncoder">
     			<salt-source ref="saltSource"/>
     		</password-encoder>

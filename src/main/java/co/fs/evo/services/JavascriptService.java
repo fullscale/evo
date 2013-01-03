@@ -44,9 +44,6 @@ public class JavascriptService {
             ScriptableObject.defineClass(scope, ElasticJsClient.class);
             ScriptableObject.defineClass(scope, NodeClient.class);
 
-            // used in cloud9 javascript api to detect if we are running server side or not
-            scope.put("ServerSideC9", scope, true);
-
             // load shared libs
             loadLib(cx, scope, "underscore", "file:resources/js/underscore-min.js");
             loadLib(cx, scope, "ejs", "file:resources/js/elastic.min.js");

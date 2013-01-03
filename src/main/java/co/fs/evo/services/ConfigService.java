@@ -27,7 +27,7 @@ public class ConfigService {
     private static final XLogger logger = XLoggerFactory.getXLogger(ConfigService.class);
 
     // system property keys
-    public static final String PROPERTY_C9_HOME = "evo.home";
+    public static final String PROPERTY_HOME_DIR = "evo.home";
     public static final String PROPERTY_HTTP_PORT = "evo.http.port";
     public static final String PROPERTY_HTTPS_PORT = "evo.https.port";
     public static final String PROPERTY_HTTPS_ENABLED = "evo.https.enabled";
@@ -67,7 +67,7 @@ public class ConfigService {
     public static final String RESOURCE_PREFIX_FILE = "file:";
 
     // our settings
-    private Settings cloud9Settings;
+    private Settings evoSettings;
     private Settings nodeSettings;
 
     private static ConfigService configService;
@@ -102,7 +102,7 @@ public class ConfigService {
         // configure hazelcast to use slf4j
         System.setProperty("hazelcast.logging.type", "slf4j");
 
-        cloud9Settings = createCloud9Settings();
+        evoSettings = createEvoSettings();
         nodeSettings = createNodeSettings();
         logger.exit();
     }
@@ -114,7 +114,7 @@ public class ConfigService {
      * @return a string value of the setting
      */
     public String get(String key) {
-        return cloud9Settings.get(key);
+        return evoSettings.get(key);
     }
 
     /**
@@ -125,7 +125,7 @@ public class ConfigService {
      * @return a string value of the setting
      */
     public String get(String key, String def) {
-        return cloud9Settings.get(key, def);
+        return evoSettings.get(key, def);
     }
 
     /**
@@ -135,7 +135,7 @@ public class ConfigService {
      * @return an integer value of the setting
      */
     public int getInt(String key) {
-        return cloud9Settings.getAsInt(key, null);
+        return evoSettings.getAsInt(key, null);
     }
 
     /**
@@ -146,7 +146,7 @@ public class ConfigService {
      * @return a integer value of the setting
      */
     public int getInt(String key, int def) {
-        return cloud9Settings.getAsInt(key, def);
+        return evoSettings.getAsInt(key, def);
     }
 
     /**
@@ -156,7 +156,7 @@ public class ConfigService {
      * @return a float value of the setting
      */
     public float getFloat(String key) {
-        return cloud9Settings.getAsFloat(key, null);
+        return evoSettings.getAsFloat(key, null);
     }
 
     /**
@@ -167,7 +167,7 @@ public class ConfigService {
      * @return a float value of the setting
      */
     public float getFloat(String key, float def) {
-        return cloud9Settings.getAsFloat(key, def);
+        return evoSettings.getAsFloat(key, def);
     }
 
     /**
@@ -177,7 +177,7 @@ public class ConfigService {
      * @return a double value of the setting
      */
     public double getDouble(String key) {
-        return cloud9Settings.getAsDouble(key, null);
+        return evoSettings.getAsDouble(key, null);
     }
 
     /**
@@ -188,7 +188,7 @@ public class ConfigService {
      * @return a double value of the setting
      */
     public double getDouble(String key, double def) {
-        return cloud9Settings.getAsDouble(key, def);
+        return evoSettings.getAsDouble(key, def);
     }
 
     /**
@@ -198,7 +198,7 @@ public class ConfigService {
      * @return a long value of the setting
      */
     public long getLong(String key) {
-        return cloud9Settings.getAsLong(key, null);
+        return evoSettings.getAsLong(key, null);
     }
 
     /**
@@ -209,7 +209,7 @@ public class ConfigService {
      * @return a long value of the setting
      */
     public long getLong(String key, long def) {
-        return cloud9Settings.getAsLong(key, def);
+        return evoSettings.getAsLong(key, def);
     }
 
     /**
@@ -219,7 +219,7 @@ public class ConfigService {
      * @return a boolean value of the setting
      */
     public boolean getBool(String key) {
-        return cloud9Settings.getAsBoolean(key, null);
+        return evoSettings.getAsBoolean(key, null);
     }
 
     /**
@@ -230,7 +230,7 @@ public class ConfigService {
      * @return a boolean value of the setting
      */
     public boolean getBool(String key, boolean def) {
-        return cloud9Settings.getAsBoolean(key, def);
+        return evoSettings.getAsBoolean(key, def);
     }
 
     /**
@@ -240,7 +240,7 @@ public class ConfigService {
      * @return an array value of the setting
      */
     public String[] getArray(String key) {
-        return cloud9Settings.getAsArray(key, null);
+        return evoSettings.getAsArray(key, null);
     }
 
     /**
@@ -251,16 +251,16 @@ public class ConfigService {
      * @return a array value of the setting
      */
     public String[] getArray(String key, String[] def) {
-        return cloud9Settings.getAsArray(key, def);
+        return evoSettings.getAsArray(key, def);
     }
 
     /**
-     * Gets the internal cloud9 settings
+     * Gets the internal evo settings
      * 
-     * @return the cloud9 settings object
+     * @return the evo settings object
      */
-    public Settings getCloud9Settings() {
-        return cloud9Settings;
+    public Settings getEvoSettings() {
+        return evoSettings;
     }
 
     /**
@@ -408,12 +408,12 @@ public class ConfigService {
     }
 
     /**
-     * Generates the main Cloud9 settings. Settings are read from system properties or a user specified file. Some settings use
+     * Generates the main Evo settings. Settings are read from system properties or a user specified file. Some settings use
      * defaults when not set by the user.
      * 
      * @return the settings file
      */
-    public Settings createCloud9Settings() {
+    public Settings createEvoSettings() {
         logger.entry();
         ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
 
@@ -499,7 +499,7 @@ public class ConfigService {
         
         // node name
         // set node name to the current hostname if the user does not specify one
-        // order is system properties, settings file, hostname, "cloud9"
+        // order is system properties, settings file, hostname, "evo"
         String nodeName = System.getProperty(PROPERTY_NODE_NAME, defaults.get(SETTING_NODE_NAME));
         if (nodeName == null) {
             logger.debug("no node name specified, using hostname");
@@ -507,7 +507,7 @@ public class ConfigService {
                 nodeName = InetAddress.getLocalHost().getHostName();
             } catch (UnknownHostException e) {
                 logger.debug("unable to get hostname", e);
-                nodeName = "cloud9";
+                nodeName = "evo";
             }
         }
 
@@ -551,7 +551,7 @@ public class ConfigService {
     }
 
     /**
-     * Create the node settings from default settings and the main cloud9 settings file.
+     * Create the node settings from default settings and the main evo settings file.
      * 
      * @return the node settings.
      */
@@ -663,78 +663,78 @@ public class ConfigService {
     }
 
     public String getHome() {
-        return System.getProperty(PROPERTY_C9_HOME, System.getProperty("user.dir", "."));
+        return System.getProperty(PROPERTY_HOME_DIR, System.getProperty("user.dir", "."));
     }
 
     public int getHttpPort() {
-        return cloud9Settings.getAsInt(SETTING_HTTP_PORT, 2600);
+        return evoSettings.getAsInt(SETTING_HTTP_PORT, 2600);
     }
 
     public int getHttpMaxThreads() {
-        return cloud9Settings.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
+        return evoSettings.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
     }
 
     public int getHttpSessionTimeout() {
-        return cloud9Settings.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, 43200);
+        return evoSettings.getAsInt(SETTING_HTTP_SESSION_TIMEOUT, 43200);
     }
 
     public boolean getHttpRequestLogEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_HTTP_REQUESTLOG_ENABLED, false);
+        return evoSettings.getAsBoolean(SETTING_HTTP_REQUESTLOG_ENABLED, false);
     }
 
     public int getHttpsPort() {
-        return cloud9Settings.getAsInt(SETTING_HTTPS_PORT, 2643);
+        return evoSettings.getAsInt(SETTING_HTTPS_PORT, 2643);
     }
 
     public boolean getHttpsEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_HTTPS_ENABLED, false);
+        return evoSettings.getAsBoolean(SETTING_HTTPS_ENABLED, false);
     }
 
     public String getHttpsKeypass() {
-        return cloud9Settings.get(SETTING_HTTPS_KEYPASS);
+        return evoSettings.get(SETTING_HTTPS_KEYPASS);
     }
 
     public String getHttpsKeystore() {
-        return cloud9Settings.get(SETTING_HTTPS_KEYSTORE);
+        return evoSettings.get(SETTING_HTTPS_KEYSTORE);
     }
 
     public boolean getSpdyEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_SPDY_ENABLED, true);
+        return evoSettings.getAsBoolean(SETTING_SPDY_ENABLED, true);
     }
     
     public String getNodeName() {
-        return cloud9Settings.get(SETTING_NODE_NAME);
+        return evoSettings.get(SETTING_NODE_NAME);
     }
 
     public String getClusterName() {
-        return cloud9Settings.get(SETTING_CLUSTER_NAME);
+        return evoSettings.get(SETTING_CLUSTER_NAME);
     }
 
     public boolean getMulticastEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_MULTICAST_ENABLED, true);
+        return evoSettings.getAsBoolean(SETTING_MULTICAST_ENABLED, true);
     }
 
     public boolean getUnicastEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_UNICAST_ENABLED, false);
+        return evoSettings.getAsBoolean(SETTING_UNICAST_ENABLED, false);
     }
 
     public String[] getUnicastHosts() {
-        return cloud9Settings.getAsArray(SETTING_UNICAST_HOSTS);
+        return evoSettings.getAsArray(SETTING_UNICAST_HOSTS);
     }
 
     public boolean getHazelcastEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_HAZELCAST_ENABLED, true);
+        return evoSettings.getAsBoolean(SETTING_HAZELCAST_ENABLED, true);
     }
 
     public boolean getResourceCacheEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_CACHE_RESOURCES_ENABLED, true);
+        return evoSettings.getAsBoolean(SETTING_CACHE_RESOURCES_ENABLED, true);
     }
 
     public boolean getSessionCacheEnabled() {
-        return cloud9Settings.getAsBoolean(SETTING_CACHE_SESSIONS_ENABLED, true);
+        return evoSettings.getAsBoolean(SETTING_CACHE_SESSIONS_ENABLED, true);
     }
     
     public boolean getGzipEnabled() {
-    	return cloud9Settings.getAsBoolean(SETTING_GZIP_ENABLED, true);
+    	return evoSettings.getAsBoolean(SETTING_GZIP_ENABLED, true);
     }
 }

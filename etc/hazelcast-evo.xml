@@ -19,8 +19,8 @@
            xmlns="http://www.hazelcast.com/schema/config"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <group>
-        <name>cloud9</name>
-        <password>cloud9</password>
+        <name>evo</name>
+        <password>evo</password>
     </group>
     <management-center enabled="false">http://localhost:8080/mancenter</management-center>
     <network>
@@ -169,7 +169,7 @@
         <merge-policy>hz.ADD_NEW_ENTRY</merge-policy>
     </map>
 
-	<!--  Cloud9 Caches -->
+	<!--  Evo Caches -->
 	<map name="resources">
 		<backup-count>1</backup-count>
 		<async-backup-count>0</async-backup-count>

@@ -1,8 +1,8 @@
 package co.fs.evo.exceptions.mapping;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 
-public class MappingException extends Cloud9Exception {
+public class MappingException extends EvoException {
 
 	private static final long serialVersionUID = 1L;
 

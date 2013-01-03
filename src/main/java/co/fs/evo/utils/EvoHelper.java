@@ -1,6 +1,6 @@
 package co.fs.evo.utils;
 
-public class C9Helper {
+public class EvoHelper {
 
     /**
      * Determines if the name is a valid name or not. A valid name is contains only lowercase characters and numbers.

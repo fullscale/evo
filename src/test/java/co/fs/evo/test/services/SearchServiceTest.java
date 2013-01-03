@@ -27,7 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
 import co.fs.evo.exceptions.index.IndexCreationException;
@@ -44,7 +44,7 @@ public class SearchServiceTest {
     private static ConfigService config;
 
     @BeforeClass
-    public static void setup() throws Cloud9Exception {
+    public static void setup() throws EvoException {
         System.setProperty("evo.cluster.name", "evo.test.cluster");
         System.setProperty("evo.node.name", "evo.test.node");
 
@@ -448,13 +448,13 @@ public class SearchServiceTest {
         try {
             searchService.importApp("testappimport", null, false);
             fail();
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
         }
 
         try {
             searchService.importApp("testappimport", testzip, false);
             fail();
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
         }
 
         searchService.importApp("testappimport", testzip, true);
@@ -503,13 +503,13 @@ public class SearchServiceTest {
         try {
             searchService.exportApp("testappimport", null, exportCollections);
             fail();
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
         }
 
         try {
             searchService.exportApp("does.not.exist", exportedZipOut, exportCollections);
             fail();
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
         }
 
         // test that all types are exported when type array is null

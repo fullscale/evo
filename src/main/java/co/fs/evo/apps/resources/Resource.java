@@ -16,7 +16,7 @@ import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.resources.NotFoundException;
 import co.fs.evo.exceptions.resources.ResourceException;
 import co.fs.evo.services.SearchService;
@@ -103,7 +103,7 @@ public abstract class Resource implements DataSerializable {
      * @param resource the name/id of the resource
      * @param fields what fields you want returned
      * @return the document
-     * @throws Cloud9Exception if resource document is not found
+     * @throws EvoException if resource document is not found
      */
     protected GetResponse getDoc(String[] fields) throws NotFoundException {
         logger.entry((Object) fields);

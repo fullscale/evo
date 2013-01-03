@@ -1,8 +1,8 @@
 package co.fs.evo.exceptions.application;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 
-public class ApplicationException extends Cloud9Exception {
+public class ApplicationException extends EvoException {
 
 	private static final long serialVersionUID = 1L;
 

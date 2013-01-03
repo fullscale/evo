@@ -61,10 +61,10 @@ public class HazelcastService {
         }
 
         logger.info("Initializing distributed in-memory data grid");
-        // read default cloud9 hazelcast settings
-        Config conf = new ClasspathXmlConfig("hazelcast-cloud9.xml");
+        // read default evo hazelcast settings
+        Config conf = new ClasspathXmlConfig("hazelcast-evo.xml");
 
-        // set our hazelcast instance name to cloud9 node name
+        // set our hazelcast instance name to evo node name
         conf.setInstanceName(configService.getNodeName());
 
         // hazelcast group name should be the same as our elasticsearch cluster name
@@ -287,7 +287,7 @@ public class HazelcastService {
         sessionCacheConfig.put("instance-name", hazelcast.getName()); // the name of our hazelcast instance
         sessionCacheConfig.put("map-name", "session-cache");
         sessionCacheConfig.put("sticky-session", "false");
-        sessionCacheConfig.put("cookie-name", "cloud9-sid");
+        sessionCacheConfig.put("cookie-name", "evo-sid");
         sessionCacheConfig.put("shutdown-on-destroy", "false");
         logger.debug("sessionCacheConfig: {}", sessionCacheConfig);
 

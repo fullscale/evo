@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import co.fs.evo.apps.resources.ResourceHelper;
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
 import co.fs.evo.exceptions.mapping.MappingException;
@@ -186,13 +186,13 @@ public class AppsController extends BaseController {
 
             logger.debug("res: {}", res);
             if (res == null) {
-                throw new Cloud9Exception("Unable to get resource");
+                throw new EvoException("Unable to get resource");
             }
 
             Map<String, Object> source = res.sourceAsMap();
             logger.debug("source: {}", source);
             if (source == null) {
-                throw new Cloud9Exception("Unable to get resource source");
+                throw new EvoException("Unable to get resource source");
             }
 
             String mime = (String) source.get("mime");
@@ -246,7 +246,7 @@ public class AppsController extends BaseController {
                 logger.debug("sIdx: {}", sIdx);
                 if (sIdx == -1) {
                     logger.warn("Image without extension: {}", resource);
-                    throw new Cloud9Exception("Image without extension: " + resource);
+                    throw new EvoException("Image without extension: " + resource);
                 }
                 String suffix = resource.substring(sIdx + 1, resource.length());
                 logger.debug("suffix: {}", suffix);
@@ -268,7 +268,7 @@ public class AppsController extends BaseController {
             resp.put("status", "ok");
             resp.put("id", indexResponse.id());
             resp.put("version", indexResponse.version());
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
             logger.debug("Error creating resource", e);
             resp.put("status", "failed");
             resp.put("response", e.getMessage());
@@ -326,12 +326,12 @@ public class AppsController extends BaseController {
             String oldId = (String) data.get("from");
             String newId = (String) data.get("to");
             if (oldId == null || newId == null) {
-                throw new Cloud9Exception("Must specify the old and new ids");
+                throw new EvoException("Must specify the old and new ids");
             }
 
             GetResponse oldDoc = searchService.getDoc(searchService.APP_INDEX, app+"_"+dir, oldId, null);
             if (oldDoc == null) {
-                throw new Cloud9Exception("Resource does not exist");
+                throw new EvoException("Resource does not exist");
             }
 
             // evict from caches, even the new name just to be safe
@@ -350,7 +350,7 @@ public class AppsController extends BaseController {
                 resp.put("status", "failed");
                 resp.put("response", "unable to rename resource");
             }
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
             logger.error("Error renaming resource: {}", e.getMessage());
             logger.debug("exception", e);
             resp.put("status", "failed");
@@ -418,13 +418,13 @@ public class AppsController extends BaseController {
 
             logger.debug("res: {}", res);
             if (res == null) {
-                throw new Cloud9Exception("Unable to get resource");
+                throw new EvoException("Unable to get resource");
             }
 
             Map<String, Object> source = res.sourceAsMap();
             logger.debug("source: {}", source);
             if (source == null) {
-                throw new Cloud9Exception("Unable to get resource source");
+                throw new EvoException("Unable to get resource source");
             }
 
             String mime = (String) source.get("mime");

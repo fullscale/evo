@@ -9,15 +9,15 @@
 # This script relies on few environment variables to determine startup
 # behavior, those variables are:
 #
-#   C9_CLASSPATH -- A Java classpath containing everything necessary to run.
+#   EVO_CLASSPATH -- A Java classpath containing everything necessary to run.
 #   JAVA_OPTS    -- Additional arguments to the JVM for heap size, etc
-#   C9_JAVA_OPTS -- External Java Opts on top of the defaults set
+#   EVO_JAVA_OPTS -- External Java Opts on top of the defaults set
 #
 #
 # Optionally, exact memory values can be set using the following values, note,
-# they can still be set using the `C9_JAVA_OPTS`. Sample format include "512m", and "10g".
+# they can still be set using the `EVO_JAVA_OPTS`. Sample format include "512m", and "10g".
 #
-#   C9_HEAP_SIZE -- Sets both the minimum and maximum memory to allocate (recommended)
+#   EVO_HEAP_SIZE -- Sets both the minimum and maximum memory to allocate (recommended)
 #
 
 CDPATH=""
@@ -36,40 +36,40 @@ while [ -h "$SCRIPT" ] ; do
 done
 
 # determine evo home
-C9_HOME=`dirname "$SCRIPT"`/..
+EVO_HOME=`dirname "$SCRIPT"`/..
 
-# make C9_HOME absolute
-C9_HOME=`cd "$C9_HOME"; pwd`
+# make EVO_HOME absolute
+EVO_HOME=`cd "$EVO_HOME"; pwd`
 
 
-C9_CLASSPATH=$C9_CLASSPATH:$C9_HOME/etc:$C9_HOME/etc/security:$C9_HOME/lib/${project.build.finalName}.jar:$C9_HOME/lib/*:$C9_HOME/lib/sigar/*
+EVO_CLASSPATH=$EVO_CLASSPATH:$EVO_HOME/etc:$EVO_HOME/etc/security:$EVO_HOME/lib/${project.build.finalName}.jar:$EVO_HOME/lib/*:$EVO_HOME/lib/sigar/*
 
-if [ "x$C9_MIN_MEM" = "x" ]; then
-    C9_MIN_MEM=256m
+if [ "x$EVO_MIN_MEM" = "x" ]; then
+    EVO_MIN_MEM=256m
 fi
-if [ "x$C9_MAX_MEM" = "x" ]; then
-    C9_MAX_MEM=1g
+if [ "x$EVO_MAX_MEM" = "x" ]; then
+    EVO_MAX_MEM=1g
 fi
-if [ "x$C9_HEAP_SIZE" != "x" ]; then
-    C9_MIN_MEM=$C9_HEAP_SIZE
-    C9_MAX_MEM=$C9_HEAP_SIZE
+if [ "x$EVO_HEAP_SIZE" != "x" ]; then
+    EVO_MIN_MEM=$EVO_HEAP_SIZE
+    EVO_MAX_MEM=$EVO_HEAP_SIZE
 fi
 
 # min and max heap sizes should be set to the same value to avoid
 # stop-the-world GC pauses during resize, and so that we can lock the
 # heap in memory on startup to prevent any of it from being swapped
 # out.
-JAVA_OPTS="$JAVA_OPTS -Xms${C9_MIN_MEM}"
-JAVA_OPTS="$JAVA_OPTS -Xmx${C9_MAX_MEM}"
+JAVA_OPTS="$JAVA_OPTS -Xms${EVO_MIN_MEM}"
+JAVA_OPTS="$JAVA_OPTS -Xmx${EVO_MAX_MEM}"
 
 # new generation
-if [ "x$C9_HEAP_NEWSIZE" != "x" ]; then
-    JAVA_OPTS="$JAVA_OPTS -Xmn${C9_HEAP_NEWSIZE}"
+if [ "x$EVO_HEAP_NEWSIZE" != "x" ]; then
+    JAVA_OPTS="$JAVA_OPTS -Xmn${EVO_HEAP_NEWSIZE}"
 fi
 
 # max direct memory
-if [ "x$C9_DIRECT_SIZE" != "x" ]; then
-    JAVA_OPTS="$JAVA_OPTS -XX:MaxDirectMemorySize=${C9_DIRECT_SIZE}"
+if [ "x$EVO_DIRECT_SIZE" != "x" ]; then
+    JAVA_OPTS="$JAVA_OPTS -XX:MaxDirectMemorySize=${EVO_DIRECT_SIZE}"
 fi
 
 # reduce the per-thread stack size
@@ -102,9 +102,9 @@ JAVA_OPTS="$JAVA_OPTS -XX:+UseCondCardMark"
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 # The path to the heap dump location, note directory must exists and have enough
 # space for a full heap dump.
-#JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$C9_HOME/logs/heapdump.hprof"
+#JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$EVO_HOME/logs/heapdump.hprof"
 
-JAVA_OPTS="$JAVA_OPTS -Xbootclasspath/p:$C9_HOME/lib/boot/npn-boot-1.1.1.v20121030.jar"
+JAVA_OPTS="$JAVA_OPTS -Xbootclasspath/p:$EVO_HOME/lib/boot/npn-boot-1.1.1.v20121030.jar"
 
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA=$JAVA_HOME/bin/java
@@ -112,16 +112,16 @@ else
     JAVA=`which java`
 fi
 
-if [ -z "$C9_CLASSPATH" ]; then
-    echo "You must set the C9_CLASSPATH var" >&2
+if [ -z "$EVO_CLASSPATH" ]; then
+    echo "You must set the EVO_CLASSPATH var" >&2
     exit 1
 fi
 
 # Special-case path variables.
 case `uname` in
     CYGWIN*)
-        C9_CLASSPATH=`cygpath -p -w "$C9_CLASSPATH"`
-        C9_HOME=`cygpath -p -w "$C9_HOME"`
+        EVO_CLASSPATH=`cygpath -p -w "$EVO_CLASSPATH"`
+        EVO_HOME=`cygpath -p -w "$EVO_HOME"`
     ;;
 esac
 
@@ -132,13 +132,13 @@ launch_service()
     props=$3
 
     if [ "x$foreground" != "x" ]; then
-        exec "$JAVA" $JAVA_OPTS $C9_JAVA_OPTS -Dc9.home="$C9_HOME" -cp "$C9_CLASSPATH" $props \
-                co.fs.evo.Cloud9
+        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Dc9.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
+                co.fs.evo.Evo
         execval=$?
     else
         # Startup in background and write the pid.
-        exec "$JAVA" $JAVA_OPTS $C9_JAVA_OPTS -Dc9.home="$C9_HOME" -cp "$C9_CLASSPATH" $props \
-                    co.fs.evo.Cloud9 <&- >&- &
+        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Dc9.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
+                    co.fs.evo.Evo <&- >&- &
         execval=$?
         [ ! -z "$pidpath" ] && printf '%d' $! > "$pidpath"
     fi
@@ -170,7 +170,7 @@ stop_service()
 args=`getopt sfhp:D:X: "$@"`
 eval set -- "$args"
 
-pidfile="$C9_HOME/evo.pid"
+pidfile="$EVO_HOME/evo.pid"
 
 while true; do
     case $1 in

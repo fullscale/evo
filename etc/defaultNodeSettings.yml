@@ -3,7 +3,7 @@ node:
     data: true
 
 cluster:
-    name: cloud9
+    name: evo
 
 http:
     enabled: false

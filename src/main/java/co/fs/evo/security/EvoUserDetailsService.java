@@ -24,9 +24,9 @@ import org.springframework.util.Assert;
 
 import co.fs.evo.services.SearchService;
 
-public class Cloud9UserDetailsService implements UserDetailsService, UserDetailsManager {
+public class EvoUserDetailsService implements UserDetailsService, UserDetailsManager {
 
-    private static final XLogger logger = XLoggerFactory.getXLogger(Cloud9UserDetailsService.class);
+    private static final XLogger logger = XLoggerFactory.getXLogger(EvoUserDetailsService.class);
     private AuthenticationManager authenticationManager;
     private UserCache userCache = new NullUserCache();
 
@@ -43,10 +43,10 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         logger.entry(userName);
         Map<String, Object> source = getUser(userName);
-        Cloud9User principle = null;
+        EvoUser principle = null;
 
         if (source != null) {
-            principle = new Cloud9User();
+            principle = new EvoUser();
             principle.setUsername((String) source.get("username"));
             principle.setPassword((String) source.get("password"));
             principle.setUid((String) source.get("uid"));
@@ -118,7 +118,7 @@ public class Cloud9UserDetailsService implements UserDetailsService, UserDetails
             logger.debug("No authentication manager set. Password won't be re-checked.");
         }
 
-        Cloud9User newUser = (Cloud9User) loadUserByUsername(username);
+        EvoUser newUser = (EvoUser) loadUserByUsername(username);
         newUser.setPassword(newPassword);
         updateUser(newUser);
 

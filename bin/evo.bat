@@ -5,32 +5,32 @@ SETLOCAL
 if NOT DEFINED JAVA_HOME goto err
 
 set SCRIPT_DIR=%~dp0
-for %%I in ("%SCRIPT_DIR%..") do set C9_HOME=%%~dpfI
+for %%I in ("%SCRIPT_DIR%..") do set EVO_HOME=%%~dpfI
 
 
 REM ***** JAVA options *****
 
-if "%C9_MIN_MEM%" == "" (
-set C9_MIN_MEM=256m
+if "%EVO_MIN_MEM%" == "" (
+set EVO_MIN_MEM=256m
 )
 
-if "%C9_MAX_MEM%" == "" (
-set C9_MAX_MEM=1g
+if "%EVO_MAX_MEM%" == "" (
+set EVO_MAX_MEM=1g
 )
 
-if NOT "%C9_HEAP_SIZE%" == "" (
-set C9_MIN_MEM=%C9_HEAP_SIZE%
-set C9_MAX_MEM=%C9_HEAP_SIZE%
+if NOT "%EVO_HEAP_SIZE%" == "" (
+set EVO_MIN_MEM=%EVO_HEAP_SIZE%
+set EVO_MAX_MEM=%EVO_HEAP_SIZE%
 )
 
-set JAVA_OPTS=%JAVA_OPTS% -Xms%C9_MIN_MEM% -Xmx%C9_MAX_MEM%
+set JAVA_OPTS=%JAVA_OPTS% -Xms%EVO_MIN_MEM% -Xmx%EVO_MAX_MEM%
 
-if NOT "%C9_HEAP_NEWSIZE%" == "" (
-set JAVA_OPTS=%JAVA_OPTS% -Xmn%C9_HEAP_NEWSIZE%
+if NOT "%EVO_HEAP_NEWSIZE%" == "" (
+set JAVA_OPTS=%JAVA_OPTS% -Xmn%EVO_HEAP_NEWSIZE%
 )
 
-if NOT "%C9_DIRECT_SIZE%" == "" (
-set JAVA_OPTS=%JAVA_OPTS% -XX:MaxDirectMemorySize=%C9_DIRECT_SIZE%
+if NOT "%EVO_DIRECT_SIZE%" == "" (
+set JAVA_OPTS=%JAVA_OPTS% -XX:MaxDirectMemorySize=%EVO_DIRECT_SIZE%
 )
 
 set JAVA_OPTS=%JAVA_OPTS% -Xss256k
@@ -54,20 +54,20 @@ REM JAVA_OPTS=%JAVA_OPTS% -XX:+PrintGCTimeStamps
 REM JAVA_OPTS=%JAVA_OPTS% -XX:+PrintClassHistogram
 REM JAVA_OPTS=%JAVA_OPTS% -XX:+PrintTenuringDistribution
 REM JAVA_OPTS=%JAVA_OPTS% -XX:+PrintGCApplicationStoppedTime
-REM JAVA_OPTS=%JAVA_OPTS% -Xloggc:%C9_HOME%\logs\gc.log
+REM JAVA_OPTS=%JAVA_OPTS% -Xloggc:%EVO_HOME%\logs\gc.log
 
 REM Causes the JVM to dump its heap on OutOfMemory.
 set JAVA_OPTS=%JAVA_OPTS% -XX:+HeapDumpOnOutOfMemoryError
 REM The path to the heap dump location, note directory must exists and have enough
 REM space for a full heap dump.
-REM set JAVA_OPTS=%JAVA_OPTS% -XX:HeapDumpPath=%C9_HOME%\logs\heapdump.hprof
+REM set JAVA_OPTS=%JAVA_OPTS% -XX:HeapDumpPath=%EVO_HOME%\logs\heapdump.hprof
 
-set JAVA_OPTS=%JAVA_OPTS% -Xbootclasspath/p:%C9_HOME%/lib/boot/npn-boot-1.1.1.v20121030.jar
+set JAVA_OPTS=%JAVA_OPTS% -Xbootclasspath/p:%EVO_HOME%/lib/boot/npn-boot-1.1.1.v20121030.jar
 
-set C9_CLASSPATH=%C9_CLASSPATH%;%C9_HOME%/etc;%C9_HOME%/etc/security;%C9_HOME%/lib/${project.build.finalName}.jar;%C9_HOME%/lib/*;%C9_HOME%/lib/sigar/*
-set C9_PARAMS=-Dc9.home="%C9_HOME%"
+set EVO_CLASSPATH=%EVO_CLASSPATH%;%EVO_HOME%/etc;%EVO_HOME%/etc/security;%EVO_HOME%/lib/${project.build.finalName}.jar;%EVO_HOME%/lib/*;%EVO_HOME%/lib/sigar/*
+set EVO_PARAMS=-Dc9.home="%EVO_HOME%"
 
-"%JAVA_HOME%\bin\java" %JAVA_OPTS% %C9_JAVA_OPTS% %C9_PARAMS% %* -cp "%C9_CLASSPATH%" "co.fs.evo.Cloud9"
+"%JAVA_HOME%\bin\java" %JAVA_OPTS% %EVO_JAVA_OPTS% %EVO_PARAMS% %* -cp "%EVO_CLASSPATH%" "co.fs.evo.Evo"
 goto finally
 
 

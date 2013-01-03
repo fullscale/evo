@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.services.SearchService;
 
 @Controller
@@ -60,7 +60,7 @@ public class TypeController {
             searchService.createType(collection, type);
             logger.info("Successfully created type: {}", type);
             resp.put("status", "ok");
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
             logger.warn("Error creating type: {}, {}", type, e.getMessage());
             resp.put("status", "error");
             resp.put("response", e.getMessage());
@@ -82,7 +82,7 @@ public class TypeController {
             MappingMetaData typeInfo = searchService.getType(collection, type);
             logger.debug("typeInfo: {}", typeInfo);
             if (typeInfo == null) {
-                throw new Cloud9Exception("Unable to get type info for: " + type);
+                throw new EvoException("Unable to get type info for: " + type);
             }
 
             Map<String, Object> currentMappings = typeInfo.sourceAsMap();
@@ -93,7 +93,7 @@ public class TypeController {
                 String fieldName = mapping.getKey();
                 logger.debug("fieldName: {}", fieldName);
                 if (currentFields.containsKey(fieldName)) {
-                    throw new Cloud9Exception("Field already exists: " + fieldName);
+                    throw new EvoException("Field already exists: " + fieldName);
                 }
 
                 currentFields.put(fieldName, mapping.getValue());

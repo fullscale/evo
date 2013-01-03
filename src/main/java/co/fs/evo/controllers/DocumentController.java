@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.services.SearchService;
 
 @Controller
@@ -48,13 +48,13 @@ public class DocumentController {
             IndexResponse idxResp = searchService.indexDoc(collection, type, id, source);
             logger.debug("idxResp: {}", idxResp);
             if (idxResp == null) {
-                throw new Cloud9Exception("Error indexing document: " + id);
+                throw new EvoException("Error indexing document: " + id);
             }
 
             resp.put("status", "ok");
             resp.put("id", idxResp.id());
             resp.put("version", idxResp.version());
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
             logger.warn(e.getMessage());
             resp.put("status", "error");
             resp.put("response", e.getMessage());
@@ -85,13 +85,13 @@ public class DocumentController {
             logger.debug("delResp: {}", delResp);
             if (delResp == null) {
                 logger.debug("delResp is null");
-                throw new Cloud9Exception("Error deleteing document: " + id);
+                throw new EvoException("Error deleteing document: " + id);
             }
 
             resp.put("status", "ok");
             resp.put("id", delResp.id());
             resp.put("version", delResp.version());
-        } catch (Cloud9Exception e) {
+        } catch (EvoException e) {
             logger.warn(e.getMessage());
             resp.put("status", "error");
             resp.put("response", e.getMessage());

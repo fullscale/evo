@@ -1,8 +1,8 @@
 package co.fs.evo.exceptions.index;
 
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 
-public class IndexException extends Cloud9Exception {
+public class IndexException extends EvoException {
 
 	private static final long serialVersionUID = 1L;
 

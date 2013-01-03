@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class Cloud9User implements UserDetails {
+public class EvoUser implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String username;

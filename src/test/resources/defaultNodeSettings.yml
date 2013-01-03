@@ -6,7 +6,7 @@ path:
     data: target/data
 
 cluster:
-    name: cloud9test
+    name: evotest
 
 http:
     enabled: false

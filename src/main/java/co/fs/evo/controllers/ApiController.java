@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import co.fs.evo.apps.resources.ResourceHelper;
-import co.fs.evo.exceptions.Cloud9Exception;
+import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.rest.ServletRestRequest;
 import co.fs.evo.services.SearchService;
 
@@ -134,7 +134,7 @@ public class ApiController {
         try {
             if (data == null) {
                 logger.debug("no input data found");
-                throw new Cloud9Exception("No application file found");
+                throw new EvoException("No application file found");
             }
 
             // expire any cached items that might exist for the app
