@@ -11,6 +11,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.elasticsearch.node.internal.InternalNode;
 import org.elasticsearch.rest.RestChannel;
@@ -126,7 +127,7 @@ public class ApiController {
     public Map<String, Object> importApp(@PathVariable String app,
             @RequestParam(value = "force", defaultValue = "false") boolean force,
             @RequestParam(value = "mappings", defaultValue = "true") boolean mappings,
-            @RequestPart(value = "app", required = false) MultipartFile data) {
+            @RequestPart(value = "app", required = false) Part data) {
         logger.entry(app, force, mappings);
         Map<String, Object> resp = new HashMap<String, Object>();
 

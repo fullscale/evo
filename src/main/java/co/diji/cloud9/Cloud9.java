@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 
@@ -188,6 +189,8 @@ public final class Cloud9 {
         logger.debug("creating servlet holder for dispatcher");
         final ServletHolder servletHolder = new ServletHolder(dispatcher);
         servletHolder.setInitOrder(1);
+        servletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(
+        		System.getProperty("java.io.tmpdir"), 1024*1024*5, 1024*1024*5*5, 1024*1024));
 
         // session timeout configuration
         logger.debug("setting session timeout");

@@ -1089,8 +1089,8 @@ public class SearchService {
                 if (pathParts.length != 3) {
                 	if (pathParts.length == 2) {
                 		// the html dir isn't specified in most cases
-                		pathParts[2] = pathParts[1];
-                		pathParts[1] = "html";
+                	    String[] newParts = {pathParts[0], "html", pathParts[1]};
+                        pathParts = newParts;
                 	} else {
                 		logger.warn("Invalid resource: {}", entry.getName());
                 		throw new Cloud9Exception("Invalid resource: " + entry.getName());
@@ -1131,7 +1131,11 @@ public class SearchService {
                     }
                 } else if (partType.equals("html")) {
                     indexAppDoc(app, "html", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
-                } else if (partType.equals("css")) {
+                } else if (partType.equals("partials")) {
+                    indexAppDoc(app, "partials", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
+                } else if (partType.equals("lib")) { 
+                	indexAppDoc(app, "lib", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
+            	}else if (partType.equals("css")) {
                     indexAppDoc(app, "css", partName, IOUtils.toString(zip, "UTF-8"), "text/css");
                 } else if (partType.equals("img")) {
                     int sIdx = partName.indexOf('.');
@@ -1143,7 +1147,7 @@ public class SearchService {
                     indexAppDoc(app, "img", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
-                } else if (partType.equals("server")) {
+                } else if (partType.equals("server-side")) {
                     indexAppDoc(app, "server-side", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
                 } else {
                     logger.warn("Unknown resource type: {}", partType);
