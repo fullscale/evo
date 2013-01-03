@@ -133,12 +133,12 @@ launch_service()
 
     if [ "x$foreground" != "x" ]; then
         exec "$JAVA" $JAVA_OPTS $C9_JAVA_OPTS -Dc9.home="$C9_HOME" -cp "$C9_CLASSPATH" $props \
-                co.diji.cloud9.Cloud9
+                co.fs.evo.Cloud9
         execval=$?
     else
         # Startup in background and write the pid.
         exec "$JAVA" $JAVA_OPTS $C9_JAVA_OPTS -Dc9.home="$C9_HOME" -cp "$C9_CLASSPATH" $props \
-                    co.diji.cloud9.Cloud9 <&- >&- &
+                    co.fs.evo.Cloud9 <&- >&- &
         execval=$?
         [ ! -z "$pidpath" ] && printf '%d' $! > "$pidpath"
     fi

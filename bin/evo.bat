@@ -67,7 +67,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Xbootclasspath/p:%C9_HOME%/lib/boot/npn-boot-1.1.1.v2
 set C9_CLASSPATH=%C9_CLASSPATH%;%C9_HOME%/etc;%C9_HOME%/etc/security;%C9_HOME%/lib/${project.build.finalName}.jar;%C9_HOME%/lib/*;%C9_HOME%/lib/sigar/*
 set C9_PARAMS=-Dc9.home="%C9_HOME%"
 
-"%JAVA_HOME%\bin\java" %JAVA_OPTS% %C9_JAVA_OPTS% %C9_PARAMS% %* -cp "%C9_CLASSPATH%" "co.diji.cloud9.Cloud9"
+"%JAVA_HOME%\bin\java" %JAVA_OPTS% %C9_JAVA_OPTS% %C9_PARAMS% %* -cp "%C9_CLASSPATH%" "co.fs.evo.Cloud9"
 goto finally
 
 

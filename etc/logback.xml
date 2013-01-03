@@ -42,7 +42,7 @@
 
 	<!-- Application Loggers -->
     <!-- DEBUG+ goes it file, INFO+ to console -->
-	<logger name="co.diji.cloud9" level="DEBUG">
+	<logger name="co.fs.evo" level="DEBUG">
 		<appender-ref ref="STDOUT" />
     </logger>
 

@@ -13,7 +13,7 @@
 
 	<!-- Bean definitions -->
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
-    <beans:bean id="cloud9UserDetailsService" class="co.diji.cloud9.security.Cloud9UserDetailsService" />
+    <beans:bean id="cloud9UserDetailsService" class="co.fs.evo.security.Cloud9UserDetailsService" />
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
     	<beans:constructor-arg value="256"/>
     </beans:bean>
