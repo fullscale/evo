@@ -73,7 +73,7 @@ public final class Evo {
         // HTTP connector
         HttpConnectionFactory http = new HttpConnectionFactory(httpConf);
         ServerConnector httpConnector = new ServerConnector(server, http);
-        httpConnector.setPort(2600);
+        httpConnector.setPort(config.getHttpPort());
         httpConnector.setIdleTimeout(10000);
         server.addConnector(httpConnector);
         
