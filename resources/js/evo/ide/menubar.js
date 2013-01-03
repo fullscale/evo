@@ -6,15 +6,15 @@
 YAHOO.util.Event.onDOMReady(function () {
 
     function showResourceDialog(type, args, ctype) {
-        C9.app.dialog.resource.show(ctype);  
+        EVO.app.dialog.resource.show(ctype);  
     }
 
     function showUploadDialog(type, args, ctype) {
-        C9.app.dialog.upload.show(ctype);  
+        EVO.app.dialog.upload.show(ctype);  
     }
 
     function showAboutDialog() {
-        C9.app.dialog.about.show();
+        EVO.app.dialog.about.show();
     }
 
     // returns active editor
@@ -122,11 +122,11 @@ YAHOO.util.Event.onDOMReady(function () {
     };
 
     var previewProject = function() {
-        window.open("/" + C9.app.name);    
+        window.open("/" + EVO.app.name);    
     };
 
     var exportProject = function() {
-        window.open("/v1/apps/" + C9.app.name);    
+        window.open("/v1/apps/" + EVO.app.name);    
     };
 
     var viewDevGuide = function() {
@@ -314,12 +314,12 @@ YAHOO.util.Event.onDOMReady(function () {
                     text: "Save", 
                     helptext: "Ctrl + S", 
                     onclick: { 
-                        fn: C9.ide.editor.save 
+                        fn: EVO.ide.editor.save 
                     }
                 },{ 
                     text: "Save All",
                     onclick: {
-                        fn: C9.ide.editor.saveAll
+                        fn: EVO.ide.editor.saveAll
                     }
                 }]]
             }
@@ -517,7 +517,7 @@ YAHOO.util.Event.onDOMReady(function () {
     * constructor is the id of the element to be created; the 
     * second is an object literal of configuration properties.
     */
-    var oMenuBar = new YAHOO.widget.MenuBar("c9-ide-menubar", { 
+    var oMenuBar = new YAHOO.widget.MenuBar("evo-ide-menubar", { 
         lazyload: true, 
         itemdata: menuData 
     });
@@ -528,7 +528,7 @@ YAHOO.util.Event.onDOMReady(function () {
      * reference for the DOM element that its should be 
      * appended to.
      */
-    oMenuBar.render("c9-ide-menubar-container");
+    oMenuBar.render("evo-ide-menubar-container");
     
     /* Add a "show" event listener for each submenu. */
 	function onSubmenuShow() {
@@ -536,7 +536,7 @@ YAHOO.util.Event.onDOMReady(function () {
 		var oIFrame, oElement, nOffsetWidth;
 
 		/* Keep the left-most submenu against the left edge of the browser viewport */
-		if (this.id == "cloud9") {
+		if (this.id == "evo") {
 			YAHOO.util.Dom.setX(this.element, 0);
 			oIFrame = this.iframe;            
 			if (oIFrame) {

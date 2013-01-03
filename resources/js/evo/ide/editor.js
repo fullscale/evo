@@ -10,7 +10,7 @@ var JavaScriptMode = require("ace/mode/javascript").Mode;
 var vim = require("ace/keyboard/keybinding/vim").Vim;
 var emacs = require("ace/keyboard/keybinding/emacs").Emacs;
       
-C9.ide.editor.save = function(tab) {
+EVO.ide.editor.save = function(tab) {
 
 	var idx = tabView.getTabIndex(tab);
 	
@@ -71,8 +71,8 @@ C9.ide.editor.save = function(tab) {
     } 
 };
 
-C9.ide.editor.saveAll = function() {
-    tabView.get('tabs').forEach(function(tab) { C9.ide.editor.save(tab); });
+EVO.ide.editor.saveAll = function() {
+    tabView.get('tabs').forEach(function(tab) { EVO.ide.editor.save(tab); });
 };
                     
 canon.addCommand({
@@ -82,5 +82,5 @@ canon.addCommand({
         mac: "Command-S",
         sender: "editor"
     },
-    exec: C9.ide.editor.save
+    exec: EVO.ide.editor.save
 });

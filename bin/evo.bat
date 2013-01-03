@@ -65,7 +65,7 @@ REM set JAVA_OPTS=%JAVA_OPTS% -XX:HeapDumpPath=%EVO_HOME%\logs\heapdump.hprof
 set JAVA_OPTS=%JAVA_OPTS% -Xbootclasspath/p:%EVO_HOME%/lib/boot/npn-boot-1.1.1.v20121030.jar
 
 set EVO_CLASSPATH=%EVO_CLASSPATH%;%EVO_HOME%/etc;%EVO_HOME%/etc/security;%EVO_HOME%/lib/${project.build.finalName}.jar;%EVO_HOME%/lib/*;%EVO_HOME%/lib/sigar/*
-set EVO_PARAMS=-Dc9.home="%EVO_HOME%"
+set EVO_PARAMS=-Devo.home="%EVO_HOME%"
 
 "%JAVA_HOME%\bin\java" %JAVA_OPTS% %EVO_JAVA_OPTS% %EVO_PARAMS% %* -cp "%EVO_CLASSPATH%" "co.fs.evo.Evo"
 goto finally

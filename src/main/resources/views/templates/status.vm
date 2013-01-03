@@ -3,14 +3,14 @@
     <li>
       <img align="top" src="/img/evo/cloud.png" alt="${build}" title="${build}" style="padding-right:10px">
     </li>
-    <li><a id="c9-overview-page" href="/evo/overview">Overview</a></li>
-    <li><a id="c9-content-page" href="/evo/content">Collections</a></li>
-    <li><a id="c9-apps-page" href="/evo/apps">Applications</a></li>
-    <li><a id="c9-user-page" href="/evo/user">Users</a></li>
+    <li><a id="evo-overview-page" href="/evo/overview">Overview</a></li>
+    <li><a id="evo-content-page" href="/evo/content">Collections</a></li>
+    <li><a id="evo-apps-page" href="/evo/apps">Applications</a></li>
+    <li><a id="evo-user-page" href="/evo/user">Users</a></li>
   </ul>
 </div>
 
-<div class="status-header gradient-light"><a href="/logout">Log Out (<span class="c9-session-username">$SPRING_SECURITY_CONTEXT.authentication.getName()</span>)</a></div>
+<div class="status-header gradient-light"><a href="/logout">Log Out (<span class="evo-session-username">$SPRING_SECURITY_CONTEXT.authentication.getName()</span>)</a></div>
 
 <div class="status-body">
   <div class="status-body-title">
@@ -20,20 +20,20 @@
           <img align="absmiddle" src="/img/evo/cluster.png" />
         </td>
         <td>
-          <div class="c9-cluster-banner">Cluster Name: <span class="c9-cluster-name">${cluster.clusterName()}</span></div>
+          <div class="evo-cluster-banner">Cluster Name: <span class="evo-cluster-name">${cluster.clusterName()}</span></div>
           #if ($cluster.numberOfNodes == 1)
-            <div class="c9-cluster-banner-sub">There is currently ${cluster.numberOfNodes()} active node</div>
+            <div class="evo-cluster-banner-sub">There is currently ${cluster.numberOfNodes()} active node</div>
           #else
-            <div class="c9-cluster-banner-sub">There are currently ${cluster.numberOfNodes()} active nodes</div>
+            <div class="evo-cluster-banner-sub">There are currently ${cluster.numberOfNodes()} active nodes</div>
           #end
         </td>
       </tr>
     </table>
   </div>
-  <hr class="c9-cluster-hr">
+  <hr class="evo-cluster-hr">
   <div class="status-body-data">
     <center>
-    <table class="c9-cluster-details-table">
+    <table class="evo-cluster-details-table">
       <tr>
         <td>
         	#if ($status.size() == 1)
@@ -50,7 +50,7 @@
           		#end
           	#end
         </td>
-        <td class="c9-cluster-health">
+        <td class="evo-cluster-health">
           <span>Cluster Health&nbsp;</span>
           #if ($cluster.status() == "GREEN")
             <img align="top" alt="Severe" title="Severe" src="/img/evo/admin/offline.png">

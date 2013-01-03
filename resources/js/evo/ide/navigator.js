@@ -8,7 +8,7 @@
  * @module ContentTree
  * @requires dom, event, layout
  */
-C9.ide.navigator = function () {
+EVO.ide.navigator = function () {
         
     var tree = "";
     var currentIconMode = "";
@@ -120,7 +120,7 @@ C9.ide.navigator = function () {
 
     function buildTree(appName) {
     	/* create a new tree: */
-    	tree = new YAHOO.widget.TreeView("c9-ide-navigator");
+    	tree = new YAHOO.widget.TreeView("evo-ide-navigator");
 
     	/* set tree expand/collapse animation */
     	tree.setExpandAnim(YAHOO.widget.TVAnim.FADE_IN);
@@ -148,7 +148,7 @@ C9.ide.navigator = function () {
 	    	if (dirName === appName) {
 	    		dirName = 'html';
 	    	}
-	    	c9.renameResource(appName, dirName, oldName, newName);
+	    	evo.renameResource(appName, dirName, oldName, newName);
 
 	    	var id = appName + '-' + dirName + '-' + oldName;
 	    	var newId = appName + '-' + dirName + '-' + newName;
@@ -307,8 +307,8 @@ C9.ide.navigator = function () {
                     // save then close this tab
                     text: "Yes", 
                     handler: function() {
-                        C9.app.dialog.confirm.hide();
-                        C9.ide.editor.save(tab);
+                        EVO.app.dialog.confirm.hide();
+                        EVO.ide.editor.save(tab);
                         delete Editors[id];
                         tabView.removeTab(tab);
                     }, 
@@ -317,17 +317,17 @@ C9.ide.navigator = function () {
                     // close tab without saving
                     text: "No", 
                     handler: function() { 
-                        C9.app.dialog.confirm.hide();
+                        EVO.app.dialog.confirm.hide();
                         delete Editors[id];
                         tabView.removeTab(tab);
                     }
                 }];
 
                 // setup the dialog text and register the callbacks
-                C9.app.dialog.confirm.setHeader("Confirm Close");
-                C9.app.dialog.confirm.setBody("Would you like to save your changes first?");
-                C9.app.dialog.confirm.cfg.setProperty("buttons", saveFirstCallbacks);
-                C9.app.dialog.confirm.show();
+                EVO.app.dialog.confirm.setHeader("Confirm Close");
+                EVO.app.dialog.confirm.setBody("Would you like to save your changes first?");
+                EVO.app.dialog.confirm.cfg.setProperty("buttons", saveFirstCallbacks);
+                EVO.app.dialog.confirm.show();
             } else {
                 // no unsaved changes, safe to close this tab
                 delete Editors[id];
@@ -360,7 +360,7 @@ C9.ide.navigator = function () {
     	  Get the TextNode instance that that triggered the
     	  display of the ContextMenu instance.
     	*/ 
-    	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
+    	oCurrentTextNode = EVO.ide.navigator.tree().getNodeByElement(oTarget); 
     	
     	if (!oCurrentTextNode || !oCurrentTextNode.isLeaf) { 
     		// Cancel the display of the ContextMenu instance.     	 
@@ -378,7 +378,7 @@ C9.ide.navigator = function () {
     	  Get the TextNode instance that triggered the
     	  display of the ContextMenu instance.
     	*/ 
-    	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
+    	oCurrentTextNode = EVO.ide.navigator.tree().getNodeByElement(oTarget); 
     	
     	if (!oCurrentTextNode || !contains(['css', 'html', 'img', 'js', 'server-side', 'partials', 'lib'], oCurrentTextNode.label)) { 
     		// Cancel the display of the ContextMenu instance.     	 
@@ -395,7 +395,7 @@ C9.ide.navigator = function () {
     	  Get the TextNode instance that that triggered the
     	  display of the ContextMenu instance.
     	*/ 
-    	oCurrentTextNode = C9.ide.navigator.tree().getNodeByElement(oTarget); 
+    	oCurrentTextNode = EVO.ide.navigator.tree().getNodeByElement(oTarget); 
     	
     	if (!oCurrentTextNode || !oCurrentTextNode.parent.isRoot()) {
     	  // Cancel the display of the ContextMenu instance.     	 
@@ -406,9 +406,9 @@ C9.ide.navigator = function () {
     function performDeletion() { 
     	var dir = oCurrentTextNode.parent.label;
     	var resource = oCurrentTextNode.label;
-    	var id = C9.app.name + '-' + dir + '-' + resource;
+    	var id = EVO.app.name + '-' + dir + '-' + resource;
       
-    	c9.deleteResource(C9.app.name, dir, resource);
+    	evo.deleteResource(EVO.app.name, dir, resource);
     	
     	tree.removeNode(oCurrentTextNode); 
     	tree.draw(); 
@@ -424,7 +424,7 @@ C9.ide.navigator = function () {
     			break;
     		}
     	}
-    	C9.app.dialog.confirm.hide();
+    	EVO.app.dialog.confirm.hide();
     }
     
     function deleteNode() { 
@@ -435,24 +435,24 @@ C9.ide.navigator = function () {
       },{ 
     	  text: "No", 
     	  handler: function() { 
-    		  C9.app.dialog.confirm.hide(); 
+    		  EVO.app.dialog.confirm.hide(); 
     	  }
       }];
-      C9.app.dialog.confirm.cfg.setProperty("buttons", deleteNodeCallbacks);
-      C9.app.dialog.confirm.show();
+      EVO.app.dialog.confirm.cfg.setProperty("buttons", deleteNodeCallbacks);
+      EVO.app.dialog.confirm.show();
     }
     
     function addNode(type, args, ctype) {
     	var type = oCurrentTextNode.label;
         
     	if (type === "img") {
-    		C9.app.dialog.upload.show(type);
+    		EVO.app.dialog.upload.show(type);
     	} else if (type in {html:true, css:true, js:true, 'server-side':true, partials:true, lib:true}) {
-    		C9.app.dialog.resource.show(type); 
+    		EVO.app.dialog.resource.show(type); 
     	} else if (ctype in {html:true, css:true, js:true, 'server-side':true, partials:true, lib:true}) {
-    		C9.app.dialog.resource.show(ctype);
+    		EVO.app.dialog.resource.show(ctype);
     	} else if (ctype === "img") {
-    		C9.app.dialog.upload.show(ctype);
+    		EVO.app.dialog.upload.show(ctype);
     	}
     }
 
@@ -483,8 +483,8 @@ C9.ide.navigator = function () {
             /*
             	Instantiates the context menu when right clicking on a resource (file).
             */ 
-            var fileContextMenu = new YAHOO.widget.ContextMenu("c9-file-context-menu", { 
-            	trigger: "c9-ide-navigator", 
+            var fileContextMenu = new YAHOO.widget.ContextMenu("evo-file-context-menu", { 
+            	trigger: "evo-ide-navigator", 
             	lazyload: true, 
             	itemdata: [{ 
             		text: "Rename...", 
@@ -502,8 +502,8 @@ C9.ide.navigator = function () {
             /*
             	Instantiates the context menu when right clicking on a content-type (dir).
             */
-            var dirContextMenu = new YAHOO.widget.ContextMenu("c9-dir-context-menu", { 
-            	trigger: "c9-ide-navigator", 
+            var dirContextMenu = new YAHOO.widget.ContextMenu("evo-dir-context-menu", { 
+            	trigger: "evo-ide-navigator", 
             	lazyload: true, 
             	itemdata: [{ 
             		text: "New File", 
@@ -516,8 +516,8 @@ C9.ide.navigator = function () {
             /*
             	Instantiates the context menu when right clicking on the project.
             */
-            var projContextMenu = new YAHOO.widget.ContextMenu("c9-proj-context-menu", { 
-            	trigger: "c9-ide-navigator", 
+            var projContextMenu = new YAHOO.widget.ContextMenu("evo-proj-context-menu", { 
+            	trigger: "evo-ide-navigator", 
             	lazyload: true, 
             	itemdata: [{ 
             		text: "New",

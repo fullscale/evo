@@ -1,45 +1,45 @@
-.c9 {height:100%;}
-.c9 .userLayout {
+.evo {height:100%;}
+.evo .userLayout {
   width:855px;
   overflow-x:hidden;
 	position:relative;
 }
-.c9 .userLayout .userTableContainer {
+.evo .userLayout .userTableContainer {
   position:relative;
 	left:0px;
 	width:3420px;
 }
-.c9 .userLayout .userTableContainer table {
+.evo .userLayout .userTableContainer table {
   width:100%;
   border:1px solid #eee;
   background:#fdfdfd;
 }
-.c9 .userLayout .userTableContainer table td {
+.evo .userLayout .userTableContainer table td {
     text-align:left;
     color:#707070;
     font: 1.0em arial, helvetica, sans-serif;
     padding-right:10px;
     padding-left:10px;
 }
-.c9 .userLayout .userTableContainer table tr.even {
+.evo .userLayout .userTableContainer table tr.even {
     border-bottom: 1px solid #ddd;  
     border-right: 1px solid #ddd;
     border-left: 1px solid #ddd;
     height:35px;
 }
-.c9 .userLayout .userTableContainer table tr.odd {
+.evo .userLayout .userTableContainer table tr.odd {
     border-bottom: 1px solid #ddd;  
     border-right: 1px solid #ddd;
     border-left: 1px solid #ddd;
     height:35px;
 }
-.c9 .searchLogo {
+.evo .searchLogo {
     width:164px; 
     height:48px; 
     float:left;
     margin-left:10px;
 }
-.c9 .formButton {
+.evo .formButton {
   float: right;
 	margin-top:1em;
 	width:72px;
@@ -50,20 +50,20 @@
 	display:block;
 	cursor:pointer !important; cursor:hand;
 }
-.c9 .CodeMirror-line-numbers {
+.evo .CodeMirror-line-numbers {
   background-color:#f9f9f9;
   border-right:1px solid #ddd;
   color:#8c8c8c;
   margin-top: .3em;
   margin-left: 0em;
 }
-.c9 .CodeMirror-line-numbers div {
+.evo .CodeMirror-line-numbers div {
     font-family: monospace;
     font-size: 9pt;
     padding-right:5px;
     padding-left:5px;
 }
-.c9 input {
+.evo input {
 	padding:0.15em;
 	/*width:17em; */
     /*margin-bottom:8px;*/
@@ -75,7 +75,7 @@
 	-moz-border-radius:6px;
 	-khtml-border-radius:6px;
 }
-.c9 .searchinput {
+.evo .searchinput {
 	padding:0.15em;
 	width:16em;
 	border:1px solid #ddd;
@@ -88,11 +88,11 @@
     border-bottom-right-radius:0px;
     border-bottom-left-radius:6px;
 }
-.c9 input:hover, input:focus {
+.evo input:hover, input:focus {
 	border-color:#c5c5c5;
 	background:#f6f6f6;
 }
-.c9 label {
+.evo label {
     font: 12px arial, helvetica, sans-serif;
 	padding-right:10px;
 	float:left;
@@ -100,23 +100,23 @@
 	text-align:right;
 	margin-top:3px;
 }
-.c9 .newCollection {
+.evo .newCollection {
   font: 1.4em arial, helvetica, sans-serif;
 	margin-right:1em;
 	color:#ff8000;
 }
-.c9 .crumb {
+.evo .crumb {
     font: 1.4em arial, helvetica, sans-serif;
 	color:#333333;
 	text-decoration:none;
 }
-.c9 a {
+.evo a {
     color:#ff8000;
     text-decoration:none;
 }
-.c9 a:hover {color:#333;}
-.c9 .footer {padding-top:20px;}
-.c9 .footer p {
+.evo a:hover {color:#333;}
+.evo .footer {padding-top:20px;}
+.evo .footer p {
     color:#888888;
     font-family: arial, helvetica, sans-serif;
     font-size: 10px;
@@ -228,7 +228,7 @@ div#contentForm fieldset {
     background-color: #FFBABA;
 }
 
-em#cloud9label {
+em#evolabel {
     text-indent: -26px;
     display: block;
     background: url(../img/evo/evo-logo-tiny.png) left center no-repeat;

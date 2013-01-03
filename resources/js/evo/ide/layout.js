@@ -8,7 +8,7 @@
  * @author Eric Gaumer egaumer@gmail.com
  * @version 1.0 
  */
-C9.ide.layout = function () {
+EVO.ide.layout = function () {
 
     Event = YAHOO.util.Event;
         

@@ -1,7 +1,7 @@
 /*
 Dialog used to create new application resource.
  */
-C9.ide.dialog.resource = function () { 
+EVO.ide.dialog.resource = function () { 
     var self = {};
     
     var payload = '<form>' +
@@ -57,13 +57,13 @@ C9.ide.dialog.resource = function () {
           var code = "/*\n" +
           " * File: " + resource + "\n" +
           " *\n" +
-          " * Access public action at /" + C9.app.name + "/" + controllerName + "\n" +
+          " * Access public action at /" + EVO.app.name + "/" + controllerName + "\n" +
           " *\n" +
           " */\n" +
           "function " + controllerName + "() {\n\n" +
           "    /* private functions go here */ \n\n" +
           "    return {\n\n" +
-          "        /* public action that maps to /" + C9.app.name + "/" + controllerName + "/hello */\n" +
+          "        /* public action that maps to /" + EVO.app.name + "/" + controllerName + "/hello */\n" +
           "        hello: function(request) {\n" +
           "            return {\n" +
           "                status: 200,\n" +
@@ -73,14 +73,14 @@ C9.ide.dialog.resource = function () {
           "        }\n\n    " +
           "};\n" +
           "}";
-          c9.createResource(C9.app.name, 'server-side', resource, code);
+          evo.createResource(EVO.app.name, 'server-side', resource, code);
         } else if (self.isPartial) {
-        	c9.createResource(C9.app.name, "partials", resource);
+        	evo.createResource(EVO.app.name, "partials", resource);
         } else if (self.isLib) {
-        	c9.createResource(C9.app.name, "lib", resource);
+        	evo.createResource(EVO.app.name, "lib", resource);
         } else {
           // create the new resource on the server
-          c9.createResource(C9.app.name, this.getData().filetype[0], resource);
+          evo.createResource(EVO.app.name, this.getData().filetype[0], resource);
         }
       	this.hide();
     }; 
@@ -130,12 +130,12 @@ C9.ide.dialog.resource = function () {
     return self; 
 };
 /* create an instance of the dialog and store it in the global namepsace */
-YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.resource = C9.ide.dialog.resource(); });
+YAHOO.util.Event.addListener(window, "load", function() { EVO.app.dialog.resource = EVO.ide.dialog.resource(); });
 
-C9.ide.dialog.confirm = function () {
+EVO.ide.dialog.confirm = function () {
   var my = {};
 
-  var dialog = new YAHOO.widget.SimpleDialog("c9-dialog-confirm", { 
+  var dialog = new YAHOO.widget.SimpleDialog("evo-dialog-confirm", { 
     width: "300px", 
 	  fixedcenter: true, 
 	  visible: false, 
@@ -162,12 +162,12 @@ C9.ide.dialog.confirm = function () {
 	
 	return dialog;
 };
-YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.confirm = C9.ide.dialog.confirm(); });
+YAHOO.util.Event.addListener(window, "load", function() { EVO.app.dialog.confirm = EVO.ide.dialog.confirm(); });
 
 /*
  * Upload dialog
  */
-C9.ide.dialog.upload = function () { 
+EVO.ide.dialog.upload = function () { 
     var self = {};
     var bodyImage = '<form id="imageUpload" enctype="multipart/form-data"><input type="file" name="fileToUpload" id="fileToUpload" /></form><br><br>';
     
@@ -191,9 +191,9 @@ C9.ide.dialog.upload = function () {
         var reader = new FileReader();
         reader.onloadend = (function(data) {
             return function(evt) {
-              c9.createResource(
-                C9.app.name, 
-                C9.app.dialog.upload.ctype, 
+              evo.createResource(
+                EVO.app.name, 
+                EVO.app.dialog.upload.ctype, 
                 data.name, 
                 evt.target.result.split(",")[1]
               );
@@ -218,13 +218,13 @@ C9.ide.dialog.upload = function () {
     return self; 
 };
 /* create an instance of the dialog and store it in the global namepsace */
-YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.upload = C9.ide.dialog.upload(); });
+YAHOO.util.Event.addListener(window, "load", function() { EVO.app.dialog.upload = EVO.ide.dialog.upload(); });
 
-C9.ide.dialog.about = function () { 
+EVO.ide.dialog.about = function () { 
     var self = {};
     var bodyImage = '<center><img src="/img/evo/evo-logo-tiny.png"><br><span>Developer Preview</span><br><span>Build 0327</span><br><br><span>Copyright &copy; 2012 FullScale Labs, LLC.</span><br><span>All rights reserved.</span></center>';
     
-    var dialog = new YAHOO.widget.Dialog("c9-dialog-about",  { 
+    var dialog = new YAHOO.widget.Dialog("evo-dialog-about",  { 
       width : "300px", 
       fixedcenter : true, 
       visible : false, 
@@ -247,4 +247,4 @@ C9.ide.dialog.about = function () {
     return self; 
 };
 /* create an instance of the dialog and store it in the global namepsace */
-YAHOO.util.Event.addListener(window, "load", function() { C9.app.dialog.about = C9.ide.dialog.about(); });
+YAHOO.util.Event.addListener(window, "load", function() { EVO.app.dialog.about = EVO.ide.dialog.about(); });

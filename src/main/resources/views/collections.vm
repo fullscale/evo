@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="c9">
+<html class="evo">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/img/evo/favico.png" />
@@ -29,7 +29,7 @@
         };
     </script>
     
-    <script id="c9-input-row" type="text/template">
+    <script id="evo-input-row" type="text/template">
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light row{%= cnt %}">
             <td colspan="{%= colspan %}">
                 <input style="width:170px;" type="text" id="txt{%= cnt %}" />&nbsp;
@@ -49,7 +49,7 @@
         </tr>
     </script>
 
-    <script id="c9-collection-table-row" type="text/template">
+    <script id="evo-collection-table-row" type="text/template">
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light" id="col-{%= index %}">
             <td>
                 <a href="#" onClick="loadTypesForCollection('{%= index %}')">{%= index %}</a>
@@ -57,56 +57,56 @@
             <td>{%= info.docs %}</td>
             <td>{%= info.size %}</td>
             <td style="text-align:right;">
-                <a href="#" class="c9-collection-delete-icon" onClick="c9.deleteCollection('{%= path %}')">
+                <a href="#" class="evo-collection-delete-icon" onClick="evo.deleteCollection('{%= path %}')">
                     <img class="removeLink" src="/img/evo/trans.png">
                 </a>
             </td>
         </tr>
     </script>
 
-    <script id="c9-types-table" type="text/template">
+    <script id="evo-types-table" type="text/template">
         <a href="#" id="createTypeElement" onClick="createType('{%= collection %}')"><img class="addLink" src="/img/evo/trans.png"></a>
         <span class="newCollection">Content Types</span>
-        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections /</a><span class="crumb" style="color:#ff8000;"> {%= collection %}</span>
+        <a href="#" class="crumb" onClick="evo.slide(0)">/ collections /</a><span class="crumb" style="color:#ff8000;"> {%= collection %}</span>
         <br />
         <table id="typeTable">
-            <tr class="c9-table-header gradient-dark">
+            <tr class="evo-table-header gradient-dark">
                 <th>Name</th>
                 <th>&nbsp;</th>
             </tr>
             {% var cnt = 1; %}
             {% _.each(types, function(typeInfo, typeName) { %}
-                {%= _.template($('#c9-types-table-row').html(), {cnt:cnt++, path:path + '/' + typeName, type:typeName, info:typeInfo, collection:collection}) %}
+                {%= _.template($('#evo-types-table-row').html(), {cnt:cnt++, path:path + '/' + typeName, type:typeName, info:typeInfo, collection:collection}) %}
             {% }); %}
         </table>
     </script>
 
-    <script id="c9-types-table-row" type="text/template">
+    <script id="evo-types-table-row" type="text/template">
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light" id="type-{%= type %}">
             <td>
                 <a href="#" onClick="loadFieldsForType('{%= collection %}', '{%= type %}')">{%= type %}</a>
             </td>
             <td style="text-align:right;">
-                <a href="#" class="c9-type-delete-icon" onClick="c9.deleteType('{%= path %}')">
+                <a href="#" class="evo-type-delete-icon" onClick="evo.deleteType('{%= path %}')">
                     <img class="removeLink" src="/img/evo/trans.png">
                 </a>
             </td>
         </tr>
     </script>
 
-    <script id="c9-fields-table" type="text/template">
+    <script id="evo-fields-table" type="text/template">
         <a href="#" id="createFieldElement" onClick="createField('{%= collection %}','{%= type %}')"><img class="addLink" src="/img/evo/trans.png"></a>
         <span class="newCollection">Content Fields</span>
-        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections </a><a href="#" class="crumb" onClick="c9.slide(-855)">/ {%= collection %} /</a><span class="crumb" style="color:#ff8000;"> {%= type %}</span>
+        <a href="#" class="crumb" onClick="evo.slide(0)">/ collections </a><a href="#" class="crumb" onClick="evo.slide(-855)">/ {%= collection %} /</a><span class="crumb" style="color:#ff8000;"> {%= type %}</span>
         <br />
         <table id="fieldTable">
-            <tr class="c9-table-header gradient-dark">
+            <tr class="evo-table-header gradient-dark">
                 <th>Name</th>
                 <th style="text-align:right">Type&nbsp;&nbsp;</th>
             </tr>
             {% var cnt = 1; %}
             {% _.each(fields, function(fieldInfo, fieldName) { %}
-                {%= _.template($('#c9-fields-table-row').html(), {cnt:cnt++, path:path + '/' + fieldName, info:fieldInfo, collection:collection, type:type, field:fieldName}) %}
+                {%= _.template($('#evo-fields-table-row').html(), {cnt:cnt++, path:path + '/' + fieldName, info:fieldInfo, collection:collection, type:type, field:fieldName}) %}
             {% }); %}
         </table>
         <div style="float:right;">
@@ -114,7 +114,7 @@
         </div>
     </script>
 
-    <script id="c9-fields-table-row" type="text/template">
+    <script id="evo-fields-table-row" type="text/template">
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light" id="{%= cnt %}">
             <td>
                 <a href="#" onClick="addDocument('{%= collection %}','{%= type %}')">{%= field %}</a>
@@ -124,11 +124,11 @@
     </script>
 
     
-    <script id="c9-add-doc-form" type="text/template">
-        <a href="#" class="crumb" onClick="c9.slide(0)">/ collections </a><a href="#" class="crumb" onClick="c9.slide(-855)">/ {%= collection %} </a><a href="#" class="crumb" onClick="c9.slide(-1710)">/ {%= type %}</a>
+    <script id="evo-add-doc-form" type="text/template">
+        <a href="#" class="crumb" onClick="evo.slide(0)">/ collections </a><a href="#" class="crumb" onClick="evo.slide(-855)">/ {%= collection %} </a><a href="#" class="crumb" onClick="evo.slide(-1710)">/ {%= type %}</a>
         <br />
         <table id="newDocTable">
-            <tr class="c9-table-header gradient-dark">
+            <tr class="evo-table-header gradient-dark">
                 <th>&nbsp;id:{%= id %}</th>
                 <th>&nbsp;</th>
                 <th>&nbsp;</th>
@@ -144,7 +144,7 @@
                     <br />
                 </fieldset>
                 <div style="height:48px;text-align:right;">
-                    <a style="margin-top:10px;" href="#" class="sbab image_link" onClick="c9.addDocument('{%= path %}')">
+                    <a style="margin-top:10px;" href="#" class="sbab image_link" onClick="evo.addDocument('{%= path %}')">
                         <strong>Submit</strong>
                     </a>
                 </div>
@@ -156,12 +156,12 @@
         var indices = ${indices};
 
         $(document).ready(function() {
-          $("#c9-content-page").addClass("selected");
-          c9 = new cloud9();
+          $("#evo-content-page").addClass("selected");
+          evo = new evoApp();
          
           _.each(indices, function (indexInfo, indexName) {
             $('#collectionTable > tbody:last tr:eq(0)').after(
-                _.template($('#c9-collection-table-row').html(), {
+                _.template($('#evo-collection-table-row').html(), {
                     cnt: $('#collectionTable tbody tr').length,
                     index: indexName, 
                     info: indexInfo, 
@@ -190,7 +190,7 @@
              }
           });
 
-          $('.c9-collection-delete-icon').qtip({
+          $('.evo-collection-delete-icon').qtip({
              content: 'Delete Collection',
              show: 'mouseover',
              hide: 'mouseout',
@@ -216,8 +216,8 @@
             
             $.get(path, function(data) {
                 data.path = path;
-                var html = _.template($('#c9-types-table').html(), data);
-                c9.loadAndSlide('#types', html, '-855px');
+                var html = _.template($('#evo-types-table').html(), data);
+                evo.loadAndSlide('#types', html, '-855px');
 
                 $('#createTypeElement').qtip({
                     content: 'Create Content Type',
@@ -239,7 +239,7 @@
                     }
                 });
 
-                $('.c9-type-delete-icon').qtip({
+                $('.evo-type-delete-icon').qtip({
                     content: 'Delete Content Type',
                     show: 'mouseover',
                     hide: 'mouseout',
@@ -266,8 +266,8 @@
             
             $.get(path, function(data) {
                 data.path = path;
-                var html = _.template($('#c9-fields-table').html(), data);
-                c9.loadAndSlide('#fields', html, '-1710px');
+                var html = _.template($('#evo-fields-table').html(), data);
+                evo.loadAndSlide('#fields', html, '-1710px');
 
                 $('#createFieldElement').qtip({
                     content: 'Create Content Field',
@@ -295,15 +295,15 @@
             var path = '/evo/content/' + collection + '/' + type + '/';
             $.get(path + 'publish', function(data) {
                 data.path = path + data.id;
-                var html = _.template($('#c9-add-doc-form').html(), data);
-                c9.loadAndSlide('#newdoc', html, '-2565px');
+                var html = _.template($('#evo-add-doc-form').html(), data);
+                evo.loadAndSlide('#newdoc', html, '-2565px');
             });
         }
  
         function createCollection() {
             var cnt = $('#collectionTable tbody tr').length;
             $('#collectionTable > tbody:last tr:eq(0)').after(
-                _.template($('#c9-input-row').html(), {colspan:4, cnt:cnt, type:'collection'})
+                _.template($('#evo-input-row').html(), {colspan:4, cnt:cnt, type:'collection'})
             );
 
             $('#link' + cnt).click(function (e) {
@@ -314,7 +314,7 @@
                 $.post(url, function(data) {
                     if (data.status === 'ok') {
                         row.replaceWith(
-                            _.template($('#c9-collection-table-row').html(), {
+                            _.template($('#evo-collection-table-row').html(), {
                                 cnt: cnt,
                                 index: name,
                                 info: {docs:0, size:'172b'},
@@ -323,7 +323,7 @@
                         );
                     } else if (data.status == 'error') {
                         row.remove();
-                        c9.showError($('#collections'), data.response);
+                        evo.showError($('#collections'), data.response);
                     } else {
                         console.log('Sorry, an unknown error occurred');
                     }
@@ -334,7 +334,7 @@
         function createType(collection) {
             var cnt = $('#typeTable tbody tr').length;
             $('#typeTable > tbody:last tr:eq(0)').after(
-                _.template($('#c9-input-row').html(), {colspan:2, cnt:cnt, type:'type'})
+                _.template($('#evo-input-row').html(), {colspan:2, cnt:cnt, type:'type'})
             );
 
             $('#link' + cnt).click(function(e) {
@@ -345,7 +345,7 @@
                 $.post(url, function(data) {
                     if (data.status === 'ok') {
                         row.replaceWith(
-                            _.template($('#c9-types-table-row').html(), {
+                            _.template($('#evo-types-table-row').html(), {
                                 cnt: cnt,
                                 path: url,
                                 collection: collection,
@@ -354,7 +354,7 @@
                         );
                     } else if (data.status === 'error') {
                         row.remove();
-                        c9.showError($('#types'), data.response);
+                        evo.showError($('#types'), data.response);
                     } else {
                         console.log('Sorry, an unknown error occurred');
                     }
@@ -365,7 +365,7 @@
         function createField(collection, type) {
             var cnt = $('#fieldTable tbody tr').length;
             $('#fieldTable > tbody:last tr:eq(0)').after(
-                _.template($('#c9-input-row').html(), {colspan:1, cnt:cnt, type:'field'})
+                _.template($('#evo-input-row').html(), {colspan:1, cnt:cnt, type:'field'})
             );
 
             $('#link' + cnt).click(function(e) {
@@ -408,7 +408,7 @@
                     success:function(data) {
                         if (data.status == 'ok') {
                             row.replaceWith(
-                                _.template($('#c9-fields-table-row').html(), {
+                                _.template($('#evo-fields-table-row').html(), {
                                     cnt: cnt,
                                     collection: collection,
                                     type: type,
@@ -419,7 +419,7 @@
                             );
                         } else if (data.status == "error") {
                             row.remove();
-                            c9.showError($('#fields'), data.response);
+                            evo.showError($('#fields'), data.response);
                         } else {
                             console.log('Sorry, an unknown error occured');
                         }
@@ -451,7 +451,7 @@
                       </a>
                       <span class="newCollection">Collections</span><br />
                       <table id="collectionTable">
-                        <tr class="c9-table-header gradient-dark">
+                        <tr class="evo-table-header gradient-dark">
                           <th style="width:220px;">Name</th>
                           <th>Documents</th>
                           <th>Size</th>

@@ -22,15 +22,15 @@ jQuery.extend({
     }
 });
 
-var cloud9 = function() {};
+var evoApp = function() {};
 
-cloud9.prototype.showError = function(where, msg) {
+evoApp.prototype.showError = function(where, msg) {
     var errdiv = $('<div class="error">' + msg + '</div>');
     where.append(errdiv);
     errdiv.fadeOut(5000, function() { $(this).remove(); });
 };
 
-cloud9.prototype.deleteResource = function(app, dir, name, conf) {
+evoApp.prototype.deleteResource = function(app, dir, name, conf) {
     var url = '/evo/apps/' + app + '/' + dir + '/' + name;
     $.del(url, conf, function(data) {
         if (data.status == "error") {
@@ -39,7 +39,7 @@ cloud9.prototype.deleteResource = function(app, dir, name, conf) {
     });  
 };
 
-cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
+evoApp.prototype.renameResource = function(app, dir, oldName, newName) {
     var url = '/evo/apps/' + app + '/' + dir + '/_rename';
     $.ajax({
         type: 'PUT',
@@ -56,7 +56,7 @@ cloud9.prototype.renameResource = function(app, dir, oldName, newName) {
     });
 };
 
-cloud9.prototype.createResource = function(app, dir, name, code) {
+evoApp.prototype.createResource = function(app, dir, name, code) {
 	url = '/evo/apps/' + app + '/' + dir + '/' + name;
 	code = code || "";
   
@@ -68,11 +68,11 @@ cloud9.prototype.createResource = function(app, dir, name, code) {
         data: code, 
         success: function(data) {
             if (data.status == "error") {
-                c9.showError($('#applications'), data.response);
+                evo.showError($('#applications'), data.response);
             } else {
                 // update the file tree
             	var targetNodeLabel = (dir === 'html') ? app : dir;
-                var node = C9.ide.navigator.tree().getNodeByProperty('label', targetNodeLabel);
+                var node = EVO.ide.navigator.tree().getNodeByProperty('label', targetNodeLabel);
                 var tempNode = new YAHOO.widget.TextNode(name, node, false);
                 tempNode.label = name;
                 tempNode.type = dir;
@@ -171,8 +171,8 @@ function handleClose(e, tab) {
                 // save then close this tab
                 text: "Yes", 
                 handler: function() {
-                    C9.app.dialog.confirm.hide();
-                    C9.ide.editor.save(tab);
+                    EVO.app.dialog.confirm.hide();
+                    EVO.ide.editor.save(tab);
                     delete Editors[id];
                     tabView.removeTab(tab);
                 }, 
@@ -181,17 +181,17 @@ function handleClose(e, tab) {
                 // close tab without saving
                 text: "No", 
                 handler: function() { 
-                    C9.app.dialog.confirm.hide();
+                    EVO.app.dialog.confirm.hide();
                     delete Editors[id];
                     tabView.removeTab(tab);
                 }
             }];
 
             // setup the dialog text and register the callbacks
-            C9.app.dialog.confirm.setHeader("Confirm Close");
-            C9.app.dialog.confirm.setBody("Would you like to save your changes first?");
-            C9.app.dialog.confirm.cfg.setProperty("buttons", saveFirstCallbacks);
-            C9.app.dialog.confirm.show();
+            EVO.app.dialog.confirm.setHeader("Confirm Close");
+            EVO.app.dialog.confirm.setBody("Would you like to save your changes first?");
+            EVO.app.dialog.confirm.cfg.setProperty("buttons", saveFirstCallbacks);
+            EVO.app.dialog.confirm.show();
         } else {
             // no unsaved changes, safe to close this tab
             delete Editors[id];
@@ -203,7 +203,7 @@ function handleClose(e, tab) {
     }
 };
 
-cloud9.prototype.deleteCollection = function(url) {
+evoApp.prototype.deleteCollection = function(url) {
     components = url.split('/');
     id = components[components.length -1];
     $.del(url, {},
@@ -216,7 +216,7 @@ cloud9.prototype.deleteCollection = function(url) {
     }, "json");
 };
 
-cloud9.prototype.deleteApplication = function(url) {
+evoApp.prototype.deleteApplication = function(url) {
     components = url.split('/');
     id = components[components.length -1];
     $.del(url, {},
@@ -229,7 +229,7 @@ cloud9.prototype.deleteApplication = function(url) {
     }, "json");
 };
 
-cloud9.prototype.deleteType = function(url) {
+evoApp.prototype.deleteType = function(url) {
     components = url.split('/');
     id = components[components.length -1];
     
@@ -243,7 +243,7 @@ cloud9.prototype.deleteType = function(url) {
     }, "json");
 };
 
-cloud9.prototype.deleteDocument = function(collection, type, docid) {
+evoApp.prototype.deleteDocument = function(collection, type, docid) {
     $.ajax({
         type: "DELETE",
         url: "/evo/content/" + collection +"/"+ type +"/"+ docid, 
@@ -257,7 +257,7 @@ cloud9.prototype.deleteDocument = function(collection, type, docid) {
     });
 };
 
-cloud9.prototype.deleteUser = function(userid){
+evoApp.prototype.deleteUser = function(userid){
     console.log("Delete: " + userid);
     $.ajax({
         type: "DELETE",
@@ -265,7 +265,7 @@ cloud9.prototype.deleteUser = function(userid){
         dataType: "json",
         success: function(response){
             if (response.status == "ok") {
-                $('#c9-user-table-row-'+userid).hide();
+                $('#evo-user-table-row-'+userid).hide();
             } else {
                 console.error(response.msg);
             }
@@ -273,7 +273,7 @@ cloud9.prototype.deleteUser = function(userid){
     });
 };
 
-cloud9.prototype.addDocument = function(url, func) {
+evoApp.prototype.addDocument = function(url, func) {
     var values = {};
     
     /* check for form values that are numbers */
@@ -310,13 +310,13 @@ cloud9.prototype.addDocument = function(url, func) {
         	if (data.status === 'ok') {
         		location.reload();
         	} else {
-        		c9.showError($('#newdoc'), data.response);
+        		evo.showError($('#newdoc'), data.response);
         	}
         }
     });
 };
 
-cloud9.prototype.loadAndSlide = function(container, data, offset, options) {
+evoApp.prototype.loadAndSlide = function(container, data, offset, options) {
     var defaults = {
         queue: true,
         duration: 250
@@ -329,7 +329,7 @@ cloud9.prototype.loadAndSlide = function(container, data, offset, options) {
     $('.userTableContainer').animate({left: offset}, options);    
 };
 
-cloud9.prototype.slide = function(offset, options) {
+evoApp.prototype.slide = function(offset, options) {
     var defaults = {
         queue: true,
         duration: 250

@@ -132,12 +132,12 @@ launch_service()
     props=$3
 
     if [ "x$foreground" != "x" ]; then
-        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Dc9.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
+        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Devo.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
                 co.fs.evo.Evo
         execval=$?
     else
         # Startup in background and write the pid.
-        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Dc9.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
+        exec "$JAVA" $JAVA_OPTS $EVO_JAVA_OPTS -Devo.home="$EVO_HOME" -cp "$EVO_CLASSPATH" $props \
                     co.fs.evo.Evo <&- >&- &
         execval=$?
         [ ! -z "$pidpath" ] && printf '%d' $! > "$pidpath"

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="c9">
+<html class="evo">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/img/evo/favico.png" />
@@ -30,8 +30,8 @@
     </script>
     
     <!-- javascript templates -->
-    <script id="c9-user-table-row" type="text/template">
-      <tr class="odd gradient-light" id="c9-user-table-row-{%= uname %}">
+    <script id="evo-user-table-row" type="text/template">
+      <tr class="odd gradient-light" id="evo-user-table-row-{%= uname %}">
         <td>
           <a href="#" onClick="editUser('{%= uname %}', '{%= name %}', '{%= role %}')">{%= name %}</a>
         </td>
@@ -43,14 +43,14 @@
           </span>
         </td>
         <td style="text-align:right;">
-            <a href="#" class="c9-user-delete-icon" onClick="c9.deleteUser('{%= uname %}')">
+            <a href="#" class="evo-user-delete-icon" onClick="evo.deleteUser('{%= uname %}')">
                 <img class="removeLink" src="/img/evo/trans.png">
             </a>
         </td>
       </tr>
     </script>
       
-    <script id="c9-user-table" type="text/template">
+    <script id="evo-user-table" type="text/template">
         <tr class="{%= cnt % 2 === 0 ? 'even' : 'odd' %} gradient-light" id="{%= 'row'+cnt %}">
             <td><input style="width:90%" type="text" id="name-{%= cnt %}"></td>
             <td><input style="width:90%;" type="text" id="login-{%= cnt %}"></td>
@@ -67,7 +67,7 @@
         </tr>
     </script>
       
-    <script id="c9-edit-user-table" type="text/template">
+    <script id="evo-edit-user-table" type="text/template">
         <tr class="{%= cls %}" id="edit-row-{%= uname %}">
             <td><input style="width:90%" type="text" id="txtName" value="{%= name %}"></td>
             <td>{%= uname %}</td>
@@ -90,13 +90,13 @@
         var users = ${usersData};
         _.each(users, function(userInfo, userName) {
             $('#userTable > tbody:last tr:eq(0)').after(
-                _.template($('#c9-user-table-row').html(), userInfo)
+                _.template($('#evo-user-table-row').html(), userInfo)
             );
         });
 
         $('.searchinput').val('');
-        $("#c9-user-page").addClass("selected");
-        c9 = new cloud9();
+        $("#evo-user-page").addClass("selected");
+        evo = new evoApp();
         
         $('#createUserElement').qtip({
            content: 'Create User',
@@ -117,7 +117,7 @@
               }
            }
         });
-        $('.c9-user-delete-icon').qtip({
+        $('.evo-user-delete-icon').qtip({
            content: 'Delete User',
            show: 'mouseover',
            hide: 'mouseout',
@@ -141,10 +141,10 @@
 
       function editUser(uname, name, role) { 
         var cnt = $('#userTable tbody tr').length;
-        var row = $('#c9-user-table-row-' + uname);
+        var row = $('#evo-user-table-row-' + uname);
         var cls = row.attr('class');
         row.replaceWith(
-            _.template($('#c9-edit-user-table').html(), {
+            _.template($('#evo-edit-user-table').html(), {
                 cls: cls,
                 uname: uname,
                 name: name,
@@ -178,11 +178,11 @@
                     if (data.status === 'ok') {
                         console.log("edit user success");
                         $('#edit-row-' + uname).replaceWith(
-                            _.template($("#c9-user-table-row").html(), data.response)
+                            _.template($("#evo-user-table-row").html(), data.response)
                         );
                     } else {
                         console.log('error editing user');
-                        c9.showError($('#users'), data.response);
+                        evo.showError($('#users'), data.response);
                     }
                 }
             });
@@ -193,7 +193,7 @@
         var cnt = $('#userTable tbody tr').length;
 
         $('#userTable > tbody:last').append(
-            _.template($("#c9-user-table").html(), {cnt: cnt})
+            _.template($("#evo-user-table").html(), {cnt: cnt})
         );
 
         $('#linkSaveUser').click(function(e) {
@@ -221,11 +221,11 @@
                     if (data.status === 'ok') {
                         console.log("create user success");
                         row.replaceWith(
-                            _.template($("#c9-user-table-row").html(), data.response)
+                            _.template($("#evo-user-table-row").html(), data.response)
                         );
                     } else {
                         console.log('error creating user');
-                        c9.showError($('#users'), data.response);
+                        evo.showError($('#users'), data.response);
                     }
                 }
             });
@@ -256,7 +256,7 @@
                 </a>
                 <span class="newCollection">Users</span><br />
                 <table id="userTable">
-                  <tr class="c9-table-header gradient-dark">
+                  <tr class="evo-table-header gradient-dark">
                     <th style="width:220px;">Name</th>
                     <th>Login</th>
                     <th>Role</th>

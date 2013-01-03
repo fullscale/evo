@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="c9 yui-skin-cloud9">
+<html class="evo yui-skin-evo">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/img/evo/editor.png" />
@@ -79,16 +79,16 @@
 
   <body class="yui-skin-sam">
     <div id="top1">
-      <div id="c9-ide-menubar-container"></div>
+      <div id="evo-ide-menubar-container"></div>
     </div>
     <div id="left1" style="margin:3px 3px 3px 0;">
       <div class="project-header">
       	<div class="project-header title" style="margin-left:6px">FOLDERS</div>
       </div>
-      <div id="c9-ide-navigator" class="ygtv-highlight"></div>
+      <div id="evo-ide-navigator" class="ygtv-highlight"></div>
     </div> 
-    <div id="center1" style="height:100%"><div id="c9-ide-editor" style="height:100%"></div></div> 
+    <div id="center1" style="height:100%"><div id="evo-ide-editor" style="height:100%"></div></div> 
   </body>
     
-  <script>YAHOO.util.Event.addListener(window, "load", function() { C9.ide.init("${app}") })</script>
+  <script>YAHOO.util.Event.addListener(window, "load", function() { EVO.ide.init("${app}") })</script>
 </html>
