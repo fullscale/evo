@@ -8,15 +8,15 @@
     <link type="text/css" rel="stylesheet" href="/css/layout.css" />
     <link type="text/css" rel="stylesheet" href="/js/yui/2.9.0/build/fonts/fonts-min.css" />
     <link type="text/css" rel="stylesheet" href="/js/yui/2.9.0/build/assets/skins/sam/resize.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/tabview.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/treeview.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/layout.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/button.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/container.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/tabview.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/treeview.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/layout.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/button.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/container.css" />
     <link type="text/css" rel="stylesheet" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
-    <link type="text/css" rel="stylesheet" href="/css/cloud9.css" />
+    <link type="text/css" rel="stylesheet" href="/css/evo.css" />
     <link type="text/css" rel="stylesheet" href="/css/buttons.css" />
-    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/cloud9/menu.css" />	    
+    <link type="text/css" rel="stylesheet" href="/css/evo/ide/skins/evo/menu.css" />	    
     <link type="text/css" rel="stylesheet" href="/css/evo/ide/style.css" />
 	
     <script src="/js/yui/2.9.0/build/yahoo/yahoo-min.js"></script>
@@ -74,7 +74,7 @@
     <script src="/js/evo/ide/menubar.js"></script>
     <script src="/js/evo/ide/navigator.js"></script>
     <script src="/js/evo/ide/ide.js"></script>
-    <script src="/js/evo/c9.js"></script>
+    <script src="/js/evo/evo.js"></script>
   </head>
 
   <body class="yui-skin-sam">

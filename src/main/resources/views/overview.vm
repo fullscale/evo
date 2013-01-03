@@ -11,14 +11,14 @@
 
     <!-- Common CSS files -->
     <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
-    <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
+    <link rel="stylesheet" type="text/css" href="/css/evo.css" />
     <link rel="stylesheet" type="text/css" href="/css/evo/main.css" />
     <link rel="stylesheet" type="text/css" href="/css/evo/bootstrap-light.css" />
     <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
 
     <script src="/js/json2.min.js"></script>
-    <script src="/js/evo/c9.js"></script>
+    <script src="/js/evo/evo.js"></script>
 
     <script>
       $(document).ready(function() {

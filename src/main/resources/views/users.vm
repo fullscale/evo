@@ -8,7 +8,7 @@
 
     <!-- Common CSS files -->
     <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
-    <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
+    <link rel="stylesheet" type="text/css" href="/css/evo.css" />
     <link rel="stylesheet" type="text/css" href="/css/evo/main.css" />
     <link rel="stylesheet" type="text/css" href="/css/evo/bootstrap-light.css" />
     <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
@@ -17,7 +17,7 @@
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/json2.min.js"></script>
     <script src="/js/jquery.qtip-1.0.0-rc3.min.js"></script>
-    <script src="/js/evo/c9.js"></script>
+    <script src="/js/evo/evo.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script type="text/javascript">
         // change underscore.js template settings not to conflict with grails

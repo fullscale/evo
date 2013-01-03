@@ -463,7 +463,7 @@ public class ConfigService {
 
         // https keystore
         String httpsKeystore = System.getProperty(PROPERTY_HTTPS_KEYSTORE,
-                defaults.get(SETTING_HTTPS_KEYSTORE, getHome() + "/etc/security/c9.default.keystore"));
+                defaults.get(SETTING_HTTPS_KEYSTORE, getHome() + "/etc/security/evo.default.keystore"));
         logger.debug("https keystore: {}", httpsKeystore);
         settings.put(SETTING_HTTPS_KEYSTORE, httpsKeystore);
         
