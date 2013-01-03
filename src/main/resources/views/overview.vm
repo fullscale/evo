@@ -3,22 +3,22 @@
 <html class="c9">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/img/c9/favico.png" />
+    <link rel="icon" type="image/png" href="/img/evo/favico.png" />
     <script src="/js/jquery-1.6.2.min.js"></script>
     <script src="/js/protovis-d3.1.js"></script>
-    <script src="/js/c9/nodestats.js"></script>
+    <script src="/js/evo/nodestats.js"></script>
     <title>EVO - Overview</title>
 
     <!-- Common CSS files -->
     <link rel="stylesheet" type="text/css" href="/js/yui/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
     <link rel="stylesheet" type="text/css" href="/css/cloud9.css" />
-    <link rel="stylesheet" type="text/css" href="/css/c9/main.css" />
-    <link rel="stylesheet" type="text/css" href="/css/c9/bootstrap-light.css" />
+    <link rel="stylesheet" type="text/css" href="/css/evo/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/evo/bootstrap-light.css" />
     <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
 
     <script src="/js/json2.min.js"></script>
-    <script src="/js/c9/c9.js"></script>
+    <script src="/js/evo/c9.js"></script>
 
     <script>
       $(document).ready(function() {
@@ -43,7 +43,7 @@
             #foreach ($node in $nodes.entrySet())
               #set ($stat = $stats.get($node.key))
               <div class="overview-node-header gradient-dark">
-                <img style="margin-left:5px;" align="absmiddle" src="/img/c9/bar_chart.png">
+                <img style="margin-left:5px;" align="absmiddle" src="/img/evo/bar_chart.png">
                 <span class="node-title">$node.value.hostname&nbsp;-&nbsp;$node.value.network().primaryInterface().address()</span>
               </div>
               <div class="overview-node-body">
