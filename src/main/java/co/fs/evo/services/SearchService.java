@@ -199,22 +199,22 @@ public class SearchService {
 
         logger.exit();
     }
-    
+
     /**
      * Creates the application index
      * 
      * @throws EvoException
      */
     public void setupApplicationIndex() throws EvoException {
-    	logger.entry();
-    	boolean hasAppIndex = hasIndex(APP_INDEX);
-    	if (!hasAppIndex) {
-    		logger.info("Creating application repository");
-    		boolean ack = createIndex(APP_INDEX, 1, 1);
-    		logger.exit(ack);
-    	} else {
-    		logger.info("Recovering application data");
-    	}
+        logger.entry();
+        boolean hasAppIndex = hasIndex(APP_INDEX);
+        if (!hasAppIndex) {
+            logger.info("Creating application repository");
+            boolean ack = createIndex(APP_INDEX, 1, 1);
+            logger.exit(ack);
+        } else {
+            logger.info("Recovering application data");
+        }
     }
 
     /**
@@ -325,17 +325,17 @@ public class SearchService {
 
     public List<String> getAppNames() {
 
-    	Collection<String> appSet = new HashSet<String>();
-    	
-    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+        Collection<String> appSet = new HashSet<String>();
+
+        Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
         if (appTypes != null) {
             for (String appType : appTypes.keySet()) {
-            	appSet.add(appType.split("_")[0]);
+                appSet.add(appType.split("_")[0]);
             }
         }
         List<String> appNames = new ArrayList<String>(appSet);
         Collections.sort(appNames);
-    	return appNames;
+        return appNames;
     }
 
     /**
@@ -434,13 +434,13 @@ public class SearchService {
      */
     public boolean hasApp(String appName) {
         logger.entry(appName);
-    	
-    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+
+        Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
         if (appTypes != null) {
             for (String appType : appTypes.keySet()) {
-            	if (appType.split("_")[0].equalsIgnoreCase(appName)) {
-            		return true;
-            	}
+                if (appType.split("_")[0].equalsIgnoreCase(appName)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -667,65 +667,104 @@ public class SearchService {
      * Creates a new application by generating a set of boilerplate mappings.
      * 
      * @param appName the name of the app
-     * @throws MappingException 
+     * @throws MappingException
      * @throws IndexException
      */
-    public void createApp(String appName) 
-    	throws ApplicationExistsException, MappingException, InvalidApplicationNameException {
+    public void createApp(String appName) throws ApplicationExistsException, MappingException, InvalidApplicationNameException {
         logger.entry(appName);
-        
+
         if (Arrays.asList(INVALID_INDEX_NAMES).contains(appName)) {
-        	throw new InvalidApplicationNameException("Invalid application name");
+            throw new InvalidApplicationNameException("Invalid application name");
         }
-        
+
         if (!hasApp(appName)) {
 
-        	/* setup application mappings */
-			putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
-			putMapping(APP_INDEX, appName + "_partials", config.getPartialsMapping());
-			putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
-			putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
-			putMapping(APP_INDEX, appName + "_lib", config.getLibMapping());
-			putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
-			putMapping(APP_INDEX, appName + "_server-side", config.getServerSideMapping());
-			
-			/* load the HTML application boilerplate */
-	        indexAppDoc(appName, "html", "index.html", config.getAngularTemplate(appName, "index.html"), "text/html");
-	        indexAppDoc(appName, "partials", "search.html", config.getAngularTemplate(appName, "partial1.html"), "text/html");
-	        indexAppDoc(appName, "partials", "results.html", config.getAngularTemplate(appName, "partial2.html"), "text/html");
-	        
-	        /* load the JavaScript application boilerplate */
-	        indexAppDoc(appName, "js", "app.js", config.getAngularTemplate(appName, "app.js"), "application/javascript");
-	        indexAppDoc(appName, "js", "controllers.js", config.getAngularTemplate(appName, "controllers.js"), "application/javascript");
-	        indexAppDoc(appName, "js", "services.js", config.getAngularTemplate(appName, "services.js"), "application/javascript");
-	        indexAppDoc(appName, "js", "directives.js", config.getAngularTemplate(appName, "directives.js"), "application/javascript");
-	        indexAppDoc(appName, "js", "filters.js", config.getAngularTemplate(appName, "filters.js"), "application/javascript");
-	        
-	        /* load the JavaScript libraries/dependencies */
-	        indexAppDoc(appName, "lib", "json2.min.js", config.getAngularResource("js/json2.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "jquery-1.8.0.min.js", config.getAngularResource("js/jquery-1.8.0.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "modernizr-2.6.1.min.js", config.getAngularResource("js/modernizr-2.6.1.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "underscore.min.js", config.getAngularResource("js/underscore.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "bootstrap.min.js", config.getAngularResource("js/bootstrap.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "angular.min.js", config.getAngularResource("js/angular.min.js"), "application/javascript");
-	        indexAppDoc(appName, "lib", "evo.min.js", config.getAngularResource("js/evo.min.js"), "application/javascript");
-	        
-	        /* load the CSS application boilerplate */
-	        indexAppDoc(appName, "css", appName+".css", config.getAngularTemplate(appName, "project.css"), "text/css");
-	        indexAppDoc(appName, "css", "bootstrap.min.css", config.getAngularResource("css/bootstrap.min.css"), "text/css");
-	        indexAppDoc(appName, "css", "bootstrap-responsive.min.css", config.getAngularResource("css/bootstrap-responsive.min.css"), "text/css");
-	        indexAppDoc(appName, "css", "normalize.min.css", config.getAngularResource("css/normalize.min.css"), "text/css");
-	        indexAppDoc(appName, "css", "main.min.css", config.getAngularResource("css/main.min.css"), "text/css");
-	        
-	        /* load the SSJS example boilerplate */
-	        indexAppDoc(appName, "server-side", "examples.js", config.getAngularTemplate(appName, "examples.js"), "application/javascript");
-	        
-	        /* load application images */
-	        indexAppDoc(appName, "img", "glyphicons-halflings.png", config.getBase64Image("img/glyphicons-halflings.png"), "image/png");
-	        indexAppDoc(appName, "img", "glyphicons-halflings-white.png", config.getBase64Image("img/glyphicons-halflings-white.png"), "image/png");
+            /* setup application mappings */
+            putMapping(APP_INDEX, appName + "_html", config.getHtmlMapping());
+            putMapping(APP_INDEX, appName + "_partials", config.getPartialsMapping());
+            putMapping(APP_INDEX, appName + "_css", config.getCssMapping());
+            putMapping(APP_INDEX, appName + "_js", config.getJsMapping());
+            putMapping(APP_INDEX, appName + "_lib", config.getLibMapping());
+            putMapping(APP_INDEX, appName + "_img", config.getImagesMapping());
+            putMapping(APP_INDEX, appName + "_server-side", config.getServerSideMapping());
+
+            /* load the HTML application boilerplate */
+            indexAppDoc(appName, "html", "index.html", config.getAngularTemplate(appName, "index.html"), "text/html");
+            indexAppDoc(appName, "partials", "search.html", config.getAngularTemplate(appName, "partial1.html"), "text/html");
+            indexAppDoc(appName, "partials", "results.html", config.getAngularTemplate(appName, "partial2.html"), "text/html");
+
+            /* load the JavaScript application boilerplate */
+            indexAppDoc(appName, "js", "app.js", config.getAngularTemplate(appName, "app.js"), "application/javascript");
+            indexAppDoc(appName,
+                    "js",
+                    "controllers.js",
+                    config.getAngularTemplate(appName, "controllers.js"),
+                    "application/javascript");
+            indexAppDoc(appName, "js", "services.js", config.getAngularTemplate(appName, "services.js"), "application/javascript");
+            indexAppDoc(appName,
+                    "js",
+                    "directives.js",
+                    config.getAngularTemplate(appName, "directives.js"),
+                    "application/javascript");
+            indexAppDoc(appName, "js", "filters.js", config.getAngularTemplate(appName, "filters.js"), "application/javascript");
+
+            /* load the JavaScript libraries/dependencies */
+            indexAppDoc(appName, "lib", "json2.min.js", config.getAngularResource("js/json2.min.js"), "application/javascript");
+            indexAppDoc(appName,
+                    "lib",
+                    "jquery-1.8.0.min.js",
+                    config.getAngularResource("js/jquery-1.8.0.min.js"),
+                    "application/javascript");
+            indexAppDoc(appName,
+                    "lib",
+                    "modernizr-2.6.1.min.js",
+                    config.getAngularResource("js/modernizr-2.6.1.min.js"),
+                    "application/javascript");
+            indexAppDoc(appName,
+                    "lib",
+                    "underscore.min.js",
+                    config.getAngularResource("js/underscore.min.js"),
+                    "application/javascript");
+            indexAppDoc(appName,
+                    "lib",
+                    "bootstrap.min.js",
+                    config.getAngularResource("js/bootstrap.min.js"),
+                    "application/javascript");
+            indexAppDoc(appName, "lib", "angular.min.js", config.getAngularResource("js/angular.min.js"), "application/javascript");
+            indexAppDoc(appName, "lib", "evo.min.js", config.getAngularResource("js/evo.min.js"), "application/javascript");
+
+            /* load the CSS application boilerplate */
+            indexAppDoc(appName, "css", appName + ".css", config.getAngularTemplate(appName, "project.css"), "text/css");
+            indexAppDoc(appName, "css", "bootstrap.min.css", config.getAngularResource("css/bootstrap.min.css"), "text/css");
+            indexAppDoc(appName,
+                    "css",
+                    "bootstrap-responsive.min.css",
+                    config.getAngularResource("css/bootstrap-responsive.min.css"),
+                    "text/css");
+            indexAppDoc(appName, "css", "normalize.min.css", config.getAngularResource("css/normalize.min.css"), "text/css");
+            indexAppDoc(appName, "css", "main.min.css", config.getAngularResource("css/main.min.css"), "text/css");
+
+            /* load the SSJS example boilerplate */
+            indexAppDoc(appName,
+                    "server-side",
+                    "examples.js",
+                    config.getAngularTemplate(appName, "examples.js"),
+                    "application/javascript");
+
+            /* load application images */
+            indexAppDoc(appName,
+                    "img",
+                    "glyphicons-halflings.png",
+                    config.getBase64Image("img/glyphicons-halflings.png"),
+                    "image/png");
+            indexAppDoc(appName,
+                    "img",
+                    "glyphicons-halflings-white.png",
+                    config.getBase64Image("img/glyphicons-halflings-white.png"),
+                    "image/png");
 
         } else {
-        	throw new ApplicationExistsException("Application already exists");
+            throw new ApplicationExistsException("Application already exists");
         }
         logger.exit();
     }
@@ -782,15 +821,15 @@ public class SearchService {
      */
     public boolean deleteApp(String... apps) {
         for (int appIdx = 0; appIdx < apps.length; appIdx++) {
-        	try {
-				List<String> types = getAppTypes(apps[appIdx]);
-				for (String type: types) {
-					deleteMapping(APP_INDEX, apps[appIdx] + "_" + type);
-				}
-			} catch (InvalidApplicationNameException e) {
-				logger.warn("Encountered invalid app name trying to delete an application");
-				continue;
-			}
+            try {
+                List<String> types = getAppTypes(apps[appIdx]);
+                for (String type : types) {
+                    deleteMapping(APP_INDEX, apps[appIdx] + "_" + type);
+                }
+            } catch (InvalidApplicationNameException e) {
+                logger.warn("Encountered invalid app name trying to delete an application");
+                continue;
+            }
         }
         return true;
     }
@@ -824,19 +863,19 @@ public class SearchService {
      */
     public List<String> getAppTypes(String app) throws InvalidApplicationNameException {
 
-    	List<String> resp = new ArrayList<String>();
-    	
-    	Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
+        List<String> resp = new ArrayList<String>();
+
+        Map<String, MappingMetaData> appTypes = getMappings(APP_INDEX);
         if (appTypes != null) {
             for (String appType : appTypes.keySet()) {
-            	String[] parts = appType.split("_");
-            	if (parts.length != 2) {
-            		throw new InvalidApplicationNameException("Invalid application name: " + app);
-            	}
-                
+                String[] parts = appType.split("_");
+                if (parts.length != 2) {
+                    throw new InvalidApplicationNameException("Invalid application name: " + app);
+                }
+
                 if (app.equalsIgnoreCase(parts[0])) {
                     logger.debug("adding appType: {}", parts[1]);
-                	resp.add(parts[1]);
+                    resp.add(parts[1]);
                 }
             }
         }
@@ -1091,10 +1130,10 @@ public class SearchService {
                         // the html dir isn't specified in most cases, allow html files in root directory
                         String[] newParts = {pathParts[0], "html", pathParts[1]};
                         pathParts = newParts;
-                	} else {
-                		logger.warn("Invalid resource: {}", entry.getName());
-                		throw new EvoException("Invalid resource: " + entry.getName());
-                	}
+                    } else {
+                        logger.warn("Invalid resource: {}", entry.getName());
+                        throw new EvoException("Invalid resource: " + entry.getName());
+                    }
                 }
 
                 String partApp = pathParts[0];
@@ -1133,9 +1172,9 @@ public class SearchService {
                     indexAppDoc(app, "html", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
                 } else if (partType.equals("partials")) {
                     indexAppDoc(app, "partials", partName, IOUtils.toString(zip, "UTF-8"), "text/html");
-                } else if (partType.equals("lib")) { 
-                	indexAppDoc(app, "lib", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
-            	}else if (partType.equals("css")) {
+                } else if (partType.equals("lib")) {
+                    indexAppDoc(app, "lib", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
+                } else if (partType.equals("css")) {
                     indexAppDoc(app, "css", partName, IOUtils.toString(zip, "UTF-8"), "text/css");
                 } else if (partType.equals("img")) {
                     int sIdx = partName.indexOf('.');
@@ -1192,11 +1231,11 @@ public class SearchService {
         List<String> contentTypes = getAppTypes(app);
         String[] appTypes = new String[contentTypes.size()];
         int idx = 0;
-        for (String type: contentTypes) {
-        	appTypes[idx] = app + "_" + type;
-        	idx++;
+        for (String type : contentTypes) {
+            appTypes[idx] = app + "_" + type;
+            idx++;
         }
-        
+
         SearchResponse response = matchAll(APP_INDEX, appTypes, new String[]{});
 
         ZipOutputStream zip = null;
@@ -1207,9 +1246,9 @@ public class SearchService {
                 String contentType = hit.type().split("_")[1];
                 String resourcePath = "";
                 if (contentType.equals("html")) {
-                	resourcePath = app + sep + hit.id();
+                    resourcePath = app + sep + hit.id();
                 } else {
-                	resourcePath = app + sep + contentType + sep + hit.id();
+                    resourcePath = app + sep + contentType + sep + hit.id();
                 }
                 logger.debug("resourcePath: {}", resourcePath);
                 zip.putNextEntry(new ZipEntry(resourcePath));
@@ -1276,10 +1315,10 @@ public class SearchService {
     }
 
     public SearchResponse matchAll(String index, String type, String[] fields) {
-    	String[] types = {type};
-    	return matchAll(index, types, fields);
+        String[] types = {type};
+        return matchAll(index, types, fields);
     }
-    
+
     /**
      * Executes a matchall query against the specified index and type.
      * 
