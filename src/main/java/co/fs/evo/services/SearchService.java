@@ -1087,9 +1087,9 @@ public class SearchService {
 
                 logger.debug("number of parts: {}", pathParts.length);
                 if (pathParts.length != 3) {
-                	if (pathParts.length == 2) {
-                		// the html dir isn't specified in most cases
-                	    String[] newParts = {pathParts[0], "html", pathParts[1]};
+                    if (pathParts.length == 2 && (pathParts[1].endsWith(".html") || pathParts[1].endsWith(".htm"))) {
+                        // the html dir isn't specified in most cases, allow html files in root directory
+                        String[] newParts = {pathParts[0], "html", pathParts[1]};
                         pathParts = newParts;
                 	} else {
                 		logger.warn("Invalid resource: {}", entry.getName());
