@@ -435,7 +435,7 @@ public class SearchServiceTest {
         searchService.refreshIndex();
         Thread.sleep(500);
         assertTrue(searchService.hasApp("testappimport"));
-        /*MappingMetaData testAppMeta = searchService.getType("testappimport", "testapptype");
+        MappingMetaData testAppMeta = searchService.getType("testappimport", "testapptype");
         assertNotNull(testAppMeta);
         Map<String, Object> testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
         assertNotNull(testAppFields);
@@ -443,7 +443,7 @@ public class SearchServiceTest {
         assertTrue(testAppFields.containsKey("txtfield"));
         assertTrue(testAppFields.containsKey("intfield"));
         assertTrue(testAppFields.containsKey("datefield"));
-        assertTrue(testAppFields.containsKey("strfield")); */
+        assertTrue(testAppFields.containsKey("strfield"));
         testzip = getClass().getClassLoader().getResourceAsStream("testappimport.zip");
         try {
             searchService.importApp("testappimport", null, false);
@@ -461,7 +461,7 @@ public class SearchServiceTest {
         searchService.refreshIndex();
         Thread.sleep(500);
         assertTrue(searchService.hasApp("testappimport"));
-        /*testAppMeta = searchService.getType("testappimport", "testapptype");
+        testAppMeta = searchService.getType("testappimport", "testapptype");
         assertNotNull(testAppMeta);
         testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
         assertNotNull(testAppFields);
@@ -469,13 +469,13 @@ public class SearchServiceTest {
         assertTrue(testAppFields.containsKey("txtfield"));
         assertTrue(testAppFields.containsKey("intfield"));
         assertTrue(testAppFields.containsKey("datefield"));
-        assertTrue(testAppFields.containsKey("strfield"));*/
+        assertTrue(testAppFields.containsKey("strfield"));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testExportApp() throws Exception {
-        // test by exporting an app we know exists to a byte array, deleteing the app and
+        // test by exporting an app we know exists to a byte array, deleting the app and
         // exported collections, then importing from the byte array and seeing if everything was created
         // correctly
         Map<String, String[]> exportCollections = new HashMap<String, String[]>();
@@ -490,7 +490,7 @@ public class SearchServiceTest {
         searchService.refreshIndex();
         Thread.sleep(500);
         assertTrue(searchService.hasApp("testappimport"));
-        /*MappingMetaData testAppMeta = searchService.getType("testappimport", "testapptype");
+        MappingMetaData testAppMeta = searchService.getType("testappimport", "testapptype");
         assertNotNull(testAppMeta);
         Map<String, Object> testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
         assertNotNull(testAppFields);
@@ -498,7 +498,7 @@ public class SearchServiceTest {
         assertTrue(testAppFields.containsKey("txtfield"));
         assertTrue(testAppFields.containsKey("intfield"));
         assertTrue(testAppFields.containsKey("datefield"));
-        assertTrue(testAppFields.containsKey("strfield"));*/
+        assertTrue(testAppFields.containsKey("strfield"));
 
         try {
             searchService.exportApp("testappimport", null, exportCollections);
@@ -525,15 +525,15 @@ public class SearchServiceTest {
         searchService.refreshIndex();
         Thread.sleep(500);
         assertTrue(searchService.hasApp("testappimport"));
-        //testAppMeta = searchService.getType("testappimport", "testapptype");
-        /*assertNotNull(testAppMeta);
+        testAppMeta = searchService.getType("testappimport", "testapptype");
+        assertNotNull(testAppMeta);
         testAppFields = (Map<String, Object>) testAppMeta.getSourceAsMap().get("properties");
         assertNotNull(testAppFields);
         assertEquals(4, testAppFields.size());
         assertTrue(testAppFields.containsKey("txtfield"));
         assertTrue(testAppFields.containsKey("intfield"));
         assertTrue(testAppFields.containsKey("datefield"));
-        assertTrue(testAppFields.containsKey("strfield"));*/
+        assertTrue(testAppFields.containsKey("strfield"));
 
         // test no mapping export
         exportedZipOut = new ByteArrayOutputStream();
