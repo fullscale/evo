@@ -4,6 +4,7 @@ var event = require("pilot/event");
 /* edit modes */
 var HtmlMode = require("ace/mode/html").Mode;
 var CssMode = require("ace/mode/css").Mode;
+CssMode.prototype.createWorker = function() {}; //disables CSSLint
 var JavaScriptMode = require("ace/mode/javascript").Mode;
 
 /* keyboard bindings */
