@@ -30,9 +30,20 @@ public class ElasticJsClient extends ScriptableObject {
         return handleResponse(execRestCall("POST", host + path, content), callbackFn);
     }
     
-    public void jsFunction_put(String path, Object data, NativeFunction callbackFn)    {/* TODO */}
-    public void jsFunction_get(String path, Object data, NativeFunction callbackFn)    {/* TODO */}
-    public void jsFunction_delete(String path, Object data, NativeFunction callbackFn) {/* TODO */}
+    public Object jsFunction_put(String path, Object data, NativeFunction callbackFn)    {
+        String content = data == null ? "" : data.toString();
+        return handleResponse(execRestCall("PUT", host + path, content), callbackFn);    	
+    }
+    
+    public Object jsFunction_get(String path, Object data, NativeFunction callbackFn)    {
+    	String content = data == null ? "" : data.toString();
+    	return handleResponse(execRestCall("GET", host + path, content), callbackFn);
+    }
+    
+    public Object jsFunction_delete(String path, Object data, NativeFunction callbackFn) {
+        String content = data == null ? "" : data.toString();
+        return handleResponse(execRestCall("DELETE", host + path, content), callbackFn);
+    }
 
     private String execRestCall(String method, String uri, String content) {
         try {
