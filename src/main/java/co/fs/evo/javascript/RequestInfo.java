@@ -1,33 +1,65 @@
 package co.fs.evo.javascript;
 
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 public class RequestInfo {
+	
+    private static final XLogger logger = XLoggerFactory.getXLogger(RequestInfo.class);
 
-    private String scheme;
-    private String server;
-    private String port;
+    private final String scheme;
+    private final String server;
+    private final String port;
+    private final String method;
+    private final String queryString;
     private String controller;
     private String action;
     private String appname;
     private String app;
     private String dir;
     private String resource;
+    private BufferedReader reader;
+    private Map<String, String> headers;
     private Map<String, String[]> params;
 
     public RequestInfo(HttpServletRequest request) {
+    	logger.entry();
+    	
+        this.scheme = request.getScheme();
+        this.server = request.getServerName();
+        this.port = Integer.toString(request.getServerPort());
+        this.method = request.getMethod();
+        this.queryString = request.getQueryString();
+        this.params = request.getParameterMap();
+        this.headers = new HashMap<String, String>();
+        
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String) headerNames.nextElement();
+            headers.put(headerName, request.getHeader(headerName));
+        }
+        
+        try {
+        	this.reader = request.getReader();
+        } catch (java.io.IOException e) {
+        	this.reader = null;
+        }
+        
         ParseServletPath(request);
+        
+        logger.exit();
     }
 
     private void ParseServletPath(HttpServletRequest request) {
-
-        scheme = request.getScheme();
-        server = request.getServerName();
-        port = Integer.toString(request.getServerPort());
 
         String path = StringUtils.strip(request.getServletPath(), "/");
         String[] components = path.split("/");
@@ -37,20 +69,18 @@ public class RequestInfo {
         app = appname + ".app";
 
         if (numPathParts == 1) {
-            // only recieved an application name
+            // only received an application name
             dir = "html";
             resource = "index.html";
         } else if (numPathParts == 2) {
-            // recieved an application and resource name
+            // received an application and resource name
             dir = "html";
             resource = components[1];
         } else if (numPathParts == 3) {
-            // recieved application, directory, and resource
+            // received application, directory, and resource
             dir = components[1];
             resource = components[2];
         }
-
-        params = request.getParameterMap();
     }
 
     /**
@@ -61,13 +91,6 @@ public class RequestInfo {
     }
 
     /**
-     * @param scheme the scheme to set
-     */
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
-    }
-
-    /**
      * @return the server
      */
     public String getServer() {
@@ -75,24 +98,10 @@ public class RequestInfo {
     }
 
     /**
-     * @param server the server to set
-     */
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    /**
      * @return the port
      */
     public String getPort() {
         return port;
-    }
-
-    /**
-     * @param port the port to set
-     */
-    public void setPort(String port) {
-        this.port = port;
     }
 
     /**
@@ -185,11 +194,43 @@ public class RequestInfo {
     public Map<String, String[]> getParams() {
         return params;
     }
+    
+    /**
+     * @return the HTTP method
+     */
+    public String getMethod() {
+        return method;
+    }
+    
+    /**
+     * @return the queryString
+     */
+    public String getQueryString() {
+        return queryString;
+    }
+    
+    /**
+     * @return the input reader 
+     */
+    public BufferedReader getReader() {
+    	return reader;
+    }
 
     /**
-     * @param params the params to set
+     * @return the given header
      */
-    public void setParams(Map<String, String[]> params) {
-        this.params = params;
+    public String getHeader(String name) {
+    	if (headers.containsKey(name)) {
+    		return headers.get(name);
+    	} else {
+    		return "";
+    	}
+    }
+    
+    /**
+     * @return all header names
+     */
+    public Enumeration<String> getHeaderNames() {
+    	return Collections.enumeration(headers.keySet());
     }
 }

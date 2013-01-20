@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Component;
 import co.fs.evo.exceptions.resources.InternalErrorException;
 import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.ResourceException;
+import co.fs.evo.javascript.RequestInfo;
 
 /**
  * Represents a static resources (html, css, js, image)
@@ -117,7 +117,7 @@ public class StaticResource extends Resource {
         logger.exit();
     }
 
-    protected boolean checkIfModified(HttpServletRequest request) {
+    protected boolean checkIfModified(RequestInfo request) {
         logger.entry();
         boolean modified = true;
         try {
@@ -149,7 +149,7 @@ public class StaticResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ResourceException {
+    public void process(RequestInfo request, HttpServletResponse response, HttpSession session) throws ResourceException {
         logger.entry();
 
         // static resources only support HTTP GET

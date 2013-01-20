@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -119,7 +118,7 @@ public class JavascriptResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ResourceException {
+    public void process(RequestInfo request, HttpServletResponse response, HttpSession session) throws ResourceException {
         logger.entry();
 
         // controllers can potentially handle any request method
@@ -127,7 +126,7 @@ public class JavascriptResource extends Resource {
         response.setHeader("Allow", "GET, POST, PUT, DELETE");
 
         logger.debug("creating jsgi request");
-        JSGIRequest jsgi = new JSGIRequest(request, getRequestInfo(request), session);
+        JSGIRequest jsgi = new JSGIRequest(request, session);
 
         // run the javascript controller/action code
         logger.debug("evaluating javascript");
@@ -178,28 +177,6 @@ public class JavascriptResource extends Resource {
         }
 
         logger.exit();
-    }
-
-    /**
-     * Gets the RequestInfo object with parameters set correctly
-     * for javascript controllers.
-     * 
-     * @param request the http request object
-     * @return the request info object
-     */
-    public RequestInfo getRequestInfo(HttpServletRequest request) {
-        logger.entry();
-
-        RequestInfo params = new RequestInfo(request);
-
-        // reset some of the parsed params for our dynamic controller
-        params.setController(params.getDir());
-        params.setAction(params.getResource());
-        params.setResource(resource);
-        params.setDir(dir);
-
-        logger.exit();
-        return params;
     }
 
     /**

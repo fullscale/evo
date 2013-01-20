@@ -21,6 +21,7 @@ import co.fs.evo.exceptions.resources.InternalErrorException;
 import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.NotFoundException;
 import co.fs.evo.exceptions.resources.ResourceException;
+import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.services.ConfigService;
 import co.fs.evo.services.SearchService;
 
@@ -43,7 +44,10 @@ public class ResourceController {
     public void getResource(@PathVariable String app, HttpServletRequest request, HttpServletResponse response,
             HttpSession userSession) {
         logger.entry();
-        processResource(app, null, null, request, response, userSession);
+        
+        // convert the HttpServletRequest to a thread safe RequestInfo object
+        RequestInfo requestInfo = getRequestInfo(request, null, null);
+        processResource(app, null, null, requestInfo, response, userSession);
     }
 
     @ResponseBody
@@ -51,7 +55,10 @@ public class ResourceController {
     public void getResource(@PathVariable String app, @PathVariable String dir, HttpServletRequest request,
             HttpServletResponse response, HttpSession userSession) {
         logger.entry();
-        processResource(app, dir, null, request, response, userSession);
+        
+        // convert the HttpServletRequest to a thread safe RequestInfo object
+        RequestInfo requestInfo = getRequestInfo(request, dir, null);
+        processResource(app, dir, null, requestInfo, response, userSession);
     }
 
     @ResponseBody
@@ -59,7 +66,10 @@ public class ResourceController {
     public void getResource(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
         logger.entry();
-        processResource(app, dir, resource, request, response, userSession);
+        
+        // convert the HttpServletRequest to a thread safe RequestInfo object
+        RequestInfo requestInfo = getRequestInfo(request, dir, resource);
+        processResource(app, dir, resource, requestInfo, response, userSession);
     }
 
     /**
@@ -72,7 +82,7 @@ public class ResourceController {
      * @param response the http response
      * @param session the http session
      */
-    private void processResource(String app, String dir, String resource, HttpServletRequest request, HttpServletResponse response,
+    private void processResource(String app, String dir, String resource, RequestInfo request, HttpServletResponse response,
             HttpSession session) {
         logger.entry(app, dir, resource);
 
@@ -114,6 +124,28 @@ public class ResourceController {
         } catch (IOException e) {
             logger.debug("Error sending error response", e);
         }
+    }
+    
+    /**
+     * Gets the RequestInfo object with parameters set correctly
+     * for javascript controllers.
+     * 
+     * @param request the http request object
+     * @return the request info object
+     */
+    public RequestInfo getRequestInfo(HttpServletRequest request, String dir, String resource) {
+        logger.entry();
+
+        RequestInfo requestInfo = new RequestInfo(request);
+
+        // reset some of the parsed params for our dynamic controller
+        requestInfo.setController(requestInfo.getDir());
+        requestInfo.setAction(requestInfo.getResource());
+        requestInfo.setResource(resource);
+        requestInfo.setDir(dir);
+
+        logger.exit();
+        return requestInfo;
     }
 
 }

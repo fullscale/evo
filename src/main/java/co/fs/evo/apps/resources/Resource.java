@@ -4,7 +4,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.resources.NotFoundException;
 import co.fs.evo.exceptions.resources.ResourceException;
+import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.services.SearchService;
 
 @SpringAware
@@ -49,7 +49,7 @@ public abstract class Resource implements DataSerializable {
      * @param response the http response for the resource
      * @param session the http session for the resource
      */
-    public abstract void process(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+    public abstract void process(RequestInfo request, HttpServletResponse response, HttpSession session)
             throws ResourceException;
 
     /**

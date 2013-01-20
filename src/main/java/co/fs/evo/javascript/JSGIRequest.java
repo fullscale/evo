@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.util.Enumeration;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.mozilla.javascript.NativeArray;
@@ -22,25 +21,25 @@ public class JSGIRequest {
 
     private JavascriptObject req = null;
 
-    public JSGIRequest(HttpServletRequest request, RequestInfo params, HttpSession userSession) {
+    public JSGIRequest(RequestInfo requestInfo, HttpSession userSession) {
 
         req = new JavascriptObject();
 
         /* create the JSGI environment */
-        req.put("method", request.getMethod());
-        req.put("controller", params.getController());
-        req.put("scriptName", "/" + params.getAppname());
-        req.put("pathInfo", "/" + params.getController() + "/" + params.getAction());
-        req.put("action", params.getAction());
-        req.put("headers", headers(request));
-        req.put("queryString", request.getQueryString());
-        req.put("host", params.getServer());
-        req.put("port", params.getPort());
-        req.put("params", params(params));
+        req.put("method", requestInfo.getMethod());
+        req.put("controller", requestInfo.getController());
+        req.put("scriptName", "/" + requestInfo.getAppname());
+        req.put("pathInfo", "/" + requestInfo.getController() + "/" + requestInfo.getAction());
+        req.put("action", requestInfo.getAction());
+        req.put("headers", headers(requestInfo));
+        req.put("queryString", requestInfo.getQueryString());
+        req.put("host", requestInfo.getServer());
+        req.put("port", requestInfo.getPort());
+        req.put("params", params(requestInfo));
         req.put("jsgi", jsgi());
-        req.put("input", body(request));
-        req.put("scheme", params.getScheme());
-        req.put("env", env(request));
+        req.put("input", body(requestInfo));
+        req.put("scheme", requestInfo.getScheme());
+        req.put("env", env(requestInfo));
 
         /* session aren't part of the spec but we can add them */
         JavascriptObject session = session(userSession);
@@ -54,7 +53,7 @@ public class JSGIRequest {
     /*
      * creates the env specific request variables.
      */
-    private JavascriptObject env(HttpServletRequest request) {
+    private JavascriptObject env(RequestInfo request) {
 
         JavascriptObject env = new JavascriptObject();
         return env;
@@ -83,7 +82,7 @@ public class JSGIRequest {
     /*
      * creates the header specific request variables.
      */
-    private JavascriptObject headers(HttpServletRequest request) {
+    private JavascriptObject headers(RequestInfo request) {
         JavascriptObject headers = new JavascriptObject();
         Enumeration<String> headerNames = request.getHeaderNames();
 
@@ -113,11 +112,12 @@ public class JSGIRequest {
     /*
      * creates the input stream from which request the body is read.
      */
-    private co.fs.evo.javascript.BufferedReader body(HttpServletRequest request) {
-        try {
-            BufferedReader reader = request.getReader();
-            return new co.fs.evo.javascript.BufferedReader(reader);
-        } catch (java.io.IOException e) {
+    private co.fs.evo.javascript.BufferedReader body(RequestInfo request) {
+        BufferedReader reader = request.getReader();
+        
+        if (reader != null) {
+        	return new co.fs.evo.javascript.BufferedReader(reader);
+        } else {
             return new co.fs.evo.javascript.BufferedReader();
         }
     }
