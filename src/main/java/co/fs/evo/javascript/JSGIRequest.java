@@ -1,12 +1,16 @@
 package co.fs.evo.javascript;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.mozilla.javascript.NativeArray;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import co.fs.evo.security.EvoUser;
 
 /*
  * This object represents a JSGI compliant interface.
@@ -19,9 +23,10 @@ import org.mozilla.javascript.NativeArray;
  */
 public class JSGIRequest {
 
+	private static final XLogger logger = XLoggerFactory.getXLogger(JSGIRequest.class);
     private JavascriptObject req = null;
 
-    public JSGIRequest(RequestInfo requestInfo, HttpSession userSession) {
+    public JSGIRequest(RequestInfo requestInfo, EvoUser userDetails) {
 
         req = new JavascriptObject();
 
@@ -42,11 +47,11 @@ public class JSGIRequest {
         req.put("env", env(requestInfo));
 
         /* session aren't part of the spec but we can add them */
-        JavascriptObject session = session(userSession);
-        if (session == null) {
+        //String xxx = userSession.getAttribute("SPRING_SECURITY_CONTEXT");
+        if (userDetails == null) {
             req.put("session", "");
         } else {
-            req.put("session", session(userSession));
+            req.put("session", session(userDetails));
         }
     }
 
@@ -97,15 +102,21 @@ public class JSGIRequest {
      * creates the session specific request variables.
      */
     @SuppressWarnings("unchecked")
-    private JavascriptObject session(HttpSession userSession) {
+    private JavascriptObject session(EvoUser userDetails) {
+    	
+    	logger.entry("Found autheticated user");
         JavascriptObject session = null;
-        Map<String, String> user = (Map<String, String>) userSession.getAttribute("user");
-        if (user != null) {
-            session = new JavascriptObject();
-            session.put("user", (String) user.get("name"));
-            session.put("role", (String) user.get("role"));
-            session.put("id", (String) user.get("id"));
+        
+        session = new JavascriptObject();
+        session.put("user", userDetails.getUsername());
+        session.put("id", userDetails.getUid());
+            
+        ArrayList<SimpleGrantedAuthority> roles = (ArrayList<SimpleGrantedAuthority>)userDetails.getAuthorities();
+        for (SimpleGrantedAuthority role : roles) {
+        	// TODO: store entire array of roles
+            session.put("role", role.getAuthority());
         }
+        logger.exit();
         return session;
     }
 

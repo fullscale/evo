@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.hazelcast.spring.context.SpringAware;
 
@@ -30,6 +29,7 @@ import co.fs.evo.exceptions.resources.InternalErrorException;
 import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.ResourceException;
 import co.fs.evo.javascript.RequestInfo;
+import co.fs.evo.security.EvoUser;
 
 /**
  * Represents a static resources (html, css, js, image)
@@ -149,7 +149,7 @@ public class StaticResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(RequestInfo request, HttpServletResponse response, HttpSession session) throws ResourceException {
+    public void process(RequestInfo request, HttpServletResponse response, EvoUser userDetails) throws ResourceException {
         logger.entry();
 
         // static resources only support HTTP GET

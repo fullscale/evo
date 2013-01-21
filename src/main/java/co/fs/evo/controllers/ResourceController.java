@@ -10,6 +10,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +26,7 @@ import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.NotFoundException;
 import co.fs.evo.exceptions.resources.ResourceException;
 import co.fs.evo.javascript.RequestInfo;
+import co.fs.evo.security.EvoUser;
 import co.fs.evo.services.ConfigService;
 import co.fs.evo.services.SearchService;
 
@@ -45,9 +50,15 @@ public class ResourceController {
             HttpSession userSession) {
         logger.entry();
         
+        EvoUser userDetails = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+        	userDetails = (EvoUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+        
         // convert the HttpServletRequest to a thread safe RequestInfo object
         RequestInfo requestInfo = getRequestInfo(request, null, null);
-        processResource(app, null, null, requestInfo, response, userSession);
+        processResource(app, null, null, requestInfo, response, userDetails);
     }
 
     @ResponseBody
@@ -56,9 +67,15 @@ public class ResourceController {
             HttpServletResponse response, HttpSession userSession) {
         logger.entry();
         
+        EvoUser userDetails = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+        	userDetails = (EvoUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+        
         // convert the HttpServletRequest to a thread safe RequestInfo object
         RequestInfo requestInfo = getRequestInfo(request, dir, null);
-        processResource(app, dir, null, requestInfo, response, userSession);
+        processResource(app, dir, null, requestInfo, response, userDetails);
     }
 
     @ResponseBody
@@ -67,9 +84,15 @@ public class ResourceController {
             HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
         logger.entry();
         
+        EvoUser userDetails = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+        	userDetails = (EvoUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+        
         // convert the HttpServletRequest to a thread safe RequestInfo object
         RequestInfo requestInfo = getRequestInfo(request, dir, resource);
-        processResource(app, dir, resource, requestInfo, response, userSession);
+        processResource(app, dir, resource, requestInfo, response, userDetails);
     }
 
     /**
@@ -83,14 +106,14 @@ public class ResourceController {
      * @param session the http session
      */
     private void processResource(String app, String dir, String resource, RequestInfo request, HttpServletResponse response,
-            HttpSession session) {
+            EvoUser userDetails) {
         logger.entry(app, dir, resource);
 
         try {
             logger.debug("getting resource");
             Resource r = resourceHelper.getResource(app, dir, resource);
             logger.debug("processing resource request");
-            r.process(request, response, session);
+            r.process(request, response, userDetails);
             logger.debug("done processing resource request");
         } catch (NotFoundException e) {
             sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e);

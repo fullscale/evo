@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.hazelcast.spring.context.SpringAware;
 
@@ -31,6 +30,7 @@ import co.fs.evo.exceptions.resources.ResourceException;
 import co.fs.evo.javascript.JSGIRequest;
 import co.fs.evo.javascript.JavascriptObject;
 import co.fs.evo.javascript.RequestInfo;
+import co.fs.evo.security.EvoUser;
 import co.fs.evo.services.JavascriptService;
 
 /**
@@ -118,7 +118,7 @@ public class JavascriptResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(RequestInfo request, HttpServletResponse response, HttpSession session) throws ResourceException {
+    public void process(RequestInfo request, HttpServletResponse response, EvoUser userDetails) throws ResourceException {
         logger.entry();
 
         // controllers can potentially handle any request method
@@ -126,7 +126,7 @@ public class JavascriptResource extends Resource {
         response.setHeader("Allow", "GET, POST, PUT, DELETE");
 
         logger.debug("creating jsgi request");
-        JSGIRequest jsgi = new JSGIRequest(request, session);
+        JSGIRequest jsgi = new JSGIRequest(request, userDetails);
 
         // run the javascript controller/action code
         logger.debug("evaluating javascript");
