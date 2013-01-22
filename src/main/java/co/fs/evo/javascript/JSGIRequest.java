@@ -110,6 +110,9 @@ public class JSGIRequest {
         session = new JavascriptObject();
         session.put("user", userDetails.getUsername());
         session.put("id", userDetails.getUid());
+        session.put("enabled", userDetails.isEnabled());
+        session.put("expired", !userDetails.isAccountNonExpired());
+        session.put("locked", !userDetails.isAccountNonLocked());
             
         ArrayList<SimpleGrantedAuthority> roles = (ArrayList<SimpleGrantedAuthority>)userDetails.getAuthorities();
         String [] authorities = new String[roles.size()];
