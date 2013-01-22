@@ -112,10 +112,15 @@ public class JSGIRequest {
         session.put("id", userDetails.getUid());
             
         ArrayList<SimpleGrantedAuthority> roles = (ArrayList<SimpleGrantedAuthority>)userDetails.getAuthorities();
+        String [] authorities = new String[roles.size()];
+        int idx = 0;
         for (SimpleGrantedAuthority role : roles) {
-        	// TODO: store entire array of roles
-            session.put("role", role.getAuthority());
+        	authorities[idx] = role.getAuthority();
+        	idx += 1;
         }
+        
+        session.put("roles", new NativeArray(authorities));
+        
         logger.exit();
         return session;
     }
