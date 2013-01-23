@@ -29,7 +29,7 @@ function examples() {
     /* controller actions */
     return {
         /* simple hello world */
-        hello: function(env) {
+        hello: function(request) {
             return {
                 status: 200,
                 headers: { "Content-Type": "text/plain" },
@@ -38,8 +38,8 @@ function examples() {
         },
 
         /* specifying a content-type */
-        goodbye: function(env) {
-            var name = env.params.name;
+        goodbye: function(request) {
+            var name = request.params.name;
             return {
                 status: 200,
                 headers: { "Content-Type": "text/html" },
@@ -48,7 +48,7 @@ function examples() {
         },
         
         /* calling private functions */
-        fib: function(env) {
+        fib: function(request) {
             return {
                 status: 200,
                 headers: { "Content-Type": "text/plain" },
@@ -57,7 +57,7 @@ function examples() {
         },
         
         /* calling Java */
-        date: function(env) {
+        date: function(request) {
             var date = new java.util.Date();
             return {
                 status: 200,
@@ -67,7 +67,7 @@ function examples() {
         },
         
         /* ajax proxy using xhr */
-        xhr: function(env) {
+        xhr: function(request) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET","http://www.google.com");
             xhr.send(null);
@@ -79,7 +79,7 @@ function examples() {
         },
         
         /* example using evo javascript client */
-        search: function(env) {
+        search: function(request) {
         
             var request = ejs.Request()
                 .indices("twitter")
