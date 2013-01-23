@@ -11,6 +11,7 @@ importPackage(java.util);
  *  /${app}/examples/date
  *  /${app}/examples/xhr
  *  /${app}/examples/search
+ *  /${app}/examples/auth
  */
 function examples() {
 
@@ -99,6 +100,22 @@ function examples() {
                     status: 200,
                     headers: { "Content-Type": "text/html" },
                     body: [resultTmpl(results.hits)]
+                };
+            }
+        },
+        
+        /* example of checking authentication */
+        auth: function(request) {
+            if (!request.session) {
+                return {
+                    status: 302,
+                    headers: { "Location": "/login.html" }
+                };
+            } else {
+                return {
+                    status: 200,
+                    headers: { "Content-Type": "text/plain" },
+                    body: ["Welcome ", request.session.user, " (", request.session.roles[0], ")"]
                 };
             }
         }
