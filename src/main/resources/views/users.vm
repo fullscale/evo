@@ -62,7 +62,7 @@
             </td>
             <td><input style="width:90%;" type="password" id="pass-{%= cnt %}"></td>
             <td>
-                &nbsp;<a href="#" style="color:#ff8000;font-size:10px;" id="linkSaveUser">Save</a>
+                &nbsp;<a href="#" style="color:#ff505c;font-size:10px;" id="linkSaveUser">Save</a>
             </td>
         </tr>
     </script>
@@ -79,7 +79,7 @@
             </td>
             <td><input style="width:90%;" type="password" id="txtPassword"></td>
             <td>
-                &nbsp;<a href="#" style="color:#ff8000;font-size:10px;" id="linkSaveEdit">Save</a>
+                &nbsp;<a href="#" style="color:#ff505c;font-size:10px;" id="linkSaveEdit">Save</a>
             </td>
         </tr>
     </script>
