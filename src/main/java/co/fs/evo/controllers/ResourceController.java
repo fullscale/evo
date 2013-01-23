@@ -118,10 +118,12 @@ public class ResourceController {
         } catch (NotFoundException e) {
             sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e);
         } catch (InternalErrorException e) {
+            logger.debug(e.getMessage());
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         } catch (NotAllowedException e) {
             sendErrorResponse(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, e);
         } catch (ResourceException e) {
+            logger.debug(e.getMessage());
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
 
