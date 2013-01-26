@@ -1,11 +1,6 @@
 package co.fs.evo.javascript;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 import org.elasticsearch.node.internal.InternalNode;
 import org.elasticsearch.rest.RestChannel;
@@ -22,7 +17,6 @@ import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Scope;
 
 import co.fs.evo.rest.InternalRestRequest;
 import co.fs.evo.services.SearchService;
