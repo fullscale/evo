@@ -11,7 +11,7 @@
     <properties>
         <java-version>1.7</java-version>
         <org.springframework-version>3.2.0.RELEASE</org.springframework-version>
-        <spring.security.version>3.1.3.RELEASE</spring.security.version>
+        <spring.security.version>3.2.0.M1</spring.security.version>
         <org.aspectj-version>1.6.9</org.aspectj-version>
         <org.slf4j-version>1.6.6</org.slf4j-version>
         <logback.version>1.0.6</logback.version>
@@ -29,6 +29,18 @@
             <name>OSS Sonatype</name>
             <url>http://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
+        <!-- Spring Security 3.2.0.M1 requires this. Will be removed when it's released -->
+        <repository>
+            <id>repository.springsource.snapshot</id>
+            <name>SpringSource Snapshot Repository</name>
+            <url>http://repo.springsource.org/snapshot</url>
+        </repository>
+        <!-- needed for Spring Security 3.2.0.M1 which contains bug fix. Will be removed when it's released -->
+		<repository>
+		    <id>repository.springsource.milestone</id>
+		    <name>SpringSource Milestone Repository</name>
+		    <url>http://repo.springsource.org/milestone</url>
+		</repository>
         <repository>
             <id>org.fuin</id>
             <name>Fuin</name>
