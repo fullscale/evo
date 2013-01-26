@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hazelcast.spring.context.SpringAware;
@@ -118,8 +119,10 @@ public class JavascriptResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(RequestInfo request, HttpServletResponse response, EvoUser userDetails) throws ResourceException {
+    public void process(RequestInfo request, AsyncContext ctx, EvoUser userDetails) throws ResourceException {
         logger.entry();
+        
+        HttpServletResponse response = (HttpServletResponse)ctx.getResponse();
 
         // controllers can potentially handle any request method
         logger.debug("send allow headers");
@@ -171,9 +174,22 @@ public class JavascriptResource extends Resource {
             } catch (IOException e) {
                 logger.debug("Error writing response", e);
                 throw new InternalErrorException("Error writing response", e);
+            } finally {
+            	try {
+					response.flushBuffer();
+				} catch (IOException e) {
+					logger.debug("Unable to flush buffer");
+				}
+                ctx.complete();
             }
         } else {
             logger.debug("null content body");
+            try {
+				response.flushBuffer();
+			} catch (IOException e) {
+				logger.debug("Unable to flush buffer");
+			}
+            ctx.complete();
         }
 
         logger.exit();

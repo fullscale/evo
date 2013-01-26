@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hazelcast.spring.context.SpringAware;
@@ -149,9 +150,11 @@ public class StaticResource extends Resource {
      * javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession)
      */
     @Override
-    public void process(RequestInfo request, HttpServletResponse response, EvoUser userDetails) throws ResourceException {
+    public void process(RequestInfo request, AsyncContext ctx, EvoUser userDetails) throws ResourceException {
         logger.entry();
 
+        HttpServletResponse response = (HttpServletResponse)ctx.getResponse();
+        
         // static resources only support HTTP GET
         response.setHeader("Allow", "GET");
 
@@ -182,12 +185,25 @@ public class StaticResource extends Resource {
             } catch (IOException e) {
                 logger.debug("Error writing response");
                 throw new InternalErrorException("Error writing response", e);
+            } finally {
+            	try {
+					response.flushBuffer();
+				} catch (IOException e) {
+					logger.debug("Unable to flush buffer");
+				}
+                ctx.complete();
             }
         } else {
             logger.debug("resource not modified");
 
             // tell browser to use cached copy
             response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        	try {
+				response.flushBuffer();
+			} catch (IOException e) {
+				logger.debug("Unable to flush buffer");
+			}
+            ctx.complete();
         }
 
         logger.exit();

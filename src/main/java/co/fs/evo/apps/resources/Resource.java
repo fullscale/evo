@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.AsyncContext;
 
 import com.hazelcast.nio.DataSerializable;
 import com.hazelcast.spring.context.SpringAware;
@@ -49,7 +49,7 @@ public abstract class Resource implements DataSerializable {
      * @param response the http response for the resource
      * @param session the http session for the resource
      */
-    public abstract void process(RequestInfo request, HttpServletResponse response, EvoUser userDetails)
+    public abstract void process(RequestInfo request, AsyncContext ctx, EvoUser userDetails)
             throws ResourceException;
 
     /**

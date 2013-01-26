@@ -3,7 +3,9 @@ package co.fs.evo.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -43,6 +45,16 @@ public class AppContext extends WebMvcConfigurerAdapter {
         view.setExposeSessionAttributes(true);
 
         return view;
+    }
+    
+    // application threadpool
+    @Bean
+    public TaskExecutor taskExecutor() {
+    	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    	// TODO: make these configurable options
+    	executor.setCorePoolSize(10);
+    	executor.setMaxPoolSize(100);
+    	return executor;	
     }
 
     // for static resources
