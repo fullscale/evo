@@ -513,7 +513,7 @@ public class ConfigService {
         
         // resource max threadpool size
         int maxPoolSize = Integer.parseInt(System.getProperty(PROPERTY_MAXPOOL_SIZE,
-                defaults.get(SETTING_MAXPOOL_SIZE, "100")));
+                defaults.get(SETTING_MAXPOOL_SIZE, "500")));
         logger.debug("setting threadpool max size: {}", maxPoolSize);
         settings.put(SETTING_MAXPOOL_SIZE, maxPoolSize);
         
@@ -775,7 +775,7 @@ public class ConfigService {
     }
     
     public int getMaxPoolSize() {
-    	return evoSettings.getAsInt(SETTING_MAXPOOL_SIZE, 100);
+    	return evoSettings.getAsInt(SETTING_MAXPOOL_SIZE, 500);
     }
     
     public int getQueueCapacity() {
