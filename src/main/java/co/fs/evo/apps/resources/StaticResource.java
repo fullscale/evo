@@ -110,12 +110,17 @@ public class StaticResource extends Resource {
         expiration.add(Calendar.YEAR, 1);
         logger.debug("expiration: {}", expiration.getTime());
 
-        // set cache headers
-        logger.debug("setting cache control headers");
-        response.addHeader("Cache-Control", "max-age=31556926, public"); // 1 year
-        response.addHeader("Expires", getDateFormatter().format(expiration.getTime())); // 1 year
-        response.addHeader("Last-Modified", getDateFormatter().format(lastModified));
+        try {
+	        // set cache headers
+	        logger.debug("setting cache control headers");
+	        response.addHeader("Cache-Control", "max-age=31556926, public"); // 1 year
+	        response.addHeader("Expires", getDateFormatter().format(expiration.getTime())); // 1 year
+	        response.addHeader("Last-Modified", getDateFormatter().format(lastModified));
+        } catch (Exception e) {
+        	logger.debug("Error set cache headers: {}", e);
+        }
         logger.exit();
+        
     }
 
     protected boolean checkIfModified(RequestInfo request) {
