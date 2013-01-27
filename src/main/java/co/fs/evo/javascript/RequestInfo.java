@@ -223,7 +223,7 @@ public class RequestInfo {
     	if (headers.containsKey(name)) {
     		return headers.get(name);
     	} else {
-    		return "";
+    		return null;
     	}
     }
     
