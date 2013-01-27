@@ -40,6 +40,10 @@ public class ConfigService {
     public static final String PROPERTY_CACHE_RESOURCES = "evo.cache.resources";
     public static final String PROPERTY_CACHE_SESSIONS = "evo.cache.sessions";
     public static final String PROPERTY_GZIP_ENABLED = "evo.gzip.enabled";
+    public static final String PROPERTY_COREPOOL_SIZE = "evo.thread.pool.core.size";
+    public static final String PROPERTY_MAXPOOL_SIZE = "evo.thread.pool.max.size";
+    public static final String PROPERTY_QUEUE_CAPACITY = "evo.thread.queue.capacity";
+    public static final String PROPERTY_KEEPALIVE_SECONDS = "evo.thread.keepalive.seconds";
 
     // settings keys
     public static final String SETTING_HOME_DIR = "home";
@@ -61,6 +65,10 @@ public class ConfigService {
     public static final String SETTING_CACHE_RESOURCES_ENABLED = "cache.resources.enabled";
     public static final String SETTING_CACHE_SESSIONS_ENABLED = "cache.sessions.enabled";
     public static final String SETTING_GZIP_ENABLED = "gzip.enabled";
+    public static final String SETTING_COREPOOL_SIZE = "thread.pool.core.size";
+    public static final String SETTING_MAXPOOL_SIZE = "thread.pool.max.size";
+    public static final String SETTING_QUEUE_CAPACITY = "thread.queue.capacity";
+    public static final String SETTING_KEEPALIVE_SECONDS = "thread.keepalive.seconds";
 
     // resource prefix strings
     public static final String RESOURCE_PREFIX_CLASSPATH = "classpath:";
@@ -497,6 +505,30 @@ public class ConfigService {
         logger.debug("gzip compression enabled: {}", gzipEnabled);
         settings.put(SETTING_GZIP_ENABLED, gzipEnabled);
         
+        // resource core threadpool size
+        int corePoolSize = Integer.parseInt(System.getProperty(PROPERTY_COREPOOL_SIZE,
+                defaults.get(SETTING_COREPOOL_SIZE, "10")));
+        logger.debug("setting threadpool core size: {}", corePoolSize);
+        settings.put(SETTING_COREPOOL_SIZE, corePoolSize);
+        
+        // resource max threadpool size
+        int maxPoolSize = Integer.parseInt(System.getProperty(PROPERTY_MAXPOOL_SIZE,
+                defaults.get(SETTING_MAXPOOL_SIZE, "100")));
+        logger.debug("setting threadpool max size: {}", maxPoolSize);
+        settings.put(SETTING_MAXPOOL_SIZE, maxPoolSize);
+        
+        // resource threadpool queue capacity
+        int queueCapacity = Integer.parseInt(System.getProperty(PROPERTY_QUEUE_CAPACITY,
+                defaults.get(SETTING_QUEUE_CAPACITY, "1000")));
+        logger.debug("setting threadpool queue capacity: {}", queueCapacity);
+        settings.put(SETTING_QUEUE_CAPACITY, queueCapacity);
+        
+        // resource threadpool keepalive seconds
+        int keepaliveSeconds = Integer.parseInt(System.getProperty(PROPERTY_KEEPALIVE_SECONDS,
+                defaults.get(SETTING_KEEPALIVE_SECONDS, "1")));
+        logger.debug("setting threadpool keepalive seconds: {}", keepaliveSeconds);
+        settings.put(SETTING_KEEPALIVE_SECONDS, keepaliveSeconds);
+        
         // node name
         // set node name to the current hostname if the user does not specify one
         // order is system properties, settings file, hostname, "evo"
@@ -736,5 +768,21 @@ public class ConfigService {
     
     public boolean getGzipEnabled() {
     	return evoSettings.getAsBoolean(SETTING_GZIP_ENABLED, true);
+    }
+    
+    public int getCorePoolSize() {
+    	return evoSettings.getAsInt(SETTING_COREPOOL_SIZE, 10);
+    }
+    
+    public int getMaxPoolSize() {
+    	return evoSettings.getAsInt(SETTING_MAXPOOL_SIZE, 100);
+    }
+    
+    public int getQueueCapacity() {
+    	return evoSettings.getAsInt(SETTING_QUEUE_CAPACITY, 1000);
+    }
+    
+    public int getKeepaliveSeconds() {
+    	return evoSettings.getAsInt(SETTING_KEEPALIVE_SECONDS, 1);
     }
 }
