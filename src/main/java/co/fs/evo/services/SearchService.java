@@ -28,6 +28,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -49,6 +50,7 @@ import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -1388,6 +1390,33 @@ public class SearchService {
 
         logger.exit();
         return response;
+    }
+
+    /**
+     * Gets a specific document asynchronously
+     * 
+     * @param index the name of the index where the document exists
+     * @param type the name of the type the document belongs to
+     * @param id the id of the document you want
+     * @param fields a list of fields you want returned, null for the default _source field
+     * @param listener the action listener to be invoked  
+     * @return the get response, null on error
+     */
+    public void getDocAsync(String index, 
+    		 				String type, 
+    		 				String id, 
+    		 				String[] fields, 
+    		 				ActionListener<GetResponse> listener) {
+    	
+    	logger.entry(index, type, id, fields, "async");
+    	final GetRequest getRequest = new GetRequest(index, type, id);
+    	getRequest.operationThreaded(true);
+    	
+    	if (fields != null) {
+    		getRequest.fields(fields);
+    	}
+    	client.get(getRequest, listener);
+    	logger.exit();
     }
 
     /**
