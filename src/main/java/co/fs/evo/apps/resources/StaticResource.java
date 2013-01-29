@@ -5,12 +5,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.hazelcast.spring.context.SpringAware;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.tika.io.IOUtils;
 import org.elasticsearch.action.get.GetResponse;
 import org.slf4j.ext.XLogger;
@@ -43,13 +37,12 @@ public class StaticResource extends Resource {
 
     private static final long serialVersionUID = 6329914850918878864L;
     private static final XLogger logger = XLoggerFactory.getXLogger(StaticResource.class);
-
-    protected transient DateFormat dateFormatter = null;
+    private static final long MILLISECONDS_IN_YEAR = 31556952000L;
 
     // serializable data
     protected String mime;
     protected byte[] data = null;
-    protected Date lastModified;
+    protected long lastModified;
 
     /**
      * Configures the resource. Get data from app index, get last modified date, and gets the response bytes.
@@ -67,8 +60,9 @@ public class StaticResource extends Resource {
         // get the resource source
         Map<String, Object> source = doc.sourceAsMap();
 
-        // calculate the last modifed date based on the timestamp field returned with the doc response
-        lastModified = DateUtils.truncate(new Date((Long) doc.field("_timestamp").value()), Calendar.SECOND);
+        // calculate the last modifed date based on the timestamp field returned with the 
+        // doc response. We need to truncate the milliseconds portion.
+        lastModified = (long)doc.field("_timestamp").value()/1000*1000;
         logger.debug("lastModified: {}", lastModified);
 
         // set the mime
@@ -93,29 +87,19 @@ public class StaticResource extends Resource {
         logger.exit();
     }
 
-    protected DateFormat getDateFormatter() {
-        if (dateFormatter == null) {
-            logger.debug("dateFormatter null, creating");
-            dateFormatter = new SimpleDateFormat("EEE, d MMM yyyy H:mm:ss z");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT:00"));
-        }
-
-        return dateFormatter;
-    }
-
     protected void sendCacheHeaders(HttpServletResponse response) {
         logger.entry();
         // Build an expiration date 1 year from now. This is the max duration according to RFC guidelines
-        Calendar expiration = Calendar.getInstance();
-        expiration.add(Calendar.YEAR, 1);
-        logger.debug("expiration: {}", expiration.getTime());
+        long expiration = System.currentTimeMillis() +  MILLISECONDS_IN_YEAR;
+        logger.debug("expiration: {}", expiration);
 
         try {
 	        // set cache headers
 	        logger.debug("setting cache control headers");
 	        response.addHeader("Cache-Control", "max-age=31556926, public"); // 1 year
-	        response.addHeader("Expires", getDateFormatter().format(expiration.getTime())); // 1 year
-	        response.addHeader("Last-Modified", getDateFormatter().format(lastModified));
+	        response.addDateHeader("Expires", expiration);
+	        response.addDateHeader("Last-Modified", lastModified);
+	        
         } catch (Exception e) {
         	logger.debug("Error set cache headers: {}", e);
         }
@@ -128,14 +112,13 @@ public class StaticResource extends Resource {
         boolean modified = true;
         try {
             // does the client have a cached copy
-            String conditionalHeader = request.getHeader("If-Modified-Since");
-            logger.debug("conditionalHeader: {}", conditionalHeader);
-            if (conditionalHeader != null) {
-                Date sinceModified = getDateFormatter().parse(conditionalHeader);
-                logger.debug("sinceModified: {}", sinceModified);
+        	long modifiedSince = request.getModifiedSince();
+
+            if (modifiedSince != -1) {
+                logger.debug("sinceModified: {}", modifiedSince);
 
                 // does the client cache reflect the latest version
-                if (lastModified.equals(sinceModified) || lastModified.before(sinceModified)) {
+                if (lastModified <= modifiedSince) {
                     logger.debug("resource not modified");
                     modified = false;
                 }
@@ -226,7 +209,7 @@ public class StaticResource extends Resource {
         mime = in.readUTF();
 
         // create date from long
-        lastModified = new Date(in.readLong());
+        lastModified = in.readLong();
 
         // read length of data, create array and read the data
         int len = in.readInt();
@@ -247,7 +230,7 @@ public class StaticResource extends Resource {
         out.writeUTF(mime);
 
         // the date can be represented as a long
-        out.writeLong(lastModified.getTime());
+        out.writeLong(lastModified);
 
         // write length of data so we know how much to read when unserializing
         out.writeInt(data.length);

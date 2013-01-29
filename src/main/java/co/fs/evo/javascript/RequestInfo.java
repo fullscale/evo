@@ -21,6 +21,7 @@ public class RequestInfo {
     private final String port;
     private final String method;
     private final String queryString;
+    private final long modifiedSince;
     private String controller;
     private String action;
     private String appname;
@@ -41,6 +42,7 @@ public class RequestInfo {
         this.queryString = request.getQueryString();
         this.params = request.getParameterMap();
         this.headers = new HashMap<String, String>();
+        this.modifiedSince = request.getDateHeader("If-Modified-Since");
         
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -232,5 +234,12 @@ public class RequestInfo {
      */
     public Enumeration<String> getHeaderNames() {
     	return Collections.enumeration(headers.keySet());
+    }
+    
+    /**
+     * @return all if-modified-since as a long timestamp
+     */
+    public long getModifiedSince() {
+    	return modifiedSince;
     }
 }
