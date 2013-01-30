@@ -96,7 +96,7 @@ public class ResourceController {
         // execute an AsyncResourceProcessor task in a new thread
         final AsyncContext asyncContext = request.startAsync(request, response);
         try {
-            RequestInfo requestInfo = getRequestInfo(request, dir, resource);
+            RequestInfo requestInfo = RequestInfo.valueOf(request, app, dir, resource);
             if (this.taskExecutor != null) {
             	this.taskExecutor.execute(new AsyncResourceProcessor(app, dir, resource, requestInfo, 
             			asyncContext, userDetails, resourceHelper));
@@ -107,27 +107,4 @@ public class ResourceController {
             asyncContext.complete();
         }    	
     }
-    
-    /**
-     * Gets the RequestInfo object with parameters set correctly
-     * for javascript controllers.
-     * 
-     * @param request the http request object
-     * @return the request info object
-     */
-    public RequestInfo getRequestInfo(HttpServletRequest request, String dir, String resource) {
-        logger.entry();
-
-        RequestInfo requestInfo = new RequestInfo(request);
-
-        // reset some of the parsed params for our dynamic controller
-        requestInfo.setController(requestInfo.getDir());
-        requestInfo.setAction(requestInfo.getResource());
-        requestInfo.setResource(resource);
-        requestInfo.setDir(dir);
-
-        logger.exit();
-        return requestInfo;
-    }
-
 }

@@ -1,6 +1,7 @@
 package co.fs.evo.javascript;
 
 import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -8,7 +9,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -21,18 +21,22 @@ public class RequestInfo {
     private final String port;
     private final String method;
     private final String queryString;
+    private final String controller;
+    private final String action;
+    private final String appname;
+    private final String app;
+    private final String dir;
+    private final String resource;
     private final long modifiedSince;
-    private String controller;
-    private String action;
-    private String appname;
-    private String app;
-    private String dir;
-    private String resource;
-    private BufferedReader reader;
-    private Map<String, String> headers;
-    private Map<String, String[]> params;
+    private final BufferedReader reader;
+    private final Map<String, String> headers;
+    private final Map<String, String[]> params;
 
-    public RequestInfo(HttpServletRequest request) {
+    private RequestInfo(HttpServletRequest request, 
+    					String appname, 
+    					String dir, 
+    					String resource) 
+    {
     	logger.entry();
     	
         this.scheme = request.getScheme();
@@ -43,6 +47,12 @@ public class RequestInfo {
         this.params = request.getParameterMap();
         this.headers = new HashMap<String, String>();
         this.modifiedSince = request.getDateHeader("If-Modified-Since");
+        this.appname = appname;
+        this.app = appname + ".app";
+        this.dir = dir == null ? "html" : dir;
+        this.resource = resource == null ? "index.html" : resource;
+        this.action = resource;
+        this.controller = dir;
         
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -50,39 +60,24 @@ public class RequestInfo {
             headers.put(headerName, request.getHeader(headerName));
         }
         
+        BufferedReader r = null;
         try {
-        	this.reader = request.getReader();
-        } catch (java.io.IOException e) {
-        	this.reader = null;
+        	r = request.getReader();
+        } catch (Exception e) {
+        	r = new BufferedReader(new StringReader(""));
+        } finally {
+        	this.reader = r;
         }
-        
-        ParseServletPath(request);
         
         logger.exit();
     }
-
-    private void ParseServletPath(HttpServletRequest request) {
-
-        String path = StringUtils.strip(request.getServletPath(), "/");
-        String[] components = path.split("/");
-        int numPathParts = components.length;
-
-        appname = components[0];
-        app = appname + ".app";
-
-        if (numPathParts == 1) {
-            // only received an application name
-            dir = "html";
-            resource = "index.html";
-        } else if (numPathParts == 2) {
-            // received an application and resource name
-            dir = "html";
-            resource = components[1];
-        } else if (numPathParts == 3) {
-            // received application, directory, and resource
-            dir = components[1];
-            resource = components[2];
-        }
+    
+    public static RequestInfo valueOf(HttpServletRequest request, 
+    								  String appname, 
+    								  String dir, 
+    								  String resource) 
+    {
+    	return new RequestInfo(request, appname, dir, resource);
     }
 
     /**
@@ -114,24 +109,10 @@ public class RequestInfo {
     }
 
     /**
-     * @param controller the controller to set
-     */
-    public void setController(String controller) {
-        this.controller = controller;
-    }
-
-    /**
      * @return the action
      */
     public String getAction() {
         return action;
-    }
-
-    /**
-     * @param action the action to set
-     */
-    public void setAction(String action) {
-        this.action = action;
     }
 
     /**
@@ -142,24 +123,10 @@ public class RequestInfo {
     }
 
     /**
-     * @param appname the appname to set
-     */
-    public void setAppname(String appname) {
-        this.appname = appname;
-    }
-
-    /**
      * @return the app
      */
     public String getApp() {
         return app;
-    }
-
-    /**
-     * @param app the app to set
-     */
-    public void setApp(String app) {
-        this.app = app;
     }
 
     /**
@@ -170,13 +137,6 @@ public class RequestInfo {
     }
 
     /**
-     * @param dir the dir to set
-     */
-    public void setDir(String dir) {
-        this.dir = dir;
-    }
-
-    /**
      * @return the resource
      */
     public String getResource() {
@@ -184,17 +144,10 @@ public class RequestInfo {
     }
 
     /**
-     * @param resource the resource to set
-     */
-    public void setResource(String resource) {
-        this.resource = resource;
-    }
-
-    /**
-     * @return the params
+     * @return a defensive copy of the params map
      */
     public Map<String, String[]> getParams() {
-        return params;
+    	return Collections.unmodifiableMap(params);
     }
     
     /**
@@ -241,5 +194,11 @@ public class RequestInfo {
      */
     public long getModifiedSince() {
     	return modifiedSince;
+    }
+    
+    @Override
+    public String toString() {
+    	return String.format("RequestInfo Obj: (%s) %s/%s/%s", 
+    			method, appname, dir, resource);
     }
 }
