@@ -34,6 +34,8 @@ import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
 import co.fs.evo.exceptions.mapping.MappingException;
 
+import static co.fs.evo.Constants.*;
+
 @Controller
 public class AppsController extends BaseController {
 
@@ -161,7 +163,7 @@ public class AppsController extends BaseController {
         logger.entry(app, dir);
         List<String> resp = new ArrayList<String>();
         
-        SearchResponse searchResp = searchService.matchAll(searchService.APP_INDEX, app + "_" + dir, null);
+        SearchResponse searchResp = searchService.matchAll(APP_INDEX, app + "_" + dir, null);
         logger.debug("searchResp:{}", searchResp);
         if (searchResp != null) {
             for (SearchHit hit : searchResp.hits()) {
@@ -179,7 +181,7 @@ public class AppsController extends BaseController {
         logger.entry(app, dir, resource);
 
         // TODO: maybe hide this in the searchService?
-        GetResponse res = searchService.getDoc(searchService.APP_INDEX, app + "_" + dir, resource, null);
+        GetResponse res = searchService.getDoc(APP_INDEX, app + "_" + dir, resource, null);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -288,7 +290,7 @@ public class AppsController extends BaseController {
         // evict cached resource
         resourceHelper.evict(app, dir, resource);
         
-        IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, resource, data);
+        IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());
         resp.put("version", indexResponse.version());
@@ -306,7 +308,7 @@ public class AppsController extends BaseController {
         // evict cached resource
         resourceHelper.evict(app, dir, resource);
         
-        DeleteResponse deleteResponse = searchService.deleteDoc(searchService.APP_INDEX, app+"_"+dir, resource);
+        DeleteResponse deleteResponse = searchService.deleteDoc(APP_INDEX, app+"_"+dir, resource);
         resp.put("status", "ok");
         resp.put("id", deleteResponse.id());
         resp.put("version", deleteResponse.version());
@@ -329,7 +331,7 @@ public class AppsController extends BaseController {
                 throw new EvoException("Must specify the old and new ids");
             }
 
-            GetResponse oldDoc = searchService.getDoc(searchService.APP_INDEX, app+"_"+dir, oldId, null);
+            GetResponse oldDoc = searchService.getDoc(APP_INDEX, app+"_"+dir, oldId, null);
             if (oldDoc == null) {
                 throw new EvoException("Resource does not exist");
             }
@@ -339,7 +341,7 @@ public class AppsController extends BaseController {
             resourceHelper.evict(app, dir, oldId);
             
             // index the new doc
-            IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, newId, oldDoc.sourceAsMap());
+            IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, newId, oldDoc.sourceAsMap());
             if (indexResponse.id().equals(newId)) {
                 // delete the old doc
                 searchService.deleteDoc("app", app+"_"+dir, oldId);
@@ -393,7 +395,7 @@ public class AppsController extends BaseController {
         resourceHelper.evict(app, dir, resource);
         
         // index the new resource
-        IndexResponse indexResponse = searchService.indexDoc(searchService.APP_INDEX, app+"_"+dir, resource, data);
+        IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, resource, data);
         resp.put("status", "ok");
         resp.put("id", indexResponse.id());
         resp.put("version", indexResponse.version());
@@ -411,7 +413,7 @@ public class AppsController extends BaseController {
         //String appIdx = searchService.appsWithSuffix(app)[0];
         logger.debug("appIdx: {}", app);
 
-        GetResponse res = searchService.getDoc(searchService.APP_INDEX, app+"_"+dir, resource, null);
+        GetResponse res = searchService.getDoc(APP_INDEX, app+"_"+dir, resource, null);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

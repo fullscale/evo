@@ -1,6 +1,7 @@
 package co.fs.evo.services;
 
 import static org.elasticsearch.index.query.FilterBuilders.matchAllFilter;
+import static co.fs.evo.Constants.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -91,11 +92,6 @@ import co.fs.evo.utils.EvoHelper;
 
 @Service
 public class SearchService {
-
-    private static final String SYSTEM_INDEX = "sys";
-    public final String APP_INDEX = "app";
-    private static final String[] INVALID_INDEX_NAMES = {"css", "js", "img", "partials", "lib"};
-    private static final String[] VALID_TYPES = {"conf", "html", "css", "img", "js", "server-side", "partials", "lib"};
 
     private static final XLogger logger = XLoggerFactory.getXLogger(SearchService.class);
     private Node node;
