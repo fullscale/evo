@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
+import static co.fs.evo.Constants.*;
+
 public class RequestInfo {
 	
     private static final XLogger logger = XLoggerFactory.getXLogger(RequestInfo.class);
@@ -27,6 +29,7 @@ public class RequestInfo {
     private final String app;
     private final String dir;
     private final String resource;
+    private final boolean isStatic;
     private final long modifiedSince;
     private final BufferedReader reader;
     private final Map<String, String> headers;
@@ -53,6 +56,7 @@ public class RequestInfo {
         this.resource = resource == null ? "index.html" : resource;
         this.action = resource;
         this.controller = dir;
+        this.isStatic = STATIC_RESOURCES.contains(this.dir);
         
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -194,6 +198,13 @@ public class RequestInfo {
      */
     public long getModifiedSince() {
     	return modifiedSince;
+    }
+
+    /**
+     * @return returns true if resource is static
+     */
+    public boolean isStatic() {
+    	return isStatic;
     }
     
     @Override

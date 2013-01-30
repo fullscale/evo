@@ -1,9 +1,6 @@
 package co.fs.evo.apps.resources;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +23,6 @@ import co.fs.evo.services.HazelcastService;
 public class ResourceHelper implements EntryListener<String, Resource> {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(ResourceHelper.class);
-
-    protected static final Set<String> STATIC_RESOURCES = new HashSet<String>(Arrays.asList(new String[]{
-            "css", "img", "js", "html", "partials", "lib"}));
 
     protected Map<String, Script> scriptCache;
 
@@ -116,9 +110,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
         }
 
         // if this is a static resource
-        boolean isStatic = STATIC_RESOURCES.contains(dir);
-        logger.debug("isStatic: {}", isStatic);
-        if (!isStatic) {
+        if (!requestInfo.isStatic()) {
             // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js
             logger.debug("found javascript controller, using controllers/{}.js", dir);
             resource = dir + ".js";
@@ -135,7 +127,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             logger.debug("resource not cached");
 
             // have spring initialize the resource
-            r = appContext.getBean(isStatic ? StaticResource.class : JavascriptResource.class);
+            r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
 
             // run resource setup code
             r.setup(app, dir, resource);
@@ -144,7 +136,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             hazelcast.putResource(cacheKey, r);
 
             // if this is javascript resource, we add the compiled script to a local cache
-            if (!isStatic && hazelcast.resourceCacheEnabled()) {
+            if (!requestInfo.isStatic() && hazelcast.resourceCacheEnabled()) {
                 logger.debug("caching script of javascript resource");
                 getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
             }
@@ -152,7 +144,7 @@ public class ResourceHelper implements EntryListener<String, Resource> {
             logger.debug("using cached resource");
 
             // if this is javascript resource, see if we have script cached.
-            if (!isStatic) {
+            if (!requestInfo.isStatic()) {
                 JavascriptResource jr = (JavascriptResource) r;
                 Script cachedScript = getScriptCache().get(cacheKey);
                 if (cachedScript != null) {
