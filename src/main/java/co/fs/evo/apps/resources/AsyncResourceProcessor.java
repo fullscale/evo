@@ -20,24 +20,17 @@ public class AsyncResourceProcessor implements Runnable {
 
 	private static final XLogger logger = XLoggerFactory.getXLogger(AsyncResourceProcessor.class);
 	
-    private final String app;
-    private final String dir;
-    private final String resource;
     private final RequestInfo requestInfo;
     private final AsyncContext ctx;
     private final EvoUser userDetails;
     private final ResourceHelper resourceHelper;
     
-    public AsyncResourceProcessor(String app, 
-    		String dir, 
-    		String resource, 
-    		RequestInfo requestInfo, 
-    		AsyncContext ctx, 
-    		EvoUser userDetails, 
-    		ResourceHelper resourceHelper) {
-    	this.app = app;
-    	this.dir = dir;
-    	this.resource = resource;
+    public AsyncResourceProcessor(
+    	RequestInfo requestInfo, 
+    	AsyncContext ctx, 
+    	EvoUser userDetails, 
+    	ResourceHelper resourceHelper
+    ) {
     	this.requestInfo = requestInfo;
     	this.ctx = ctx;
     	this.userDetails = userDetails;
@@ -48,8 +41,8 @@ public class AsyncResourceProcessor implements Runnable {
 	public void run() {
 		try {
             logger.debug("getting resource");
-            Resource r = resourceHelper.getResource(app, dir, resource);
-            logger.debug("processing resource request");
+            Resource r = resourceHelper.getResource(requestInfo);
+            logger.debug("processing resource request: {}", requestInfo);
             r.process(requestInfo, ctx, userDetails);
             logger.debug("done processing resource request");
         } catch (NotFoundException e) {

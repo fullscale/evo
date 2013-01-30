@@ -98,7 +98,7 @@ public class ResourceController {
         try {
             RequestInfo requestInfo = RequestInfo.valueOf(request, app, dir, resource);
             if (this.taskExecutor != null) {
-            	this.taskExecutor.execute(new AsyncResourceProcessor(app, dir, resource, requestInfo, 
+            	this.taskExecutor.execute(new AsyncResourceProcessor(requestInfo, 
             			asyncContext, userDetails, resourceHelper));
             }
         } catch (Exception e) {

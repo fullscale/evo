@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import co.fs.evo.exceptions.resources.ResourceException;
+import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.services.HazelcastService;
 
 @Component
@@ -92,7 +93,11 @@ public class ResourceHelper implements EntryListener<String, Resource> {
      * @return the resource
      * @throws ResourceException on error retrieving/creating the resource
      */
-    public Resource getResource(String app, String dir, String resource) throws ResourceException {
+    public Resource getResource(RequestInfo requestInfo) throws ResourceException {
+    	String app = requestInfo.getAppname();
+    	String dir = requestInfo.getDir();
+    	String resource = requestInfo.getResource();
+    	
         logger.entry(app, dir, resource);
 
         Resource r;
