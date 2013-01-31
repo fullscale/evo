@@ -61,6 +61,7 @@ public class AppContext extends WebMvcConfigurerAdapter {
     	executor.setMaxPoolSize(config.getMaxPoolSize());
     	executor.setQueueCapacity(config.getQueueCapacity());
     	executor.setKeepAliveSeconds(config.getKeepaliveSeconds());
+    	executor.setThreadNamePrefix("evo[async.resource.processor]T#");
     	return executor;	
     }
 
