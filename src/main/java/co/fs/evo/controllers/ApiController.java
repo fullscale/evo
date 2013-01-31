@@ -30,9 +30,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import co.fs.evo.apps.resources.ResourceHelper;
+import co.fs.evo.apps.resources.ResourceCache;
 import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.rest.ServletRestRequest;
 import co.fs.evo.services.SearchService;
@@ -47,7 +46,7 @@ public class ApiController {
     protected SearchService searchService;
 
     @Autowired
-    protected ResourceHelper resourceHelper;
+    protected ResourceCache resourceCache;
     
     protected RestController restController;
 
@@ -64,7 +63,7 @@ public class ApiController {
         Map<String, String[]> exportMappings = null;
         String[] mappings = request.getParameterValues("mapping");
 
-        logger.debug("mappings: {}", mappings);
+        logger.debug("mappings: {}", (Object)mappings);
         if (mappings != null) {
             exportMappings = new HashMap<String, String[]>();
             for (String mapping : mappings) {
@@ -138,7 +137,7 @@ public class ApiController {
             }
 
             // expire any cached items that might exist for the app
-            resourceHelper.evict(app);
+            resourceCache.evict(app);
             
             // import the app
             searchService.importApp(app, data.getInputStream(), force, mappings);

@@ -5,33 +5,30 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
-import com.hazelcast.core.EntryEvent;
-import com.hazelcast.core.EntryListener;
-
 import org.mozilla.javascript.Script;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import co.fs.evo.exceptions.resources.ResourceException;
-import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.services.HazelcastService;
 
+import com.hazelcast.core.EntryEvent;
+import com.hazelcast.core.EntryListener;
+
 @Component
-public class ResourceHelper implements EntryListener<String, Resource> {
-
-    private static final XLogger logger = XLoggerFactory.getXLogger(ResourceHelper.class);
-
-    protected Map<String, Script> scriptCache;
-
+public class ResourceCache implements EntryListener<String, Resource> {
+	
+	private static final XLogger logger = XLoggerFactory.getXLogger(ResourceCache.class);
+	
+	protected Map<String, Script> scriptCache;
+	
     @Autowired
     protected HazelcastService hazelcast;
 
-    @Autowired
-    protected ApplicationContext appContext;
-
+    //@Autowired
+    //protected ApplicationContext appContext;
+    
     /**
      * Our bootstrap code which is responsible for hooking us up to the cache events
      */
@@ -76,92 +73,6 @@ public class ResourceHelper implements EntryListener<String, Resource> {
 
         logger.exit(keyBuilder);
         return keyBuilder.toString();
-    }
-
-    /**
-     * Responsible for retrieving the specific resource. Attempts to get from cache first, if not found, it creates new instance.
-     * 
-     * @param app the app the resource belongs to
-     * @param dir the dir/type of the resource
-     * @param resource the resource name/id
-     * @return the resource
-     * @throws ResourceException on error retrieving/creating the resource
-     */
-    public Resource getResource(RequestInfo requestInfo) throws ResourceException {
-    	String app = requestInfo.getAppname();
-    	String dir = requestInfo.getDir();
-    	String resource = requestInfo.getResource();
-    	
-        logger.entry(app, dir, resource);
-
-        Resource r;
-
-        if (dir == null && resource == null) {
-            // only given app name, go to index html by default
-            logger.debug("no dir or resource, using html/index.html");
-            dir = "html";
-            resource = "index.html";
-        } else if (resource == null) {
-            // only app name and resource name which spring thinks is actually the dir
-            // set the resource name and dir to html
-            logger.debug("no resource, using html/{}", dir);
-            resource = dir + ".html";
-            dir = "html";
-        }
-
-        // if this is a static resource
-        if (!requestInfo.isStatic()) {
-            // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js
-            logger.debug("found javascript controller, using controllers/{}.js", dir);
-            resource = dir + ".js";
-            dir = "server-side";
-        }
-
-        // see if the resource is cached
-        String cacheKey = getCacheKey(app, dir, resource);
-        logger.debug("cacheKey: {}", cacheKey);
-        r = hazelcast.getResource(cacheKey);
-
-        if (r == null) {
-            // resource is not cached
-            logger.debug("resource not cached");
-
-            // have spring initialize the resource
-            r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
-
-            // run resource setup code
-            r.setup(app, dir, resource);
-
-            // add to cache
-            hazelcast.putResource(cacheKey, r);
-
-            // if this is javascript resource, we add the compiled script to a local cache
-            if (!requestInfo.isStatic() && hazelcast.resourceCacheEnabled()) {
-                logger.debug("caching script of javascript resource");
-                getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
-            }
-        } else {
-            logger.debug("using cached resource");
-
-            // if this is javascript resource, see if we have script cached.
-            if (!requestInfo.isStatic()) {
-                JavascriptResource jr = (JavascriptResource) r;
-                Script cachedScript = getScriptCache().get(cacheKey);
-                if (cachedScript != null) {
-                    // found cached script
-                    logger.debug("using cached script");
-                    jr.setScript(cachedScript);
-                } else {
-                    // script was not cached due to being added/updated on remote node
-                    // get the script from the compiled script and cache it
-                    logger.debug("cached script not found, adding to cache");
-                    getScriptCache().put(cacheKey, jr.getScript());
-                }
-            }
-        }
-
-        logger.exit();
-        return r;
     }
 
     /**
@@ -274,5 +185,16 @@ public class ResourceHelper implements EntryListener<String, Resource> {
         }
         logger.exit();
     }
+    
+    public Resource getResource(String cacheKey) {
+    	return hazelcast.getResource(cacheKey);
+    }
+    
+    public void putResource(String cacheKey, Resource r) {
+    	hazelcast.putResource(cacheKey, r);
+    }
 
+    public boolean resourceCacheEnabled() {
+    	return hazelcast.resourceCacheEnabled();
+    }
 }

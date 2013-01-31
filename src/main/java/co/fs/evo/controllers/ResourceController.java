@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import co.fs.evo.apps.resources.AsyncResourceProcessor;
-import co.fs.evo.apps.resources.ResourceHelper;
 import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.security.EvoUser;
 import co.fs.evo.services.ConfigService;
@@ -34,12 +34,12 @@ public class ResourceController {
 
     @Autowired
     protected ConfigService config;
-
-    @Autowired
-    protected ResourceHelper resourceHelper;
     
     @Autowired 
     protected TaskExecutor taskExecutor;
+    
+    @Autowired
+    protected ApplicationContext appContext;
     
     @ResponseBody
     @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|img|js|\\.))}")
@@ -98,8 +98,13 @@ public class ResourceController {
         try {
             RequestInfo requestInfo = RequestInfo.valueOf(request, app, dir, resource);
             if (this.taskExecutor != null) {
-            	this.taskExecutor.execute(new AsyncResourceProcessor(requestInfo, 
-            			asyncContext, userDetails, resourceHelper));
+            	AsyncResourceProcessor resourceProcessor = new AsyncResourceProcessor(
+            			requestInfo, asyncContext, userDetails);
+            	
+            	// explicitly autowire this instance
+            	appContext.getAutowireCapableBeanFactory().autowireBean(resourceProcessor);
+            	
+            	this.taskExecutor.execute(resourceProcessor);
             }
         } catch (Exception e) {
             logger.error("Error processing resource", e);

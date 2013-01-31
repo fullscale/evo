@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import co.fs.evo.apps.resources.ResourceHelper;
+import co.fs.evo.apps.resources.ResourceCache;
 import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
@@ -42,7 +42,7 @@ public class AppsController extends BaseController {
     private static final XLogger logger = XLoggerFactory.getXLogger(AppsController.class);
 
     @Autowired
-    private ResourceHelper resourceHelper;
+    private ResourceCache resourceCache;
     
     /**
      * Validates that the resource has the correct extension, if not, it adds it.
@@ -147,7 +147,7 @@ public class AppsController extends BaseController {
         Map<String, Object> resp = new HashMap<String, Object>();
         
         // evict cached resources
-        resourceHelper.evict(app);
+        resourceCache.evict(app);
         
         // delete the app
         searchService.deleteApp(app);
@@ -263,7 +263,7 @@ public class AppsController extends BaseController {
             }
 
             // nothing should be cached since this is new, but just to be safe, evict from cache
-            resourceHelper.evict(app, dir, resource);
+            resourceCache.evict(app, dir, resource);
             
             // index the doc
             IndexResponse indexResponse = searchService.indexAppDoc(app, dir, resource, data, mime);
@@ -288,7 +288,7 @@ public class AppsController extends BaseController {
         logger.debug("addIdx: {}", app);
 
         // evict cached resource
-        resourceHelper.evict(app, dir, resource);
+        resourceCache.evict(app, dir, resource);
         
         IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, resource, data);
         resp.put("status", "ok");
@@ -306,7 +306,7 @@ public class AppsController extends BaseController {
         logger.debug("appIdx: {}", app);
 
         // evict cached resource
-        resourceHelper.evict(app, dir, resource);
+        resourceCache.evict(app, dir, resource);
         
         DeleteResponse deleteResponse = searchService.deleteDoc(APP_INDEX, app+"_"+dir, resource);
         resp.put("status", "ok");
@@ -337,8 +337,8 @@ public class AppsController extends BaseController {
             }
 
             // evict from caches, even the new name just to be safe
-            resourceHelper.evict(app, dir, newId);
-            resourceHelper.evict(app, dir, oldId);
+            resourceCache.evict(app, dir, newId);
+            resourceCache.evict(app, dir, oldId);
             
             // index the new doc
             IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, newId, oldDoc.sourceAsMap());
@@ -392,7 +392,7 @@ public class AppsController extends BaseController {
         }
 
         // evict old cached resource
-        resourceHelper.evict(app, dir, resource);
+        resourceCache.evict(app, dir, resource);
         
         // index the new resource
         IndexResponse indexResponse = searchService.indexDoc(APP_INDEX, app+"_"+dir, resource, data);
