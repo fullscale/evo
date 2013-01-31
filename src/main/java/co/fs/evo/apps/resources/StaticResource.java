@@ -25,6 +25,7 @@ import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.ResourceException;
 import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.security.EvoUser;
+import static co.fs.evo.Constants.*;
 
 /**
  * Represents a static resources (html, css, js, image)
@@ -37,7 +38,6 @@ public class StaticResource extends Resource {
 
     private static final long serialVersionUID = 6329914850918878864L;
     private static final XLogger logger = XLoggerFactory.getXLogger(StaticResource.class);
-    private static final long MILLISECONDS_IN_YEAR = 31556952000L;
 
     // serializable data
     protected String mime;
