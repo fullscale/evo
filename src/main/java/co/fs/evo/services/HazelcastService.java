@@ -130,7 +130,11 @@ public class HazelcastService {
         // cache will be null if hazelcast is disabled or the application specific cache is disabled
         if (cache != null) {
             logger.debug("caching {}", key);
-            cache.put(key, value);
+            try {
+            	cache.put(key, value);
+            } catch (RuntimeException ex) {
+            	logger.debug(ex.getMessage(), ex);
+            }
         }
     }
 
@@ -145,7 +149,11 @@ public class HazelcastService {
         // cache will be null if hazelcast is disabled or the application specific cache is disabled
         if (cache != null) {
             logger.debug("evicting: {}", key);
-            cache.remove(key);
+            try {
+            	cache.remove(key);
+            } catch (RuntimeException ex) {
+            	logger.debug(ex.getMessage(), ex);
+            }
         }
     }
 
@@ -161,7 +169,12 @@ public class HazelcastService {
         // cache will be null if hazelcast is disabled or the application specific cache is disabled
         if (cache != null) {
             logger.debug("getting: {}", key);
-            value = cache.get(key);
+            try {
+            	value = cache.get(key);
+            } catch (IllegalStateException ex) {
+            	logger.warn("Hazelcast Instance is not active!");
+            	logger.debug(ex.getMessage(), ex);
+            }
         }
 
         return value;
@@ -192,7 +205,11 @@ public class HazelcastService {
         Set<K> keys = Collections.emptySet();
         if (cache != null) {
             logger.debug("getting cache keys");
-            keys = cache.keySet();
+            try {
+            	keys = cache.keySet();
+            } catch (RuntimeException ex) {
+            	logger.debug(ex.getMessage(), ex);
+            }
         }
 
         return keys;
