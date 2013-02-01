@@ -53,7 +53,23 @@ public final class Evo {
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
         
-        // configure our connection thread pool
+        /*===========================================================
+        Configure the Server Thread Pool.
+        The server holds a common thread pool which is used by
+        default as the executor used by all connectors and servlet
+        dispatches.
+
+        Configuring a fixed thread pool is vital to controlling the
+        maximal memory footprint of the server and is a key tuning
+        parameter for tuning.  In an application that rarely blocks
+        then maximal threads may be close to the number of 5*CPUs.
+        In an application that frequently blocks, then maximal
+        threads should be set as high as possible given the memory
+        available.
+
+        Consult the javadoc of o.e.j.util.thread.QueuedThreadPool
+        for all configuration that may be set here.            
+        ===========================================================*/
         logger.debug("create jetty thread pool");
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setMaxThreads(config.getHttpMaxThreads());

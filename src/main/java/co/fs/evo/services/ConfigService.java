@@ -392,7 +392,7 @@ public class ConfigService {
         settings.put(SETTING_HTTP_PORT, httpPort);
 
         // max threads
-        int maxThreads = defaults.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
+        int maxThreads = defaults.getAsInt(SETTING_HTTP_MAXTHREADS, 10);
         logger.debug("max threads: {}", maxThreads);
         settings.put(SETTING_HTTP_MAXTHREADS, maxThreads);
 
@@ -657,7 +657,7 @@ public class ConfigService {
     }
 
     public int getHttpMaxThreads() {
-        return evoSettings.getAsInt(SETTING_HTTP_MAXTHREADS, 500);
+        return evoSettings.getAsInt(SETTING_HTTP_MAXTHREADS, 10);
     }
 
     public int getHttpSessionTimeout() {
