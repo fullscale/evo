@@ -518,7 +518,7 @@ public class ConfigService {
         // multicast is disabled, unicast is enabled and we use the hostnames specified
         String[] unicastHosts = defaults.getAsArray(SETTING_UNICAST_HOSTS, null);
 
-        logger.debug("unicastHosts: {}", unicastHosts);
+        logger.debug("unicastHosts: {}", (Object[])unicastHosts);
         if (unicastHosts != null) {
             logger.debug("unicast settings found");
             logger.debug("unicast enabled, multicast disabled");

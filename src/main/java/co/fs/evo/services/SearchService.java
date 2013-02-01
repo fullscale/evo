@@ -781,7 +781,7 @@ public class SearchService {
         try {
             refreshResponse = action.actionGet();
         } catch (ElasticSearchException e) {
-            logger.debug("Error refreshing indices:{}", indices);
+            logger.debug("Error refreshing indices:{}", (Object[])indices);
         }
 
         logger.exit();
@@ -795,7 +795,7 @@ public class SearchService {
      * @return if the delete was ack'd by the cluster or not
      */
     public boolean deleteIndex(String... indices) {
-        logger.entry((Object) indices);
+        logger.entry((Object[])indices);
         ListenableActionFuture<DeleteIndexResponse> action = client.admin().indices().prepareDelete(indices).execute();
         DeleteIndexResponse resp = null;
         boolean acked = false;
@@ -804,7 +804,7 @@ public class SearchService {
             resp = action.actionGet();
             acked = resp.acknowledged();
         } catch (ElasticSearchException e) {
-            logger.error("Error deleting index: {}", indices);
+            logger.error("Error deleting index: {}", (Object[])indices);
         }
 
         logger.exit(acked);
@@ -1120,7 +1120,7 @@ public class SearchService {
                 }
 
                 String[] pathParts = entry.getName().split(sep);
-                logger.debug("pathParts: {}", pathParts);
+                logger.debug("pathParts: {}", (Object[])pathParts);
 
                 logger.debug("number of parts: {}", pathParts.length);
                 if (pathParts.length != 3) {
@@ -1266,7 +1266,7 @@ public class SearchService {
                     String exportIndex = mapping.getKey();
                     String[] exportTypes = mapping.getValue();
                     logger.debug("exportIndex: {}", exportIndex);
-                    logger.debug("exportTypes: {}", exportTypes);
+                    logger.debug("exportTypes: {}", (Object[])exportTypes);
 
                     Map<String, Object> exportedMappings = new HashMap<String, Object>();
                     Map<String, MappingMetaData> types = getTypes(exportIndex);
@@ -1332,12 +1332,12 @@ public class SearchService {
         request.setFrom(0);
         request.setSize(250); // TODO make this configurable or use scroll search
 
-        logger.debug("type: {}", type);
+        logger.debug("type: {}", (Object[])type);
         if (type != null) {
             request.setTypes(type);
         }
 
-        logger.debug("fields: {}", fields);
+        logger.debug("fields: {}", (Object[])fields);
         if (fields == null) {
             request.setNoFields();
         } else if (fields.length > 0) {
@@ -1370,7 +1370,7 @@ public class SearchService {
         logger.entry(index, type, id, fields);
         GetRequestBuilder request = client.prepareGet(index, type, id);
 
-        logger.debug("fields: {}", fields);
+        logger.debug("fields: {}", (Object[])fields);
         if (fields != null) {
             request.setFields(fields);
         }
