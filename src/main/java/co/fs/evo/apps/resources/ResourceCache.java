@@ -25,9 +25,6 @@ public class ResourceCache implements EntryListener<String, Resource> {
 	
     @Autowired
     protected HazelcastService hazelcast;
-
-    //@Autowired
-    //protected ApplicationContext appContext;
     
     /**
      * Our bootstrap code which is responsible for hooking us up to the cache events
