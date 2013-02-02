@@ -1429,6 +1429,24 @@ public class SearchService {
     }
 
     /**
+     * Asynchronously gets a resource from an app
+     * 
+     * @param app the appname
+     * @param dir the resoruce type/directory
+     * @param resource the resource name/id
+     * @param fields a list of fields you want returned, null for the default _source field
+     * @param listener the action listener to be invoked 
+     * @return the get response, null on error
+     */
+    public void getAppResourceAsync(String app, 
+    									   String dir, 
+    									   String resource, 
+    									   String[] fields, 
+    									   ActionListener<GetResponse> listener) {
+        getDocAsync(APP_INDEX, app + "_" + dir, resource, fields, listener);
+    }
+
+    /**
      * Get's the local node id. Not sure we will need this, in most cases you can use the "_local" alias.
      * 
      * @return the nodeId
