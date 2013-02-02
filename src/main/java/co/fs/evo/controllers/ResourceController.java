@@ -47,7 +47,7 @@ public class ResourceController {
             HttpSession userSession) {
     	
         logger.entry();
-        processAsyncRequest(request, response, app, null, null);
+        processAsyncRequest(request, response, app, "html", "index.html");
         logger.exit();
     }
 
@@ -57,7 +57,7 @@ public class ResourceController {
             HttpServletResponse response, HttpSession userSession) {
     	
         logger.entry();
-        processAsyncRequest(request, response, app, dir, null);
+        processAsyncRequest(request, response, app, "html", dir + ".html");
         logger.exit();
     }
 

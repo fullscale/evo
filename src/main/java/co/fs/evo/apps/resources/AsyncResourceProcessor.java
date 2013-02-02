@@ -105,19 +105,6 @@ public class AsyncResourceProcessor implements Runnable {
 
         Resource r;
 
-        if (dir == null && resource == null) {
-            // only given app name, go to index html by default
-            logger.debug("no dir or resource, using html/index.html");
-            dir = "html";
-            resource = "index.html";
-        } else if (resource == null) {
-            // only app name and resource name which spring thinks is actually the dir
-            // set the resource name and dir to html
-            logger.debug("no resource, using html/{}", dir);
-            resource = dir + ".html";
-            dir = "html";
-        }
-
         // if this is a static resource
         if (!requestInfo.isStatic()) {
             // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js

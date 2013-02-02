@@ -52,10 +52,8 @@ public class RequestInfo {
         this.modifiedSince = request.getDateHeader("If-Modified-Since");
         this.appname = appname;
         this.app = appname + ".app";
-        this.dir = dir == null ? "html" : dir;
-        this.resource = resource == null ? "index.html" : resource;
-        this.action = resource;
-        this.controller = dir;
+        this.dir = this.controller = dir;
+        this.resource = this.action = resource;
         this.isStatic = STATIC_RESOURCES.contains(this.dir);
         
         Enumeration<String> headerNames = request.getHeaderNames();
