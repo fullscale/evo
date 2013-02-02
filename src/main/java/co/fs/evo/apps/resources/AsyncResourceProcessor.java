@@ -105,14 +105,6 @@ public class AsyncResourceProcessor implements Runnable {
 
         Resource r;
 
-        // if this is a static resource
-        if (!requestInfo.isStatic()) {
-            // javascript controllers are in the "controllers" type/dir and have resource name of dir + .js
-            logger.debug("found javascript controller, using controllers/{}.js", dir);
-            resource = dir + ".js";
-            dir = "server-side";
-        }
-
         // see if the resource is cached
         String cacheKey = cache.getCacheKey(app, dir, resource);
         logger.debug("cacheKey: {}", cacheKey);

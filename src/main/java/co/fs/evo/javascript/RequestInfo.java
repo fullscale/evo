@@ -52,9 +52,21 @@ public class RequestInfo {
         this.modifiedSince = request.getDateHeader("If-Modified-Since");
         this.appname = appname;
         this.app = appname + ".app";
-        this.dir = this.controller = dir;
-        this.resource = this.action = resource;
-        this.isStatic = STATIC_RESOURCES.contains(this.dir);
+        this.isStatic = STATIC_RESOURCES.contains(dir);
+        
+        if (!this.isStatic()) {
+            // javascript controllers are in the "server-side" type/dir and have resource name of dir + .js
+            logger.debug("found javascript controller, using server-side/{}.js", dir);
+            this.dir = "server-side";
+            this.resource = dir + ".js";
+            this.controller = dir;
+            this.action = resource;
+        } else {
+            this.dir = dir;
+            this.resource = resource;
+            this.controller = null;
+            this.action = null;
+        }
         
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
