@@ -110,25 +110,7 @@ public class AsyncResourceProcessor implements Runnable {
         logger.debug("cacheKey: {}", cacheKey);
         r = cache.getResource(cacheKey);
 
-        if (r == null) {
-            // resource is not cached
-            logger.debug("resource not cached");
-
-            // have spring initialize the resource
-            r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
-
-            // run resource setup code
-            r.setup(app, dir, resource);
-
-            // add to cache
-            cache.putResource(cacheKey, r);
-
-            // if this is javascript resource, we add the compiled script to a local cache
-            if (!requestInfo.isStatic() && cache.resourceCacheEnabled()) {
-                logger.debug("caching script of javascript resource");
-                cache.getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
-            }
-        } else {
+        if (r != null) {
             logger.debug("using cached resource");
 
             // if this is javascript resource, see if we have script cached.
@@ -145,6 +127,20 @@ public class AsyncResourceProcessor implements Runnable {
                     logger.debug("cached script not found, adding to cache");
                     cache.getScriptCache().put(cacheKey, jr.getScript());
                 }
+            }
+        } else {
+        	
+            // resource is not cached
+            logger.debug("resource not cached");
+
+            r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
+            r.loadFromDisk(app, dir, resource);
+            cache.putResource(cacheKey, r);
+
+            // if this is javascript resource, we add the compiled script to a local cache
+            if (!requestInfo.isStatic() && cache.resourceCacheEnabled()) {
+                logger.debug("caching script of javascript resource");
+                cache.getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
             }
         }
 
