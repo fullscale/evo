@@ -50,8 +50,8 @@ public class StaticResource extends Resource {
      * @throws ResourceException when there is an error processing the resource
      */
     @Override
-    public void setup(String app, String dir, String resource) throws ResourceException {
-        super.setup(app, dir, resource);
+    public void loadFromDisk(String app, String dir, String resource) throws ResourceException {
+        super.loadFromDisk(app, dir, resource);
         logger.entry();
 
         // get the resource doc from the app index

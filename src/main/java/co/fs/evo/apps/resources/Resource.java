@@ -34,7 +34,7 @@ public abstract class Resource implements DataSerializable {
     protected String dir;
     protected String resource;
 
-    public void setup(String app, String dir, String resource) throws ResourceException {
+    public void loadFromDisk(String app, String dir, String resource) throws ResourceException {
         logger.entry(app, dir, resource);
         this.app = app;
         this.dir = dir;

@@ -56,8 +56,8 @@ public class JavascriptResource extends Resource {
     protected String code;
 
     @Override
-    public void setup(String app, String dir, String resource) throws ResourceException {
-        super.setup(app, dir, resource);
+    public void loadFromDisk(String app, String dir, String resource) throws ResourceException {
+        super.loadFromDisk(app, dir, resource);
         logger.entry();
 
         // get the resource doc from the app index
