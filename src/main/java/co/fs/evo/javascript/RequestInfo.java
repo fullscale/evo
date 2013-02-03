@@ -54,18 +54,18 @@ public class RequestInfo {
         this.app = appname + ".app";
         this.isStatic = STATIC_RESOURCES.contains(dir);
         
-        if (!this.isStatic()) {
+        if (this.isStatic()) {
+            this.dir = dir;
+            this.resource = resource;
+            this.controller = null;
+            this.action = null;
+        } else {
             // javascript controllers are in the "server-side" type/dir and have resource name of dir + .js
             logger.debug("found javascript controller, using server-side/{}.js", dir);
             this.dir = "server-side";
             this.resource = dir + ".js";
             this.controller = dir;
             this.action = resource;
-        } else {
-            this.dir = dir;
-            this.resource = resource;
-            this.controller = null;
-            this.action = null;
         }
         
         Enumeration<String> headerNames = request.getHeaderNames();
