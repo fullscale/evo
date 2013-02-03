@@ -72,6 +72,7 @@ public final class Evo {
         ===========================================================*/
         logger.debug("create jetty thread pool");
         QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setName("evo[http.async.request]");
         threadPool.setMaxThreads(config.getHttpMaxThreads());
 
         // create jetty server
