@@ -340,24 +340,6 @@ public class ConfigService {
     public String getServerSideMapping() {
         return getResourceContent("classpath:mappings/server-side.json");
     }
-
-    /**
-     * Gets the rendered velocity server template
-     * 
-     * @return the velocity template
-     *
-    public String getServerSideTemplate(String app) {
-        logger.entry(app);
-        VelocityContext context = new VelocityContext();
-        context.put("app", app);
-
-        StringWriter rendered = new StringWriter();
-        String tmpl = getResourceContent("classpath:templates/server-side.vm");
-
-        Velocity.evaluate(context, rendered, "server-side", tmpl);
-        logger.exit();
-        return rendered.toString();
-    }*/
     
     /**
      * Gets the json partials mapping as a string
