@@ -1,3 +1,17 @@
 build: "${project.version}"
 admin:
     password: "admin"
+
+network:
+    http:
+        port: 2600
+        maxthreads: 10
+    
+thread:
+    pool:
+        core.size: 10
+        max.size: 100
+    queue:
+        capacity: 1000
+    keepalive:
+        seconds: 1
