@@ -104,13 +104,13 @@ public class AsyncResourceProcessor implements Runnable {
 
         Resource r;
 
-        // see if the resource is cached
+        // check cache
         String cacheKey = cache.getCacheKey(app, dir, resource);
         logger.debug("cacheKey: {}", cacheKey);
         r = cache.getResource(cacheKey);
 
         if (r == null) {
-            // resource is not cached
+            // cache miss
             logger.debug("resource not cached");
 
             r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
