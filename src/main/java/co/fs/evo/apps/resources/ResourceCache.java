@@ -1,7 +1,6 @@
 package co.fs.evo.apps.resources;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import co.fs.evo.services.HazelcastService;
+import co.fs.evo.services.JavascriptService;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
@@ -26,6 +26,9 @@ public class ResourceCache implements EntryListener<String, Resource> {
     @Autowired
     protected HazelcastService hazelcast;
     
+    @Autowired
+    protected JavascriptService jsEngine;
+    
     /**
      * Our bootstrap code which is responsible for hooking us up to the cache events
      */
@@ -34,19 +37,6 @@ public class ResourceCache implements EntryListener<String, Resource> {
         logger.entry();
         hazelcast.registerResourceListener(this);
         logger.exit();
-    }
-
-    /**
-     * Gets the script cache
-     * 
-     * @return the cache
-     */
-    protected Map<String, Script> getScriptCache() {
-        if (scriptCache == null) {
-            scriptCache = new ConcurrentHashMap<String, Script>();
-        }
-
-        return scriptCache;
     }
 
     /**
@@ -150,7 +140,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
         logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
-        getScriptCache().remove(event.getKey());
+        jsEngine.evict(event.getKey());
         logger.exit();
     }
 
@@ -163,7 +153,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
         logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
-        getScriptCache().remove(event.getKey());
+        jsEngine.evict(event.getKey());
         logger.exit();
     }
 
@@ -178,7 +168,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
         logger.debug("Update happend on node: {}", eventNodeId);
         if (!eventNodeId.equals(hazelcast.getNodeId())) {
             logger.debug("expiring cached script if exists: {}", event.getKey());
-            getScriptCache().remove(event.getKey());
+            jsEngine.evict(event.getKey());
         }
         logger.exit();
     }

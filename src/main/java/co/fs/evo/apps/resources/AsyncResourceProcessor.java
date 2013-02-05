@@ -6,7 +6,6 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.mozilla.javascript.Script;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,38 +109,13 @@ public class AsyncResourceProcessor implements Runnable {
         logger.debug("cacheKey: {}", cacheKey);
         r = cache.getResource(cacheKey);
 
-        if (r != null) {
-            logger.debug("using cached resource");
-
-            // if this is javascript resource, see if we have script cached.
-            if (!requestInfo.isStatic()) {
-                JavascriptResource jr = (JavascriptResource) r;
-                Script cachedScript = cache.getScriptCache().get(cacheKey);
-                if (cachedScript != null) {
-                    // found cached script
-                    logger.debug("using cached script");
-                    jr.setScript(cachedScript);
-                } else {
-                    // script was not cached due to being added/updated on remote node
-                    // get the script from the compiled script and cache it
-                    logger.debug("cached script not found, adding to cache");
-                    cache.getScriptCache().put(cacheKey, jr.getScript());
-                }
-            }
-        } else {
-        	
+        if (r == null) {
             // resource is not cached
             logger.debug("resource not cached");
 
             r = appContext.getBean(requestInfo.isStatic() ? StaticResource.class : JavascriptResource.class);
             r.loadFromDisk(app, dir, resource);
             cache.putResource(cacheKey, r);
-
-            // if this is javascript resource, we add the compiled script to a local cache
-            if (!requestInfo.isStatic() && cache.resourceCacheEnabled()) {
-                logger.debug("caching script of javascript resource");
-                cache.getScriptCache().put(cacheKey, ((JavascriptResource) r).getScript());
-            }
         }
 
         logger.exit();

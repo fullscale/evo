@@ -2,10 +2,13 @@ package co.fs.evo.services;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.tika.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -21,11 +24,29 @@ import co.fs.evo.javascript.XMLHttpRequest;
 public class JavascriptService {
 
     private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptService.class);
+    
+    protected Map<String, Script> scriptCache;
 
     @Autowired
     private ConfigService config;
 
     private ScriptableObject sharedScope = null;
+    
+    public JavascriptService() {
+    	scriptCache = new ConcurrentHashMap<String, Script>();
+    }
+    
+    public Script getCache(String k) {
+    	return scriptCache.get(k);
+    }
+    
+    public void putCache(String k, Script cache) {
+    	scriptCache.put(k, cache);
+    }
+    
+    public void evict(String k) {
+    	scriptCache.remove(k);
+    }
 
     /**
      * Loads javascript resources into shared scope

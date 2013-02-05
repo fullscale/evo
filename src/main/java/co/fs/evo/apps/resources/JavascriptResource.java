@@ -133,7 +133,8 @@ public class JavascriptResource extends Resource {
 
         // run the javascript controller/action code
         logger.debug("evaluating javascript");
-        JavascriptObject jsResponse = evaluateJavascript(jsgi);
+        String key = request.getAppname() + request.getDir() + request.getResource();
+        JavascriptObject jsResponse = evaluateJavascript(jsgi, key);
 
         // controller's action was successful
         logger.debug("successfully executed controller");
@@ -204,7 +205,7 @@ public class JavascriptResource extends Resource {
      * @throws InternalErrorException on error executing javascript
      * @throws NotFoundException when the expected object is not found
      */
-    private JavascriptObject evaluateJavascript(JSGIRequest jsgi) throws ResourceException {
+    private JavascriptObject evaluateJavascript(JSGIRequest jsgi, String cacheKey) throws ResourceException {
         logger.entry();
 
         JavascriptObject jsResponse = null;
@@ -226,10 +227,19 @@ public class JavascriptResource extends Resource {
 
             // add request values to scope
             scope.put("REQUEST", scope, jsRequest.value());
-
-            // run the compiled javascript code
-            logger.debug("executing script");
-            getScript().exec(cx, scope);
+            
+            // execute script
+            Script script = jsHelper.getCache(cacheKey);
+            if (script != null) {
+            	logger.debug("Cache Hit: {}", cacheKey);
+            	script.exec(cx, scope);
+            } else {
+            	logger.debug("Cache Miss: {}", cacheKey);
+            	script = compileScript(code);
+            	jsHelper.putCache(cacheKey, script);
+            	logger.debug("Added Entry: {}", cacheKey);
+            	script.exec(cx, scope);
+            }
 
             // pull out the controller function
             Object controllerObj = scope.get(controller, scope);
