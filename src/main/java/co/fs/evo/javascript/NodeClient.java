@@ -18,7 +18,7 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import co.fs.evo.rest.InternalRestRequest;
+import co.fs.evo.http.rest.InternalRestRequest;
 import co.fs.evo.services.SearchService;
 
 @Component

@@ -111,17 +111,25 @@ public class SearchService {
     @PostConstruct
     public void booststrap() throws EvoException {
         logger.entry();
-        logger.info("Initializing data/search services");
+        logger.info("Initializing ...");
         node = NodeBuilder.nodeBuilder().settings(config.getNodeSettings()).node();
         client = node.client();
+        
+        if (isMaster()) {
+        	logger.info("Node is online [new master]");
+        } else {
+        	logger.info("Node is online");
+        }
 
         logger.info("Waiting for cluster status");
         ClusterHealthResponse health = getClusterHealth(true);
-        logger.info("Cluster Initialized [name:{}, status:{}]", health.clusterName(), health.status());
+        logger.info("... status [{}]", health.status());
+        logger.info("...   name [{}]", health.clusterName());
+        logger.info("...   size [{} node/s]", health.numberOfNodes());
 
         setupSystemIndex();
         setupApplicationIndex();
-        logger.info("Node is bootstrapped and online");
+        logger.debug("Search service is online");
         logger.exit();
     }
 
@@ -192,7 +200,7 @@ public class SearchService {
 
             indexDoc(SYSTEM_INDEX, "users", "admin", source);
         } else {
-            logger.info("Recovering system account information");
+            logger.debug("Recovering system account information");
         }
 
         logger.exit();
@@ -207,11 +215,11 @@ public class SearchService {
         logger.entry();
         boolean hasAppIndex = hasIndex(APP_INDEX);
         if (!hasAppIndex) {
-            logger.info("Creating application repository");
+            logger.debug("Creating application repository");
             boolean ack = createIndex(APP_INDEX, 1, 1);
             logger.exit(ack);
         } else {
-            logger.info("Recovering application data");
+            logger.debug("Recovering application data");
         }
     }
 
@@ -1414,6 +1422,15 @@ public class SearchService {
     public String getNodeId() {
         String nodeId = ((InternalNode) node).injector().getInstance(ClusterService.class).state().nodes().localNodeId();
         return nodeId;
+    }
+    
+    /**
+     * Checks is local node has a role of master
+     * 
+     * @return true is this local node is a master node
+     */
+    public boolean isMaster() {
+    	return ((InternalNode) node).injector().getInstance(ClusterService.class).state().nodes().localNodeMaster();
     }
 
     /**

@@ -1,4 +1,4 @@
-package co.fs.evo.javascript;
+package co.fs.evo.http.request;
 
 import java.io.BufferedReader;
 import java.io.StringReader;

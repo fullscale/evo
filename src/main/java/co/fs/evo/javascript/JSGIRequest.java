@@ -10,6 +10,7 @@ import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import co.fs.evo.http.request.RequestInfo;
 import co.fs.evo.security.EvoUser;
 
 /*

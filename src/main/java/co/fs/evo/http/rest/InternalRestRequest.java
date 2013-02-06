@@ -1,4 +1,4 @@
-package co.fs.evo.rest;
+package co.fs.evo.http.rest;
 
 import java.util.HashMap;
 import java.util.Map;

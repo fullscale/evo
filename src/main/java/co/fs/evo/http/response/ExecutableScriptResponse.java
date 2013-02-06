@@ -1,4 +1,4 @@
-package co.fs.evo.apps.resources;
+package co.fs.evo.http.response;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -9,10 +9,7 @@ import java.util.Map;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hazelcast.spring.context.SpringAware;
-
 import org.elasticsearch.action.get.GetResponse;
-
 import org.mozilla.javascript.NativeArray;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -20,54 +17,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.hazelcast.spring.context.SpringAware;
+
 import co.fs.evo.exceptions.resources.InternalErrorException;
+import co.fs.evo.exceptions.resources.NotFoundException;
 import co.fs.evo.exceptions.resources.ResourceException;
+import co.fs.evo.http.request.RequestInfo;
 import co.fs.evo.javascript.JSGIRequest;
 import co.fs.evo.javascript.JavascriptObject;
-import co.fs.evo.javascript.RequestInfo;
 import co.fs.evo.security.EvoUser;
 import co.fs.evo.services.ScriptEngine;
+import co.fs.evo.services.SearchService;
 
-/**
- * Represents a dynamic javascript resource
- * 
- */
 @Component
 @SpringAware
 @Scope("prototype")
-public class JavascriptResource extends Resource {
+public class ExecutableScriptResponse implements Response {
 
-    private static final long serialVersionUID = -5627919602999703186L;
-    private static final XLogger logger = XLoggerFactory.getXLogger(JavascriptResource.class);
+	private static final long serialVersionUID = 8812494999737600581L;
+    private static final XLogger logger = XLoggerFactory.getXLogger(ExecutableScriptResponse.class);
 
-    @Autowired
-    protected transient ScriptEngine scriptEngine;
+    @Autowired protected transient ScriptEngine scriptEngine;
+    @Autowired protected transient SearchService searchService;
 
     // serializable
     protected String code;
 
-    @Override
-    public void loadFromDisk(String app, 
-    						 String dir, 
-    						 String resource) 
-    	throws ResourceException {
-    	
-        super.loadFromDisk(app, dir, resource);
-        logger.entry();
+	@Override
+	public void send(RequestInfo request, AsyncContext ctx, EvoUser userDetails)
+			throws ResourceException {
 
-        GetResponse doc = getDoc(null);
-        Map<String, Object> source = doc.sourceAsMap();
-        code = (String) source.get("code");
-
-        logger.exit();
-    }
-
-    @Override
-    public void process(RequestInfo request, 
-    					AsyncContext ctx, 
-    					EvoUser userDetails) 
-    	throws ResourceException {
-    	
         logger.entry();
         
         HttpServletResponse response = (HttpServletResponse)ctx.getResponse();
@@ -142,18 +121,38 @@ public class JavascriptResource extends Resource {
         }
 
         logger.exit();
-    }
+	}
 
-    @Override
-    public void readData(DataInput in) throws IOException {
-        super.readData(in);
+	@Override
+	public void loadResource(RequestInfo requestInfo) 
+			throws NotFoundException, InternalErrorException {
+		
+        logger.entry();
+
+        GetResponse response = searchService.
+        		getAppResource(requestInfo.getAppname(), 
+				   			   requestInfo.getDir(), 
+				   			   requestInfo.getResource(), 
+				   			   new String[]{"_timestamp", "_source"});
+        
+        if (response == null || !response.exists()) {
+            throw new NotFoundException("Resource not found: " + requestInfo);
+        }
+        
+        code = (String) response.sourceAsMap().get("code");
+        
+        logger.trace("Raw resource: {}", code);
+        logger.exit();	
+	}
+
+	@Override
+	public void readData(DataInput in) throws IOException {
         code = in.readUTF();
-    }
+	}
 
-    @Override
-    public void writeData(DataOutput out) throws IOException {
-        super.writeData(out);
+	@Override
+	public void writeData(DataOutput out) throws IOException {
         out.writeUTF(code);
-    }
+	}
 
 }

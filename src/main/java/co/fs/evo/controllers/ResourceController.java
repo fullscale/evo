@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import co.fs.evo.apps.resources.AsyncResourceProcessor;
-import co.fs.evo.javascript.RequestInfo;
+import co.fs.evo.http.response.AsyncResponseHandler;
+import co.fs.evo.http.request.RequestInfo;
 import co.fs.evo.security.EvoUser;
 import co.fs.evo.services.ConfigService;
 import co.fs.evo.services.SearchService;
@@ -86,6 +86,8 @@ public class ResourceController {
     							     String dir, 
     							     String resource) {
     	
+    	logger.entry(app, dir, resource);
+    	
     	// gather security details
     	EvoUser userDetails = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -98,18 +100,20 @@ public class ResourceController {
         try {
             RequestInfo requestInfo = RequestInfo.valueOf(request, app, dir, resource);
             if (this.taskExecutor != null) {
-            	AsyncResourceProcessor resourceProcessor = new AsyncResourceProcessor(
+            	AsyncResponseHandler asyncResponse = new AsyncResponseHandler(
             			requestInfo, asyncContext, userDetails);
             	
             	// explicitly autowire this instance
-            	appContext.getAutowireCapableBeanFactory().autowireBean(resourceProcessor);
+            	appContext.getAutowireCapableBeanFactory().autowireBean(asyncResponse);
             	
-            	this.taskExecutor.execute(resourceProcessor);
+            	this.taskExecutor.execute(asyncResponse);
             }
         } catch (Exception e) {
-            logger.error("Error processing resource", e);
+            logger.warn("Unable to process resource: {}", app, dir, resource, e.getMessage());
             response.setStatus(500);
             asyncContext.complete();
-        }    	
+        }
+        
+        logger.exit();
     }
 }

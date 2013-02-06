@@ -7,6 +7,7 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import co.fs.evo.http.response.Response;
 import co.fs.evo.services.HazelcastService;
 import co.fs.evo.services.ScriptEngine;
 
@@ -14,7 +15,7 @@ import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
 
 @Component
-public class ResourceCache implements EntryListener<String, Resource> {
+public class ResourceCache implements EntryListener<String, Response> {
 	
 	private static final XLogger logger = XLoggerFactory.getXLogger(ResourceCache.class);
 	
@@ -42,7 +43,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
      * @param resource the resource name/id
      * @return the generated cache key
      */
-    protected String getCacheKey(String app, String dir, String resource) {
+    public String getCacheKey(String app, String dir, String resource) {
         logger.entry(app, dir, resource);
         StringBuilder keyBuilder = new StringBuilder();
         keyBuilder.append(app);
@@ -122,7 +123,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
      * @see com.hazelcast.core.EntryListener#entryAdded(com.hazelcast.core.EntryEvent)
      */
     @Override
-    public void entryAdded(EntryEvent<String, Resource> event) {
+    public void entryAdded(EntryEvent<String, Response> event) {
         // do nothing, script will be cached locally on first use
     }
 
@@ -131,7 +132,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
      * @see com.hazelcast.core.EntryListener#entryEvicted(com.hazelcast.core.EntryEvent)
      */
     @Override
-    public void entryEvicted(EntryEvent<String, Resource> event) {
+    public void entryEvicted(EntryEvent<String, Response> event) {
         logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
@@ -144,7 +145,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
      * @see com.hazelcast.core.EntryListener#entryRemoved(com.hazelcast.core.EntryEvent)
      */
     @Override
-    public void entryRemoved(EntryEvent<String, Resource> event) {
+    public void entryRemoved(EntryEvent<String, Response> event) {
         logger.entry();
         // blindly try to remove resource from local cache
         logger.debug("expiring cached script if exists: {}", event.getKey());
@@ -157,7 +158,7 @@ public class ResourceCache implements EntryListener<String, Resource> {
      * @see com.hazelcast.core.EntryListener#entryUpdated(com.hazelcast.core.EntryEvent)
      */
     @Override
-    public void entryUpdated(EntryEvent<String, Resource> event) {
+    public void entryUpdated(EntryEvent<String, Response> event) {
         logger.entry();
         String eventNodeId = event.getMember().getUuid();
         logger.debug("Update happend on node: {}", eventNodeId);
@@ -168,11 +169,11 @@ public class ResourceCache implements EntryListener<String, Resource> {
         logger.exit();
     }
     
-    public Resource getResource(String cacheKey) {
+    public Response getResponse(String cacheKey) {
     	return hazelcast.getResource(cacheKey);
     }
     
-    public void putResource(String cacheKey, Resource r) {
+    public void putResponse(String cacheKey, Response r) {
     	hazelcast.putResource(cacheKey, r);
     }
 

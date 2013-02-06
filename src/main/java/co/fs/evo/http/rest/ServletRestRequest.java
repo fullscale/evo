@@ -1,4 +1,4 @@
-package co.fs.evo.rest;
+package co.fs.evo.http.rest;
 
 import java.io.IOException;
 import java.util.HashMap;

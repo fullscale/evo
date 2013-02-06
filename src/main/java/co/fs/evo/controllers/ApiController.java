@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import co.fs.evo.apps.resources.ResourceCache;
 import co.fs.evo.exceptions.EvoException;
-import co.fs.evo.rest.ServletRestRequest;
+import co.fs.evo.apps.resources.ResourceCache;
+import co.fs.evo.http.rest.ServletRestRequest;
 import co.fs.evo.services.SearchService;
 
 @Controller

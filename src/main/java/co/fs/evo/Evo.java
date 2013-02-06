@@ -48,7 +48,7 @@ public final class Evo {
 
     public static void main(String[] args) throws Exception {
         logger.entry();
-        logger.info("Starting EVO");
+        logger.info("Starting ...");
 
         // get the config service bean from root context
         ConfigService config = ConfigService.getConfigService();
@@ -70,7 +70,7 @@ public final class Evo {
         Consult the javadoc of o.e.j.util.thread.QueuedThreadPool
         for all configuration that may be set here.            
         ===========================================================*/
-        logger.debug("create jetty thread pool");
+        logger.trace("create jetty thread pool");
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setName("evo[http.async.request]");
         threadPool.setMaxThreads(config.getHttpMaxThreads());
@@ -147,23 +147,23 @@ public final class Evo {
         }
 
         // main servlet context
-        logger.debug("creating context");
+        logger.trace("creating context");
         final ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", true, false);
 
         // setup root spring context
-        logger.debug("create root app context");
+        logger.trace("create root app context");
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        logger.debug("registering root context");
+        logger.trace("registering root context");
         rootContext.register(RootContext.class);
 
         // add spring root context listener
-        logger.debug("adding root context listener");
+        logger.trace("adding root context listener");
         servletContextHandler.addEventListener(new ContextLoaderListener(rootContext));
 
         // setup spring app context
-        logger.debug("create app context");
+        logger.trace("create app context");
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
-        logger.debug("registering app context");
+        logger.trace("registering app context");
         appContext.register(AppContext.class);
 
         // setup hazelcast filter if hazelcast and session caching are enabled
@@ -249,7 +249,8 @@ public final class Evo {
         server.start();
 
         logger.debug("jetty started");
-        logger.info("EVO started");
+        String ip = java.net.InetAddress.getLocalHost().getHostAddress() + ":" + config.getHttpPort();
+        logger.info("Online @ {}", ip);
         server.join();
 
         logger.debug("jetty stopped");

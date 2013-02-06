@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import co.fs.evo.apps.resources.Resource;
+import co.fs.evo.http.response.Response;
 
 @Service
 public class HazelcastService {
@@ -44,7 +44,7 @@ public class HazelcastService {
     private HazelcastInstance hazelcast = null;
 
     // application caches
-    private IMap<String, Resource> resourceCache = null;
+    private IMap<String, Response> resourceCache = null;
 
     /**
      * Hazelcast initialization
@@ -55,12 +55,12 @@ public class HazelcastService {
 
         // exit if hazelcast should not be started
         if (!configService.getHazelcastEnabled()) {
-            logger.info("Hazelcast disabled");
+            logger.debug("Hazelcast disabled");
             logger.exit();
             return;
         }
 
-        logger.info("Initializing distributed in-memory data grid");
+        logger.debug("Initializing hazelcast");
         // read default evo hazelcast settings
         Config conf = new ClasspathXmlConfig("hazelcast-evo.xml");
 
@@ -97,14 +97,14 @@ public class HazelcastService {
         // start hazelcast
         logger.debug("starting hazelcast");
         hazelcast = Hazelcast.newHazelcastInstance(conf);
-        logger.info("Data grid is online");
+        logger.debug("hazelcast started");
 
         // get our application caches
         if (configService.getResourceCacheEnabled()) {
             logger.debug("Enabling resource cache");
             resourceCache = hazelcast.getMap("resources");
         } else {
-            logger.info("Resource cache disabled");
+            logger.warn("Resource cache disabled");
         }
 
         logger.exit();
@@ -221,7 +221,7 @@ public class HazelcastService {
      * @param key the resource cache key
      * @param resource the resource to cache
      */
-    public void putResource(String key, Resource resource) {
+    public void putResource(String key, Response resource) {
         put(resourceCache, key, resource);
     }
 
@@ -240,7 +240,7 @@ public class HazelcastService {
      * @param key the resource cache key to get
      * @return the resource value, null if not found
      */
-    public Resource getResource(String key) {
+    public Response getResource(String key) {
         return get(resourceCache, key);
     }
 
@@ -258,7 +258,7 @@ public class HazelcastService {
      * 
      * @param listener the listener to register on the resource cache.
      */
-    public void registerResourceListener(EntryListener<String, Resource> listener) {
+    public void registerResourceListener(EntryListener<String, Response> listener) {
         // we don't need resource values when an even occurs
         registerListener(resourceCache, listener, false);
     }
@@ -280,7 +280,7 @@ public class HazelcastService {
     public void shutdown() {
         logger.entry();
         if (configService.getHazelcastEnabled() && hazelcast != null) {
-            logger.info("Shutting down distributed in-memory data grid");
+            logger.debug("Shutting down hazelcast");
             hazelcast.getLifecycleService().shutdown();
         }
         logger.exit();
