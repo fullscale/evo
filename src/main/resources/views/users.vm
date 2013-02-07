@@ -31,19 +31,19 @@
     
     <!-- javascript templates -->
     <script id="evo-user-table-row" type="text/template">
-      <tr class="odd gradient-light" id="evo-user-table-row-{%= uname %}">
+      <tr class="odd gradient-light" id="evo-user-table-row-{%= username %}">
         <td>
-          <a href="#" onClick="editUser('{%= uname %}', '{%= name %}', '{%= role %}')">{%= name %}</a>
+          <a href="#" onClick="editUser('{%= username %}', '{%= username %}', '{%= authorities %}')">{%= username %}</a>
         </td>
-        <td>{%= uname %}</td>
-        <td>{%= role %}</td>
+        <td>{%= username %}</td>
+        <td>{%= authorities %}</td>
         <td>
           <span style="font-size:22px;">
             &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
           </span>
         </td>
         <td style="text-align:right;">
-            <a href="#" class="evo-user-delete-icon" onClick="evo.deleteUser('{%= uname %}')">
+            <a href="#" class="evo-user-delete-icon" onClick="evo.deleteUser('{%= username %}')">
                 <img class="removeLink" src="/img/evo/trans.png">
             </a>
         </td>
@@ -88,6 +88,7 @@
       $(document).ready(function() {
 
         var users = ${usersData};
+
         _.each(users, function(userInfo, userName) {
             $('#userTable > tbody:last tr:eq(0)').after(
                 _.template($('#evo-user-table-row').html(), userInfo)

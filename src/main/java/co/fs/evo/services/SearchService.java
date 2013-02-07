@@ -176,7 +176,7 @@ public class SearchService {
         boolean hasSysIndex = hasIndex(SYSTEM_INDEX);
         logger.debug("hasSysIndex: {}", hasSysIndex);
         if (!hasSysIndex) {
-            logger.info("Initializing system accounts");
+            logger.debug("Initializing system accounts");
             try {
                 createIndex(SYSTEM_INDEX, 1, 1);
             } catch (IndexException e) {

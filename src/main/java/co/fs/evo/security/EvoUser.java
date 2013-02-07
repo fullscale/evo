@@ -23,11 +23,27 @@ public class EvoUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
     }
+    
+    public String[] getRoles() {
+        String [] roles = new String[this.authorities.size()];
+        int idx = 0;
+        for (SimpleGrantedAuthority role : this.authorities) {
+        	roles[idx] = role.getAuthority();
+        	idx += 1;
+        }
+        return roles;
+    }
 
     public void setAuthorities(ArrayList<String> roles) {
         for (String role : roles) {
             addAuthority(role);
         }
+    }
+    
+    public void setAuthorities(String[] roles) {
+    	for (int i = 0; i < roles.length; i++) {
+    		addAuthority(roles[i]);
+    	}
     }
 
     public void addAuthority(String authority) {

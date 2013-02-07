@@ -1,10 +1,15 @@
 package co.fs.evo.security;
 
+import static co.fs.evo.Constants.SYSTEM_INDEX;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +77,7 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
         source.put("accountNonLocked", user.isAccountNonLocked());
         source.put("credentialsNonExpired", user.isCredentialsNonExpired());
         source.put("enabled", user.isEnabled());
-        searchService.indexDoc("sys", "users", user.getUsername(), source);
+        searchService.indexDoc(SYSTEM_INDEX, "users", user.getUsername(), source);
         logger.exit();
     }
 
@@ -88,13 +93,32 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
 
     public void deleteUser(String username) {
         logger.entry(username);
-        searchService.deleteDoc("sys", "users", username);
+        if (!username.equals("admin")) {
+        	searchService.deleteDoc(SYSTEM_INDEX, "users", username);
+        }
         logger.exit();
     }
 
     public boolean userExists(String userName) {
         Map<String, Object> source = getUser(userName);
         return source != null ? true : false;
+    }
+    
+    public List<Map<String, Object>> listUsers() {
+    	SearchResponse response = searchService.matchAll(SYSTEM_INDEX, 
+    			"users", new String[]{"uid", "username", "authorities"});
+    	
+    	List<Map<String, Object>> users = new ArrayList<Map<String, Object>>();
+    	
+    	for (SearchHit hit : response.hits().hits()) {
+    		Map<String, Object> m = new HashMap<String, Object>();
+    		m.put("uid", hit.field("uid").getValue());
+    		m.put("username", hit.field("username").getValue());
+    		m.put("authorities", hit.field("authorities").getValue());
+            users.add(m);
+    	}
+    	
+    	return users;
     }
 
     public void changePassword(String oldPassword, String newPassword) throws AuthenticationException {
