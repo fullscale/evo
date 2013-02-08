@@ -264,6 +264,7 @@ evoApp.prototype.deleteUser = function(userid){
         url: "/evo/user/" + userid,
         dataType: "json",
         success: function(response){
+        	console.log(response);
             if (response.status == "ok") {
                 $('#evo-user-table-row-'+userid).hide();
             } else {

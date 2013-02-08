@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/css/layout.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/css/buttons.css" media="screen" />
 
-    <script src="/js/jquery-1.6.2.min.js"></script>
+    <script src="/js/jquery-1.8.0.min.js"></script>
     <script src="/js/json2.min.js"></script>
     <script src="/js/jquery.qtip-1.0.0-rc3.min.js"></script>
     <script src="/js/evo/evo.js"></script>
@@ -69,7 +69,7 @@
       
     <script id="evo-edit-user-table" type="text/template">
         <tr class="{%= cls %}" id="edit-row-{%= uname %}">
-            <td><input style="width:90%" type="text" id="txtName" value="{%= name %}"></td>
+            <td>{%= username %}</td>
             <td>{%= uname %}</td>
             <td>
                 <select id="selRole">
@@ -148,7 +148,7 @@
             _.template($('#evo-edit-user-table').html(), {
                 cls: cls,
                 uname: uname,
-                name: name,
+                username: name,
                 role: role
             })
         );
@@ -160,9 +160,8 @@
             var url = '/evo/user/' + encodeURIComponent(uname);
 
             var data = {
-                uname: uname,
-                name: name,
-                role: role
+                username: name,
+                authorities: [role]
             };
 
             if (password !== '') {
@@ -177,12 +176,10 @@
                 type: 'put',
                 success: function(data) {
                     if (data.status === 'ok') {
-                        console.log("edit user success");
                         $('#edit-row-' + uname).replaceWith(
                             _.template($("#evo-user-table-row").html(), data.response)
                         );
                     } else {
-                        console.log('error editing user');
                         evo.showError($('#users'), data.response);
                     }
                 }
@@ -206,9 +203,8 @@
             var url = '/evo/user/' + encodeURIComponent(uname); 
 
             var data = {
-                uname: uname,
-                name: name,
-                role: role,
+                username: uname,
+                authorities: role,
                 password: password
             };
                 
@@ -220,12 +216,10 @@
                 type: 'post',
                 success: function(data) {
                     if (data.status === 'ok') {
-                        console.log("create user success");
                         row.replaceWith(
                             _.template($("#evo-user-table-row").html(), data.response)
                         );
                     } else {
-                        console.log('error creating user');
                         evo.showError($('#users'), data.response);
                     }
                 }

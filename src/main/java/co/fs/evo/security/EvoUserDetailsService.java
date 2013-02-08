@@ -38,11 +38,17 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
     @Autowired
     private SearchService searchService;
 
+    /**
+     * Returns the user account details as a Java Map.
+     */
     private Map<String, Object> getUser(String userName) {
-        GetResponse user = searchService.getDoc("sys", "users", userName, null);
+        GetResponse user = searchService.getDoc(SYSTEM_INDEX, "users", userName, null);
         return user.sourceAsMap();
     }
 
+    /**
+     * Returns the account details for the given user.
+     */
     @SuppressWarnings("unchecked")
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -68,42 +74,66 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
         return principle;
     }
 
+    /**
+     * Adds the new user to the system account structure.
+     */
     private void addUser(UserDetails user) {
         logger.entry();
         Map<String, Object> source = new HashMap<String, Object>();
+        source.put("uid", ((EvoUser)user).getUid());
         source.put("username", user.getUsername());
         source.put("password", user.getPassword());
+        source.put("authorities", ((EvoUser)user).getRoles());
         source.put("accountNonExpired", user.isAccountNonExpired());
         source.put("accountNonLocked", user.isAccountNonLocked());
         source.put("credentialsNonExpired", user.isCredentialsNonExpired());
         source.put("enabled", user.isEnabled());
         searchService.indexDoc(SYSTEM_INDEX, "users", user.getUsername(), source);
+        searchService.refreshIndex(SYSTEM_INDEX);
         logger.exit();
     }
 
+    /**
+     * Creates a new account for the given user.
+     */
     public void createUser(UserDetails user) {
         if (userExists(user.getUsername()) == false) {
             addUser(user);
         }
     }
 
+    /**
+     * Updates the account for the given user.
+     */
     public void updateUser(final UserDetails user) {
         addUser(user);
     }
 
+    /**
+     * Deletes the given user account
+     */
     public void deleteUser(String username) {
         logger.entry(username);
         if (!username.equals("admin")) {
         	searchService.deleteDoc(SYSTEM_INDEX, "users", username);
+        	searchService.refreshIndex(SYSTEM_INDEX);
         }
         logger.exit();
     }
 
+    /**
+     * Checks whether the given user exists.
+     */
     public boolean userExists(String userName) {
-        Map<String, Object> source = getUser(userName);
-        return source != null ? true : false;
+        GetResponse user = searchService.getDoc(SYSTEM_INDEX, "users", userName, null);
+        return user.exists();
     }
     
+    /**
+     * Returns a list of the first 250 users (uses match_all query)
+     * 
+     * See {@link co.fs.evo.services.SearchService#matchAll()}
+     */
     public List<Map<String, Object>> listUsers() {
     	SearchResponse response = searchService.matchAll(SYSTEM_INDEX, 
     			"users", new String[]{"uid", "username", "authorities"});
@@ -121,7 +151,14 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
     	return users;
     }
 
-    public void changePassword(String oldPassword, String newPassword) throws AuthenticationException {
+    /**
+     * This method changes the password for the currently logged in user.
+     * It mainly meant to allow users to change their own password. It 
+     * will re-authenticate the users automatically using the new password.
+     */
+    public void changePassword(String oldPassword, String newPassword) 
+    		throws AuthenticationException {
+    	
         logger.entry();
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
 
@@ -133,7 +170,7 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
 
         String username = currentUser.getName();
 
-        // If an authentication manager has been set, reauthenticate the user with the supplied password.
+        // If an authentication manager has been set, re-authenticate the user with the supplied password.
         if (authenticationManager != null) {
             logger.debug("Reauthenticating user '" + username + "' for password change request.");
 
@@ -151,10 +188,16 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
         logger.exit();
     }
 
+    /**
+     * Used to set the current authentication manager. 
+     */
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * Creates a new Authentication object.
+     */
     protected Authentication createNewAuthentication(Authentication currentUser, UserDetails newUser, String newPassword) {
         logger.entry();
         UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(newUser,
@@ -165,6 +208,9 @@ public class EvoUserDetailsService implements UserDetailsService, UserDetailsMan
         return newAuthentication;
     }
 
+    /**
+     * Sets the cache object that will be used to manage users.
+     */
     public void setUserCache(UserCache userCache) {
         Assert.notNull(userCache, "userCache cannot be null");
         this.userCache = userCache;

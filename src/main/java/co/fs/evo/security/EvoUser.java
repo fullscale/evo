@@ -2,7 +2,10 @@ package co.fs.evo.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,12 +38,14 @@ public class EvoUser implements UserDetails {
     }
 
     public void setAuthorities(ArrayList<String> roles) {
+    	authorities.clear();
         for (String role : roles) {
             addAuthority(role);
         }
     }
     
     public void setAuthorities(String[] roles) {
+    	authorities.clear();
     	for (int i = 0; i < roles.length; i++) {
     		addAuthority(roles[i]);
     	}
@@ -115,5 +120,22 @@ public class EvoUser implements UserDetails {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+    
+    public Map<String, Object> asMap() {
+    	
+    	Map<String, Object> user = new HashMap<String, Object>();
+    	user.put("username", getUsername());
+    	user.put("uid", getUid());
+    	user.put("authorities", getRoles());
+    	user.put("accountNonExpired", isAccountNonExpired());
+    	user.put("accountNonLocked", isAccountNonLocked());
+    	user.put("credentialsNonExpired", isCredentialsNonExpired());
+    	user.put("enabled", isEnabled());
+    	
+    	return user;
+    }
 
+    public String toString() {
+    	return new JSONObject(asMap()).toJSONString();
+    }
 }
