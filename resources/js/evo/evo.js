@@ -258,17 +258,13 @@ evoApp.prototype.deleteDocument = function(collection, type, docid) {
 };
 
 evoApp.prototype.deleteUser = function(userid){
-    console.log("Delete: " + userid);
     $.ajax({
         type: "DELETE",
         url: "/evo/user/" + userid,
         dataType: "json",
         success: function(response){
-        	console.log(response);
             if (response.status == "ok") {
                 $('#evo-user-table-row-'+userid).hide();
-            } else {
-                console.error(response.msg);
             }
         }
     });
