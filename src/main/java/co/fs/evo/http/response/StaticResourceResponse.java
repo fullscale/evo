@@ -186,7 +186,7 @@ public class StaticResourceResponse implements Response {
         try {
             if (mime.startsWith("image")) {
                 logger.trace("decoding base64 image");
-                data = Base64.decodeBase64(code);
+                data = Base64.decodeBase64(code.getBytes());
             } else {
                 logger.trace("getting string as utf-8 bytes");
                 data = code.getBytes("UTF-8");

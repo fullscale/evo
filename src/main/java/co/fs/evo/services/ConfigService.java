@@ -309,7 +309,7 @@ public class ConfigService {
 
         try {
             in = getResourceInputStream("file:resources/" + resource);
-            content = Base64.encodeBase64String(IOUtils.toByteArray(in));
+            content = new String(Base64.encodeBase64(IOUtils.toByteArray(in)));
         } catch (Exception e) {
             logger.warn("Unable to load resource: {}", resource);
             logger.debug("exception", e);

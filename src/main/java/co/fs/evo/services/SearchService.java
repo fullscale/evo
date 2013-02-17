@@ -1149,7 +1149,7 @@ public class SearchService {
                         throw new EvoException("Image without extension: " + partName);
                     }
                     String suffix = partName.substring(sIdx + 1, partName.length());
-                    indexAppDoc(app, "img", partName, Base64.encodeBase64String(IOUtils.toByteArray(zip)), "image/" + suffix);
+                    indexAppDoc(app, "img", partName, new String(Base64.encodeBase64(IOUtils.toByteArray(zip))), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
                 } else if (partType.equals("server-side")) {
@@ -1221,7 +1221,7 @@ public class SearchService {
                 String code = (String) fields.get("code");
                 if (contentType.equals("img")) {
                     logger.debug("decoding base64");
-                    zip.write(Base64.decodeBase64(code));
+                    zip.write(Base64.decodeBase64(code.getBytes()));
                 } else {
                     zip.write(code.getBytes("UTF-8"));
                 }

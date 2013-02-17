@@ -205,7 +205,7 @@ public class AppsController extends BaseController {
             logger.debug("code: {}", code);
             if (mime.startsWith("image")) {
                 logger.debug("decoding base64 data");
-                byte[] data = Base64.decodeBase64(code);
+                byte[] data = Base64.decodeBase64(code.getBytes());
                 out.write(data);
             } else {
                 out.print(code);
@@ -437,7 +437,7 @@ public class AppsController extends BaseController {
             logger.debug("code: {}", code);
             if (mime.startsWith("image")) {
                 logger.debug("decoding base64 data");
-                byte[] data = Base64.decodeBase64(code);
+                byte[] data = Base64.decodeBase64(code.getBytes());
                 out.write(data);
             } else {
                 out.print(code);
