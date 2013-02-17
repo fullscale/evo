@@ -65,8 +65,8 @@ public class ConfigService {
         System.setProperty("hazelcast.logging.type", "slf4j");
         
         // configure velocity logging
-        Velocity.setProperty("runtime.log.logsystem.class", "slf4j");
-
+        Velocity.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem");
+        
         evoSettings = createEvoSettings();
         nodeSettings = createNodeSettings();
         logger.exit();
@@ -277,11 +277,7 @@ public class ConfigService {
         StringWriter rendered = new StringWriter();
         String tmpl = getResourceContent("classpath:templates/" + template + ".vm");
 
-        try {
-        	Velocity.evaluate(context, rendered, template, tmpl);
-        } catch (Exception e) {
-        	logger.debug(e.getMessage(), e);
-        }
+        Velocity.evaluate(context, rendered, template, tmpl);
 
         logger.exit();
         return rendered.toString();

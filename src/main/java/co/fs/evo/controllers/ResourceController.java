@@ -42,7 +42,7 @@ public class ResourceController {
     protected ApplicationContext appContext;
     
     @ResponseBody
-    @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|img|js|\\.))}")
+    @RequestMapping(value = "/{app:[a-z0-9]+(?!(?:css|img|js|oauth\\.))}")
     public void getResource(@PathVariable String app, HttpServletRequest request, HttpServletResponse response,
             HttpSession userSession) {
     	
@@ -52,7 +52,7 @@ public class ResourceController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{app:(?!(?:css|img|js))[a-z0-9]+}/{dir}")
+    @RequestMapping(value = "/{app:(?!(?:css|img|js|oauth))[a-z0-9]+}/{dir}")
     public void getResource(@PathVariable String app, @PathVariable String dir, HttpServletRequest request,
             HttpServletResponse response, HttpSession userSession) {
     	
@@ -62,7 +62,7 @@ public class ResourceController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{app:(?!(?:css|img|js))[a-z0-9]+}/{dir}/{resource:.*}")
+    @RequestMapping(value = "/{app:(?!(?:css|img|js|oauth))[a-z0-9]+}/{dir}/{resource:.*}")
     public void getResource(@PathVariable String app, @PathVariable String dir, @PathVariable String resource,
             HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
         

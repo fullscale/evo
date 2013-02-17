@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -21,6 +22,7 @@ import co.fs.evo.services.ConfigService;
 
 @Configuration
 @EnableWebMvc
+@ImportResource({"classpath:evo-context.xml"})
 @ComponentScan(basePackages = "co.fs.evo.controllers")
 public class AppContext extends WebMvcConfigurerAdapter {
 	

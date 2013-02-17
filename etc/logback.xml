@@ -55,7 +55,7 @@
     <!-- loggers that are too noisy to run at INFO -->
 	<logger name="org.springframework.beans.factory" level="WARN" />
 	<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
-	<logger name="org.springframework.security.config" level="WARN" />
+	<logger name="org.springframework.security" level="DEBUG" />
 
     <!-- default logging level -->
 	<root level="INFO">
