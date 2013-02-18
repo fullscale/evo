@@ -57,6 +57,18 @@
             authorities="ROLE_CLIENT" 
             scope="read,write" 
             secret="123" />
+        <oauth:client 
+            client-id="user1" 
+            authorized-grant-types="client_credentials,password,refresh_token"
+            authorities="ROLE_USER" 
+            scope="read" 
+            secret="123" />
+        <oauth:client 
+            client-id="user2" 
+            authorized-grant-types="client_credentials,password,refresh_token"
+            authorities="ROLE_USER" 
+            scope="read,write" 
+            secret="456" />
     </oauth:client-details-service>
     
     <http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="authenticationManager">
@@ -69,7 +81,7 @@
     <http pattern="/v1/**" create-session="stateless" entry-point-ref="oauthAuthenticationEntryPoint" use-expressions="true">
         <anonymous enabled="false" />
         <!--intercept-url pattern="/v1/**" access="hasRole('supervisor')" /-->
-        <intercept-url pattern="/v1/**" access="#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.hasScope('write')" />
+        <intercept-url pattern="/v1/**" access="(#oauth2.clientHasRole('ROLE_CLIENT') or #oauth2.clientHasRole('ROLE_USER')) and #oauth2.hasScope('write')" />
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
         <access-denied-handler ref="oauthAccessDeniedHandler" />
         <expression-handler ref="oauthWebExpressionHandler" />
