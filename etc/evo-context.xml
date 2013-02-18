@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans:beans xmlns="http://www.springframework.org/schema/security"
+<beans:beans 
     xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
     xmlns:beans="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8,14 +8,11 @@
         http://www.springframework.org/schema/security/oauth2 
         http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd 
         http://www.springframework.org/schema/beans 
-        http://www.springframework.org/schema/beans/spring-beans.xsd 
-        http://www.springframework.org/schema/security 
-        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
         
     <!-- This sets up the two end points... /oauth/authorization & /oauth/token by default -->
     <oauth:authorization-server client-details-service-ref="clientDetails" token-services-ref="tokenServices" user-approval-handler-ref="userApprovalHandler">
         <oauth:authorization-code />
-        <oauth:implicit />
         <oauth:refresh-token />
         <oauth:client-credentials />
         <oauth:password />

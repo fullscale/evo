@@ -66,7 +66,7 @@
     <oauth:client-details-service id="clientDetails">
         <oauth:client 
             client-id="admin" 
-            authorized-grant-types="client_credentials,refresh_token"
+            authorized-grant-types="client_credentials,password,refresh_token"
             authorities="ROLE_CLIENT" 
             scope="read,write" 
             secret="123" />
