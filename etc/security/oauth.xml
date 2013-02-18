@@ -69,7 +69,7 @@
     <http pattern="/v1/**" create-session="stateless" entry-point-ref="oauthAuthenticationEntryPoint" use-expressions="true">
         <anonymous enabled="false" />
         <!--intercept-url pattern="/v1/**" access="hasRole('supervisor')" /-->
-        <intercept-url pattern="/v1/**" access="hasRole('ROLE_CLIENT')" />
+        <intercept-url pattern="/v1/**" access="hasRole('ROLE_CLIENT') or hasRole('supervisor')" />
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
