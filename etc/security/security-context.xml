@@ -26,7 +26,7 @@
 	</beans:bean>
 
     <!-- enables method annotation -->
-    <global-method-security pre-post-annotations="enabled" />
+    <!--global-method-security pre-post-annotations="enabled" /-->
 
 	<!-- no need to secure static resources -->
     <http pattern="/css/**" security="none"/>

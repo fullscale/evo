@@ -69,9 +69,17 @@
     <http pattern="/v1/**" create-session="stateless" entry-point-ref="oauthAuthenticationEntryPoint" use-expressions="true">
         <anonymous enabled="false" />
         <!--intercept-url pattern="/v1/**" access="hasRole('supervisor')" /-->
-        <intercept-url pattern="/v1/**" access="hasRole('ROLE_CLIENT') or hasRole('supervisor')" />
+        <intercept-url pattern="/v1/**" access="#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.hasScope('write')" />
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
         <access-denied-handler ref="oauthAccessDeniedHandler" />
+        <expression-handler ref="oauthWebExpressionHandler" />
     </http>
+    
+    <global-method-security pre-post-annotations="enabled" proxy-target-class="true">
+        <expression-handler ref="oauthExpressionHandler" />
+    </global-method-security>
+    
+    <oauth:expression-handler id="oauthExpressionHandler" />
+    <oauth:web-expression-handler id="oauthWebExpressionHandler" />
     
 </beans:beans> 
