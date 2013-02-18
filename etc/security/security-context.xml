@@ -15,6 +15,7 @@
     	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<!-- Bean definitions -->
+	<beans:import resource="oauth.xml"/>
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
     <beans:bean id="evoUserDetailsService" class="co.fs.evo.security.EvoUserDetailsService" />
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
@@ -23,56 +24,6 @@
     <beans:bean class="org.springframework.security.authentication.dao.ReflectionSaltSource" id="saltSource">
      	<beans:property name="userPropertyToUse" value="uid"/>
 	</beans:bean>
-	
-	<!-- ############################### OAUTH2 START ############################### -->
-	
-	<beans:bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
-        <beans:property name="realmName" value="evo" />
-    </beans:bean>
-    
-    <beans:bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
-    
-    <beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
-        <beans:constructor-arg>
-            <beans:list>
-                <beans:bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter" />
-                <beans:bean class="org.springframework.security.access.vote.RoleVoter" />
-                <beans:bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
-            </beans:list>
-        </beans:constructor-arg>
-    </beans:bean>
-    
-    <beans:bean id="userApprovalHandler" class="co.fs.evo.security.OAuthApprovalHandler">
-        <beans:property name="autoApproveClients">
-            <beans:set>
-                <beans:value>my-less-trusted-autoapprove-client</beans:value>
-            </beans:set>
-        </beans:property>
-        <beans:property name="tokenServices" ref="tokenServices" />
-    </beans:bean>
-    
-    <oauth:resource-server id="resourceServerFilter" resource-id="evo" token-services-ref="tokenServices" />
-    
-    <beans:bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
-    
-    <!-- Responsible for creating actual tokens -->
-    <beans:bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-        <beans:property name="tokenStore" ref="tokenStore" />
-        <beans:property name="supportRefreshToken" value="true" />
-        <beans:property name="clientDetailsService" ref="clientDetails" />
-    </beans:bean>
-    
-    <!-- oauth client/s -->
-    <oauth:client-details-service id="clientDetails">
-        <oauth:client 
-            client-id="admin" 
-            authorized-grant-types="client_credentials,password,refresh_token"
-            authorities="ROLE_CLIENT" 
-            scope="read,write" 
-            secret="123" />
-    </oauth:client-details-service>
-    
-    <!-- ############################### OAUTH2 END ############################### -->
 
     <!-- enables method annotation -->
     <global-method-security pre-post-annotations="enabled" />
@@ -82,22 +33,6 @@
     <http pattern="/js/**" security="none"/>
     <http pattern="/img/**" security="none"/>
     <!--http pattern="/v1/**" security="none"/-->
-    
-    <!-- Protect the token service -->
-    <http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="authenticationManager">
-        <intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
-        <anonymous enabled="false" />
-        <http-basic />
-        <access-denied-handler ref="oauthAccessDeniedHandler" />
-    </http>
-    
-    <http pattern="/v1/**" create-session="stateless" entry-point-ref="oauthAuthenticationEntryPoint" use-expressions="true">
-        <anonymous enabled="false" />
-        <!--intercept-url pattern="/v1/**" access="hasRole('supervisor')" /-->
-        <intercept-url pattern="/v1/**" access="hasRole('ROLE_CLIENT')" />
-        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
-        <access-denied-handler ref="oauthAccessDeniedHandler" />
-    </http>
 
     <http use-expressions="true" disable-url-rewriting="true">
     
