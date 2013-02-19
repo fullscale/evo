@@ -46,8 +46,8 @@ public class EvoClientDetailsService implements ClientDetailsService {
             clientDetails.setIsSecretRequired((Boolean) source.get("secretRequired"));
             clientDetails.setClientSecret((String) source.get("clientSecret"));
             clientDetails.setIsScoped((Boolean) source.get("isScoped"));
-            clientDetails.setScope((ArrayList<String>) source.get("credentialsNonExpired"));
-            clientDetails.setAuthorizedGrantTypes((ArrayList<String>) source.get("enabled"));
+            clientDetails.setScope((ArrayList<String>) source.get("scopes"));
+            clientDetails.setAuthorizedGrantTypes((ArrayList<String>) source.get("authorizedGrantTypes"));
             clientDetails.setAuthorities((ArrayList<String>) source.get("authorities"));
             clientDetails.setAccessTokenValiditySeconds((int) source.get("accessTokenValiditySeconds"));
             clientDetails.setRefreshTokenValiditySeconds((int) source.get("refreshTokenValiditySeconds"));
