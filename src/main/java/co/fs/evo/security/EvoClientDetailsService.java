@@ -37,10 +37,10 @@ public class EvoClientDetailsService implements ClientDetailsService {
 
         logger.entry(clientId);
         Map<String, Object> source = getUser(clientId);
-        EvoClientDetails clientDetails = null;
+        EvoClient clientDetails = null;
 
         if (source != null) {
-            clientDetails = new EvoClientDetails();
+            clientDetails = new EvoClient();
             clientDetails.setClientId((String) source.get("clientId"));
             clientDetails.setResourceIds((ArrayList<String>)source.get("resourceIds"));
             clientDetails.setIsSecretRequired((Boolean) source.get("secretRequired"));

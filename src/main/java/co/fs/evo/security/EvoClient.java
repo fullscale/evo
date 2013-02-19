@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-public class EvoClientDetails implements ClientDetails {
+public class EvoClient implements ClientDetails {
 	
 	private static final long serialVersionUID = -2139167369654154395L;
 	
