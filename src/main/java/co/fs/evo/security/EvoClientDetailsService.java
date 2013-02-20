@@ -3,12 +3,16 @@ package co.fs.evo.security;
 import static co.fs.evo.Constants.SYSTEM_INDEX;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
@@ -37,20 +41,27 @@ public class EvoClientDetailsService implements ClientDetailsService {
 
         logger.entry(clientId);
         Map<String, Object> source = getUser(clientId);
-        EvoClient clientDetails = null;
+        BaseClientDetails clientDetails = null;
 
         if (source != null) {
-            clientDetails = new EvoClient();
+            clientDetails = new BaseClientDetails();
             clientDetails.setClientId((String) source.get("clientId"));
             clientDetails.setResourceIds((ArrayList<String>)source.get("resourceIds"));
-            clientDetails.setIsSecretRequired((Boolean) source.get("secretRequired"));
             clientDetails.setClientSecret((String) source.get("clientSecret"));
-            clientDetails.setIsScoped((Boolean) source.get("isScoped"));
             clientDetails.setScope((ArrayList<String>) source.get("scopes"));
             clientDetails.setAuthorizedGrantTypes((ArrayList<String>) source.get("authorizedGrantTypes"));
-            clientDetails.setAuthorities((ArrayList<String>) source.get("authorities"));
             clientDetails.setAccessTokenValiditySeconds((int) source.get("accessTokenValiditySeconds"));
             clientDetails.setRefreshTokenValiditySeconds((int) source.get("refreshTokenValiditySeconds"));
+            
+            ArrayList<String> authorities = (ArrayList<String>)source.get("authorities");
+            Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+            
+            for (String authority: authorities) {
+            	grantedAuthorities.add(new SimpleGrantedAuthority(authority));
+            }
+            
+            clientDetails.setAuthorities(grantedAuthorities);
+            
         } else {
             throw new NoSuchClientException("Unknown client: " + clientId);
         }
