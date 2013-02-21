@@ -11,10 +11,14 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
         
     <!-- This sets up the two end points... /oauth/authorization & /oauth/token by default -->
-    <oauth:authorization-server client-details-service-ref="clientDetails" token-services-ref="tokenServices" user-approval-handler-ref="userApprovalHandler">
-        <oauth:authorization-code />
-        <oauth:refresh-token />
-        <oauth:client-credentials />
-        <oauth:password />
-    </oauth:authorization-server>
+    <!--oauth:authorization-server 
+        client-details-service-ref="clientDetails" 
+        token-services-ref="tokenServices" 
+        user-approval-handler-ref="userApprovalHandler">
+            <oauth:authorization-code />
+            <oauth:refresh-token />
+            <oauth:client-credentials />
+            <oauth:password />
+    </oauth:authorization-server-->
+    
 </beans:beans>

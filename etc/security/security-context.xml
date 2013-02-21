@@ -13,9 +13,24 @@
     	http://www.springframework.org/schema/beans/spring-beans.xsd 
     	http://www.springframework.org/schema/security 
     	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
-
-	<!-- Bean definitions -->
-	<beans:import resource="oauth.xml"/>
+	
+    <!-- 
+        Enable OAuth support  
+        
+        Support for OAuth 2.0 is still under development and is
+        disabled by default. To enable OAuth support, invert
+        the commented lines below.
+         
+        You must also uncomment the oauth:authorization-server
+        section in evo-context.xml. 
+    -->
+         
+    <!--beans:import resource="oauth.xml"/-->
+    <global-method-security pre-post-annotations="enabled" />
+    <http pattern="/v1/**" security="none"/>
+    
+    <!-- End OAuth config -->
+	    
     <beans:bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
     <beans:bean id="evoUserDetailsService" class="co.fs.evo.security.EvoUserDetailsService" />
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
@@ -25,14 +40,10 @@
      	<beans:property name="userPropertyToUse" value="uid"/>
 	</beans:bean>
 
-    <!-- enables method annotation -->
-    <!--global-method-security pre-post-annotations="enabled" /-->
-
 	<!-- no need to secure static resources -->
     <http pattern="/css/**" security="none"/>
     <http pattern="/js/**" security="none"/>
     <http pattern="/img/**" security="none"/>
-    <!--http pattern="/v1/**" security="none"/-->
 
     <http use-expressions="true" disable-url-rewriting="true">
     
@@ -51,10 +62,6 @@
     	<!--
     	<intercept-url pattern="/evo/**" access="hasRole('supervisor')" requires-channel="https" />
         -->
-        
-        <!-- API Security Rules -->
-        <!--intercept-url pattern="/v1/apps/**" access="isAuthenticated()" /-->
-        <!--intercept-url pattern="/v1/**" access="isAuthenticated()" /-->
         
         <form-login 
         	login-page="/login.html" 
