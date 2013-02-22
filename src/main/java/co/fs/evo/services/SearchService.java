@@ -319,7 +319,7 @@ public class SearchService {
             for (Entry<String, IndexStatus> index : indices.entrySet()) {
                 String indexName = index.getKey();
                 IndexStatus indexStatus = index.getValue();
-                if (!indexName.equals(SYSTEM_INDEX) && !indexName.equals(APP_INDEX)) {
+                if (!StringUtils.isSystemIndex(indexName) && !StringUtils.isAppIndex(indexName)) {
                     collectionStatus.put(indexName, indexStatus);
                 }
             }
@@ -571,7 +571,7 @@ public class SearchService {
     public boolean createCollectionIndex(String name) throws IndexException {
         logger.entry(name);
 
-        if (name.equals(SYSTEM_INDEX) || name.equals(APP_INDEX) || Arrays.asList(INVALID_INDEX_NAMES).contains(name)) {
+        if (StringUtils.isSystemIndex(name) || StringUtils.isAppIndex(name)) {
             throw new IndexCreationException("Invliad collection name: " + name);
         }
 
@@ -591,7 +591,7 @@ public class SearchService {
     public boolean createCollectionIndex(String name, int shards, int replicas) throws IndexException {
         logger.entry(name, shards, replicas);
 
-        if (name.equals(SYSTEM_INDEX) || name.equals(APP_INDEX) || Arrays.asList(INVALID_INDEX_NAMES).contains(name)) {
+        if (StringUtils.isSystemIndex(name) || StringUtils.isAppIndex(name)) { 
             throw new IndexCreationException("Invliad collection name: " + name);
         }
 

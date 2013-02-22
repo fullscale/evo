@@ -23,5 +23,24 @@ public class StringUtilsTest {
         assertFalse(StringUtils.isValidIndexName("897sdfQ"));
         assertFalse(StringUtils.isValidIndexName("not#$#valid.app"));
         assertFalse(StringUtils.isValidIndexName("name.not.valid"));
+        
+        /* these are reserved names... see INVALID_INDEX_NAMES */
+        assertFalse(StringUtils.isValidIndexName("css"));
+        assertFalse(StringUtils.isValidIndexName("js"));
+        assertFalse(StringUtils.isValidIndexName("img"));
+        assertFalse(StringUtils.isValidIndexName("partials"));
+        assertFalse(StringUtils.isValidIndexName("lib"));
+    }
+    
+    @Test
+    public void testIsSystemIndex() {
+    	assertTrue(StringUtils.isSystemIndex("sys"));
+    	assertFalse(StringUtils.isSystemIndex("junk"));
+    }
+    
+    @Test
+    public void testIsAppIndex() {
+    	assertTrue(StringUtils.isAppIndex("app"));
+    	assertFalse(StringUtils.isAppIndex("junk"));
     }
 }
