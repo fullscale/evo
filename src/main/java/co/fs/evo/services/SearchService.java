@@ -78,6 +78,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import co.fs.evo.common.StringUtils;
 import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
@@ -88,7 +89,6 @@ import co.fs.evo.exceptions.index.IndexMissingException;
 import co.fs.evo.exceptions.mapping.MappingException;
 import co.fs.evo.exceptions.type.TypeCreationException;
 import co.fs.evo.exceptions.type.TypeExistsException;
-import co.fs.evo.utils.EvoHelper;
 
 @Service
 public class SearchService {
@@ -519,7 +519,7 @@ public class SearchService {
      */
     public boolean createIndex(String name, Settings settings, Map<String, String> mappings) throws IndexException {
         logger.entry(name);
-        boolean valid = EvoHelper.isValidName(name);
+        boolean valid = StringUtils.isValidIndexName(name);
         logger.debug("is valid name: {}", valid);
         if (!valid) {
             throw new IndexCreationException("Invalid index name: " + name);
@@ -993,7 +993,7 @@ public class SearchService {
         Map<String, MappingMetaData> mappings = getMappings(index);
         boolean resp = false;
 
-        boolean validName = EvoHelper.isValidName(type);
+        boolean validName = StringUtils.isValidTypeName(type);
         logger.debug("validName:{}", validName);
         if (!validName) {
             throw new TypeCreationException("Invalid type name: " + type);
