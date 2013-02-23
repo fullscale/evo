@@ -7,6 +7,8 @@ import static co.fs.evo.Constants.SYSTEM_INDEX;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
+
 public class StringUtils {
 	
 	private static List<String> invalidIndexNames = Arrays.asList(INVALID_INDEX_NAMES);
@@ -36,5 +38,17 @@ public class StringUtils {
     
     public static boolean isAppIndex(String name) {
     	return name.equals(APP_INDEX);
+    }
+    
+    public static String encodeBase64(String data) {
+    	return Base64.encodeBase64String(data.getBytes());
+    }
+    
+    public static String encodeBase64(byte[] data) {
+    	return Base64.encodeBase64String(data);
+    }
+    
+    public static byte[] decodeBase64(String data) {
+    	return Base64.decodeBase64(data);
     }
 }

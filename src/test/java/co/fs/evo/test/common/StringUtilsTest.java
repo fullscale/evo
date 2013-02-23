@@ -43,4 +43,11 @@ public class StringUtilsTest {
     	assertTrue(StringUtils.isAppIndex("app"));
     	assertFalse(StringUtils.isAppIndex("junk"));
     }
+    
+    @Test
+    public void testBase64() {
+    	String text = "some random string of text";
+    	assertEquals(text, new String(
+    			StringUtils.decodeBase64(StringUtils.encodeBase64(text))));
+    }
 }

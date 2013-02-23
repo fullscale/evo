@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -21,6 +20,8 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import co.fs.evo.common.StringUtils;
 
 import static co.fs.evo.Constants.*;
 
@@ -305,7 +306,7 @@ public class ConfigService {
 
         try {
             in = getResourceInputStream("file:resources/" + resource);
-            content = new String(Base64.encodeBase64(IOUtils.toByteArray(in)));
+            content = StringUtils.encodeBase64(IOUtils.toByteArray(in));
         } catch (Exception e) {
             logger.warn("Unable to load resource: {}", resource);
             logger.debug("exception", e);

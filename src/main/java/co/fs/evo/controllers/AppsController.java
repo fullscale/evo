@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.fs.evo.common.StringUtils;
 import co.fs.evo.exceptions.EvoException;
 import co.fs.evo.exceptions.application.ApplicationExistsException;
 import co.fs.evo.exceptions.application.InvalidApplicationNameException;
@@ -205,7 +206,7 @@ public class AppsController extends BaseController {
             logger.debug("code: {}", code);
             if (mime.startsWith("image")) {
                 logger.debug("decoding base64 data");
-                byte[] data = Base64.decodeBase64(code.getBytes());
+                byte[] data = StringUtils.decodeBase64(code);
                 out.write(data);
             } else {
                 out.print(code);

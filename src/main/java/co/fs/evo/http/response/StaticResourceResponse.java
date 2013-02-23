@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.tika.io.IOUtils;
 import org.elasticsearch.action.get.GetResponse;
 import org.slf4j.ext.XLogger;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.hazelcast.spring.context.SpringAware;
 
+import co.fs.evo.common.StringUtils;
 import co.fs.evo.exceptions.resources.InternalErrorException;
 import co.fs.evo.exceptions.resources.NotAllowedException;
 import co.fs.evo.exceptions.resources.NotFoundException;
@@ -186,7 +186,7 @@ public class StaticResourceResponse implements Response {
         try {
             if (mime.startsWith("image")) {
                 logger.trace("decoding base64 image");
-                data = Base64.decodeBase64(code.getBytes());
+                data = StringUtils.decodeBase64(code);
             } else {
                 logger.trace("getting string as utf-8 bytes");
                 data = code.getBytes("UTF-8");

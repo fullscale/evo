@@ -25,7 +25,6 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ActionFuture;
@@ -1149,7 +1148,7 @@ public class SearchService {
                         throw new EvoException("Image without extension: " + partName);
                     }
                     String suffix = partName.substring(sIdx + 1, partName.length());
-                    indexAppDoc(app, "img", partName, new String(Base64.encodeBase64(IOUtils.toByteArray(zip))), "image/" + suffix);
+                    indexAppDoc(app, "img", partName, StringUtils.encodeBase64(IOUtils.toByteArray(zip)), "image/" + suffix);
                 } else if (partType.equals("js")) {
                     indexAppDoc(app, "js", partName, IOUtils.toString(zip, "UTF-8"), "application/javascript");
                 } else if (partType.equals("server-side")) {
@@ -1221,7 +1220,7 @@ public class SearchService {
                 String code = (String) fields.get("code");
                 if (contentType.equals("img")) {
                     logger.debug("decoding base64");
-                    zip.write(Base64.decodeBase64(code.getBytes()));
+                    zip.write(StringUtils.decodeBase64(code));
                 } else {
                     zip.write(code.getBytes("UTF-8"));
                 }
