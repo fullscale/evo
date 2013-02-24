@@ -1112,7 +1112,7 @@ public class SearchService {
                 }
 
                 logger.debug("partType: {}", partType);
-                if (!Arrays.asList(VALID_TYPES).contains(partType)) {
+                if (!StringUtils.isValidResourceType(partType)) {
                     logger.warn("Invalid resource: {}", entry.getName());
                     throw new EvoException("Invalid resource: " + entry.getName());
                 }

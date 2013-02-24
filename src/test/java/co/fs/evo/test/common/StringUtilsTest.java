@@ -5,6 +5,8 @@ import static junit.framework.Assert.*;
 import org.junit.Test;
 
 import co.fs.evo.common.StringUtils;
+import static co.fs.evo.Constants.VALID_TYPES;
+import static co.fs.evo.Constants.INVALID_INDEX_NAMES;
 
 public class StringUtilsTest {
 
@@ -24,12 +26,10 @@ public class StringUtilsTest {
         assertFalse(StringUtils.isValidIndexName("not#$#valid.app"));
         assertFalse(StringUtils.isValidIndexName("name.not.valid"));
         
-        /* these are reserved names... see INVALID_INDEX_NAMES */
-        assertFalse(StringUtils.isValidIndexName("css"));
-        assertFalse(StringUtils.isValidIndexName("js"));
-        assertFalse(StringUtils.isValidIndexName("img"));
-        assertFalse(StringUtils.isValidIndexName("partials"));
-        assertFalse(StringUtils.isValidIndexName("lib"));
+        /* check for these are reserved names... see INVALID_INDEX_NAMES */
+        for (int i=0; i < INVALID_INDEX_NAMES.length; i++) {
+        	assertFalse(StringUtils.isValidIndexName(INVALID_INDEX_NAMES[i]));
+        }
     }
     
     @Test
@@ -42,6 +42,16 @@ public class StringUtilsTest {
     public void testIsAppIndex() {
     	assertTrue(StringUtils.isAppIndex("app"));
     	assertFalse(StringUtils.isAppIndex("junk"));
+    }
+    
+    @Test
+    public void testIsValidResourceType() {
+    	for (int i=0; i < VALID_TYPES.length; i++) {
+    		assertTrue(StringUtils.isValidResourceType(VALID_TYPES[i]));
+    	}
+    	
+    	assertFalse(StringUtils.isValidResourceType(""));
+    	assertFalse(StringUtils.isValidResourceType("asdf"));
     }
     
     @Test

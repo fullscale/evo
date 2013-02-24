@@ -3,6 +3,7 @@ package co.fs.evo.common;
 import static co.fs.evo.Constants.APP_INDEX;
 import static co.fs.evo.Constants.INVALID_INDEX_NAMES;
 import static co.fs.evo.Constants.SYSTEM_INDEX;
+import static co.fs.evo.Constants.VALID_TYPES;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.apache.commons.codec.binary.Base64;
 public class StringUtils {
 	
 	private static List<String> invalidIndexNames = Arrays.asList(INVALID_INDEX_NAMES);
+	private static List<String> validResourceTypes = Arrays.asList(VALID_TYPES);
 
     /**
      * Determines if the given string contains only 
@@ -30,6 +32,10 @@ public class StringUtils {
     
     public static boolean isValidIndexName(String name) {
     	return isValidIdentifier(name) && !invalidIndexNames.contains(name);
+    }
+    
+    public static boolean isValidResourceType(String resourceType) {
+    	return validResourceTypes.contains(resourceType);
     }
     
     public static boolean isSystemIndex(String name) {
